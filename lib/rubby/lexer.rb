@@ -56,5 +56,9 @@ module Rubby
     rule /"/, :complex_string do
       pop_state
     end
+
+    %w[ \+ - \* / % \*\* == != > < >= <= <=> === = \+= -= \*= /= %= \*\*= \^ ~ << >> && \|\| \! \& \| \.\. \.\.\. \. :: \?\? \\[ \\] ].each do |op|
+      rule(%r|#{op}|) { |e| [ :OPERATOR, e ] }
+    end
   end
 end

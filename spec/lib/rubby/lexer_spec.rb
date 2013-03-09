@@ -104,5 +104,56 @@ describe Rubby::Lexer do
         describe(%q['hello #{foo} world']) { it_behaves_like 'string', 'hello #{foo} world' }
       end
     end
+
+    describe 'Operators' do
+      shared_examples_for 'operator' do |type=nil|
+        let(:source) { example.example_group.parent_groups[1].description }
+        example('length') { expect(subject.length).to eq(2) }
+        example('type') { expect(subject.first.type).to eq(:OPERATOR) }
+        example('value') { expect(subject.first.value).to eq(type) } if type
+      end
+
+      describe 'arithmetic' do
+        %w[ + - * / % ** ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'comparison' do
+        %w[ == != > < >= <= <=> === ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'assignment' do
+        %w[ = += -= *= /= %= **= ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'bitwise' do
+        %w[ & | ^ ~ << >> ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'logical' do
+        %w[ && || ! ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'range' do
+        %w[ .. ... ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+
+      describe 'others' do
+        %w[ . :: ?? [  ] ].each do |op|
+          describe(op) { it_behaves_like 'operator', op }
+        end
+      end
+    end
   end
 end
