@@ -29,32 +29,36 @@ module Rubby
 
     rule /'/, :default do
       push_state :simple_string
+      [ :STRING, '' ]
     end
     rule /(\\'|[^'])*/, :simple_string do |e|
       [ :STRING, e.gsub(/\\'/, "'") ]
     end
     rule /'/, :simple_string do
       pop_state
+      [ :STRING, '' ]
     end
 
     rule /"/, :default do
       push_state :complex_string
+      [ :STRING, '' ]
     end
     rule /\#{/, :complex_string do
       push_state :default
       set_flag :inside_complex_string
-      [ :STRING_CONCAT ]
+      [ :INTERPOLATE_START ]
     end
     rule /}/, :default, [:inside_complex_string] do
       pop_state
       unset_flag :inside_complex_string
-      [ :STRING_CONCAT ]
+      [ :INTERPOLATE_END ]
     end
     rule /(\\"|[^"(\#{)])*/, :complex_string do |e|
       [ :STRING, e.gsub(/\\"/, '"') ]
     end
     rule /"/, :complex_string do
       pop_state
+      [ :STRING, '' ]
     end
 
     %w[ \+ - \* / % \*\* ].each do |op|
@@ -86,6 +90,15 @@ module Rubby
     rule(/\?\?/) { [ :DEFINED_OP, '??' ] }
     rule(/\[/) { [ :LSQUARE, '[' ] }
     rule(/\]/) { [ :RSQUARE, ']' ] }
+    rule(/\(/) { [ :LPAREN, '(' ] }
+    rule(/\)/) { [ :RPAREN, ')' ] }
+    rule(/\{/) { [ :LCURLY, '{' ] }
+    rule(/\}/) { [ :RCURLY, '}' ] }
+    rule(/,/) { [ :COMMA, ',' ] }
+    rule(/@/) { [ :AT, '@' ] }
+    rule(/->/) { [ :PROC, '->' ] }
+    rule(/\&>/) { [ :BLOCK, '&>' ] }
+    rule(/:/) { [ :COLON, ':' ] }
 
     rule /#+\s*/, :default do
       push_state :comment
@@ -95,6 +108,10 @@ module Rubby
     end
     rule /.*/, :comment do |e|
       [ :COMMENT, e ]
+    end
+
+    rule /\s+/, :default do |e|
+      [ :WHITE ]
     end
   end
 end

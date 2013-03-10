@@ -80,9 +80,9 @@ describe Rubby::Lexer do
     describe 'Strings' do
       shared_examples_for 'string' do |val=nil|
         let(:source) { example.example_group.parent_groups[1].description }
-        example('length') { expect(subject.length).to eq(2) }
-        example('type') { expect(subject.first.type).to eq(:STRING) }
-        example('value') { expect(subject.first.value).to eq(val) } if val
+        example('length') { expect(subject.length).to eq(4) }
+        example('type') { expect(subject[1].type).to eq(:STRING) }
+        example('value') { expect(subject[1].value).to eq(val) } if val
       end
 
       describe(%q['hello']) { it_behaves_like 'string', 'hello' }
@@ -90,16 +90,26 @@ describe Rubby::Lexer do
       describe(%q["hello"]) { it_behaves_like 'string', 'hello' }
       describe(%q["hello \"world\""]) { it_behaves_like 'string', 'hello "world"' }
 
-      describe 'Embedded rubby' do
-        describe %q["hello #{foo} world"] do
-          let(:source) { example.example_group.description }
-
-          example { expect(subject.size).to eq(6) }
-          example { expect(subject[0].type).to eq(:STRING) }
-          example { expect(subject[1].type).to eq(:STRING_CONCAT) }
-          example { expect(subject[-2].type).to eq(:STRING) }
-          example { expect(subject[-3].type).to eq(:STRING_CONCAT) }
+      describe 'String Interpolation' do
+        shared_examples_for 'interpolated_string' do |val=nil|
+          let(:source) { example.example_group.parent_groups[1].description }
+          let(:uniq_types) do
+            last = nil
+            subject.map do |elem|
+              type = elem.type
+              last = type unless last == type
+            end.compact
+          end
+          example { expect(uniq_types.size).to eq(6) }
+          example { puts uniq_types.inspect }
+          example { expect(uniq_types[0]).to eq(:STRING) }
+          example { expect(uniq_types[1]).to eq(:INTERPOLATE_START) }
+          example { expect(uniq_types[-3]).to eq(:INTERPOLATE_END) }
+          example { expect(uniq_types[-2]).to eq(:STRING) }
         end
+
+        describe(%q["hello #{foo} world"]) { it_behaves_like 'interpolated_string' }
+        describe(%q["#{foo}"]) { it_behaves_like 'interpolated_string' }
 
         describe(%q['hello #{foo} world']) { it_behaves_like 'string', 'hello #{foo} world' }
       end
@@ -155,6 +165,15 @@ describe Rubby::Lexer do
         describe('??') { it_behaves_like 'operator', :DEFINED_OP, '??' }
         describe('[')  { it_behaves_like 'operator', :LSQUARE, '[' }
         describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
+        describe('(')  { it_behaves_like 'operator', :LPAREN, '(' }
+        describe(')')  { it_behaves_like 'operator', :RPAREN, ')' }
+        describe('{')  { it_behaves_like 'operator', :LCURLY, '{' }
+        describe('{')  { it_behaves_like 'operator', :LCURLY, '{' }
+        describe(',')  { it_behaves_like 'operator', :COMMA, ',' }
+        describe('@')  { it_behaves_like 'operator', :AT, '@' }
+        describe('->')  { it_behaves_like 'operator', :PROC, '->' }
+        describe('&>')  { it_behaves_like 'operator', :BLOCK, '&>' }
+        describe(':')  { it_behaves_like 'operator', :COLON, ':' }
       end
     end
 
