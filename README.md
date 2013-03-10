@@ -241,7 +241,7 @@ Or install it yourself as:
 
 ## Copyright
 
-Copyright (c) 2013 Sociable Limited and named contributors:
+Copyright (c) 2013 [Sociable Limited](http://sociable.co.nz) and named contributors:
 
 ### Contributors
 
