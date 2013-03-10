@@ -86,5 +86,15 @@ module Rubby
     rule(/\?\?/) { [ :DEFINED_OP, '??' ] }
     rule(/\[/) { [ :LSQUARE, '[' ] }
     rule(/\]/) { [ :RSQUARE, ']' ] }
+
+    rule /#+\s*/, :default do
+      push_state :comment
+    end
+    rule /\n/, :comment do
+      pop_state
+    end
+    rule /.*/, :comment do |e|
+      [ :COMMENT, e ]
+    end
   end
 end

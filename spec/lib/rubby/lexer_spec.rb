@@ -157,5 +157,18 @@ describe Rubby::Lexer do
         describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
       end
     end
+
+    describe 'Comments' do
+      shared_examples_for 'comment' do |val=nil|
+        let(:source) { example.example_group.parent_groups[1].description }
+        example { expect(subject.length).to eq(2) }
+        example { expect(subject.first.type).to eq(:COMMENT) }
+        example { expect(subject.first.value).to eq(val) } if val
+      end
+      describe('# foo') { it_behaves_like('comment', 'foo') }
+      describe('#    foo') { it_behaves_like('comment', 'foo') }
+      describe('#### foo') { it_behaves_like('comment', 'foo') }
+      describe("#foo\n") { it_behaves_like('comment', 'foo') }
+    end
   end
 end
