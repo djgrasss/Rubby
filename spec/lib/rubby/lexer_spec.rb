@@ -106,53 +106,55 @@ describe Rubby::Lexer do
     end
 
     describe 'Operators' do
-      shared_examples_for 'operator' do |type=nil|
+      shared_examples_for 'operator' do |type, val=nil|
         let(:source) { example.example_group.parent_groups[1].description }
         example('length') { expect(subject.length).to eq(2) }
-        example('type') { expect(subject.first.type).to eq(:OPERATOR) }
-        example('value') { expect(subject.first.value).to eq(type) } if type
+        example('type') { expect(subject.first.type).to eq(type) }
+        example('value') { expect(subject.first.value).to eq(val) } if val
       end
 
       describe 'arithmetic' do
         %w[ + - * / % ** ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :ARITHMETIC_OP, op }
         end
       end
 
       describe 'comparison' do
         %w[ == != > < >= <= <=> === ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :COMPARISON_OP, op }
         end
       end
 
       describe 'assignment' do
         %w[ = += -= *= /= %= **= ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :ASSIGNMENT_OP, op }
         end
       end
 
       describe 'bitwise' do
         %w[ & | ^ ~ << >> ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :BITWISE_OP, op }
         end
       end
 
       describe 'logical' do
         %w[ && || ! ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :LOGICAL_OP, op }
         end
       end
 
       describe 'range' do
         %w[ .. ... ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
+          describe(op) { it_behaves_like 'operator', :RANGE_OP, op }
         end
       end
 
       describe 'others' do
-        %w[ . :: ?? [  ] ].each do |op|
-          describe(op) { it_behaves_like 'operator', op }
-        end
+        describe('.') { it_behaves_like 'operator', :DOT, '.' }
+        describe('::') { it_behaves_like 'operator', :CONST_INDEX_OP, '::' }
+        describe('??') { it_behaves_like 'operator', :DEFINED_OP, '??' }
+        describe('[')  { it_behaves_like 'operator', :LSQUARE, '[' }
+        describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
       end
     end
   end

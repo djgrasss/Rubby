@@ -57,8 +57,34 @@ module Rubby
       pop_state
     end
 
-    %w[ \+ - \* / % \*\* == != > < >= <= <=> === = \+= -= \*= /= %= \*\*= \^ ~ << >> && \|\| \! \& \| \.\. \.\.\. \. :: \?\? \\[ \\] ].each do |op|
-      rule(%r|#{op}|) { |e| [ :OPERATOR, e ] }
+    %w[ \+ - \* / % \*\* ].each do |op|
+      rule(%r|#{op}|) { |e| [ :ARITHMETIC_OP, e ] }
     end
+
+    %w[ == != > < >= <= <=> === ].each do |op|
+      rule(%r|#{op}|) { |e| [ :COMPARISON_OP, e ] }
+    end
+
+    %w[ = \+= -= \*= /= %= \*\*= ].each do |op|
+      rule(%r|#{op}|) { |e| [ :ASSIGNMENT_OP, e ] }
+    end
+
+    %w[ \& \| \^ ~ << >> ].each do |op|
+      rule(%r|#{op}|) { |e| [ :BITWISE_OP, e ] }
+    end
+
+    %w[ && \|\| \! ].each do |op|
+      rule(%r|#{op}|) { |e| [ :LOGICAL_OP, e ] }
+    end
+
+    %w[ \.\. \.\.\. ].each do |op|
+      rule(%r|#{op}|) { |e| [ :RANGE_OP, e ] }
+    end
+
+    rule(/\./) { [ :DOT, '.' ] }
+    rule(/::/) { [ :CONST_INDEX_OP, '::' ] }
+    rule(/\?\?/) { [ :DEFINED_OP, '??' ] }
+    rule(/\[/) { [ :LSQUARE, '[' ] }
+    rule(/\]/) { [ :RSQUARE, ']' ] }
   end
 end
