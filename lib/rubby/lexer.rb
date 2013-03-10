@@ -43,12 +43,12 @@ module Rubby
       push_state :complex_string
       [ :STRING, '' ]
     end
-    rule /\#{/, :complex_string do
+    rule /\#\{/, :complex_string do
       push_state :default
       set_flag :inside_complex_string
       [ :INTERPOLATE_START ]
     end
-    rule /}/, :default, [:inside_complex_string] do
+    rule /\}/, :default, [:inside_complex_string] do
       pop_state
       unset_flag :inside_complex_string
       [ :INTERPOLATE_END ]
