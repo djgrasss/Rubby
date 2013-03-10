@@ -40,6 +40,15 @@ Features required for 1.0 release:
 
 Rubby is in it's infancy, pull requests are greatly appreciated.
 
+## "Removed" features
+
+Rubby provides no syntactical way of accessing some Ruby language features,
+although those with even rudimentary metaprogramming skills can work around
+this should they desire.  Don't send PR's for these features, they won't be
+accepted:
+
+ + Class and instance variable access. Use accessors instead (yes, I know this is tricky. I'm working on it)
+
 ## Syntax examples
 
 ### Primitives:
