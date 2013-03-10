@@ -19,8 +19,21 @@ Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 
 Features required for 1.0 release:
 
- + Lexer ✓
- + Parser (*in progress*)
+ + Lexer
+   - Integers (✓)
+   - Floats (✓)
+   - Strings (✓)
+   - Symbols (✓)
+   - Regular expressions (X)
+   - Methods (✓)
+   - Keywords (X)
+ + Parser
+   - Integers (✓)
+   - Floats (✓)
+   - Strings (non-interpolated only)
+   - Symbols (non-interpolated only)
+   - Regular expressions (X)
+   - Method calls (without blocks only)
  + Transpiler
  + Interpreter
  + Polyglot interface (https://github.com/cjheath/polyglot)
