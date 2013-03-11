@@ -69,11 +69,14 @@ describe Rubby::Parser do
       describe('foo') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo 1,2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1,2,3)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo( 1, 2, 3)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo( 1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
 
       describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
