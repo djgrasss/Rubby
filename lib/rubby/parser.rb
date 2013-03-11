@@ -10,8 +10,8 @@ module Rubby
       clause('string')                   { |e| e }
       clause('constant')                 { |e| e }
       clause('symbol')                   { |e| e }
-      clause('array')                    { |e| Array.new(e) }
       clause('hash')                     { |e| e }
+      clause('array')                    { |e| e }
       clause('call')                     { |e| e }
     end
 
@@ -52,7 +52,7 @@ module Rubby
     end
 
     production(:array) do
-      clause('LSQUARE WHITE? expression_list WHITE? RSQUARE') { |_,_,e,_,_| e }
+      clause('LSQUARE WHITE? expression_list WHITE? RSQUARE') { |_,_,e,_,_| Array.new(e) }
     end
 
     production(:hash_element) do
@@ -60,8 +60,13 @@ module Rubby
       clause('expression WHITE? COLON WHITE? expression') { |e0,_,_,_,e1| HashElement.new(e0,e1) }
     end
 
+    production(:hash_element_list) do
+      clause('hash_element') { |e| [e] }
+      #clause('hash_element_list WHITE? COMMA WHITE? hash_element') { |e0,_,_,_,e1| e0 + [e1] }
+    end
+
     production(:hash) do
-      clause('hash_element') { |e| Hash.new([e]) }
+      clause('hash_element_list') { |e| Hash.new(e) }
     end
 
     production(:symbol) do
@@ -87,7 +92,7 @@ module Rubby
 
     production(:block) do
       clause('block_without_contents') { |e| e }
-      #clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
+      # clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
     end
 
     production(:call) do
@@ -95,6 +100,6 @@ module Rubby
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
     end
 
-    finalize
+    finalize explain: true, lookahead: true
   end
 end

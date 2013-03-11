@@ -74,18 +74,14 @@ describe Rubby::Parser do
       describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1,2,3)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
+
       describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
 
-      describe 'with blocks' do
-        describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-        describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-        describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-
-        describe 'single-expression blocks' do
-          disabled do
-            describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
-          end
-        end
+      disabled do
+        describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       end
     end
   end
