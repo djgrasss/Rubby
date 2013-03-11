@@ -46,12 +46,12 @@ module Rubby
     rule /\#\{/, :complex_string do
       push_state :default
       set_flag :inside_complex_string
-      [ :INTERPOLATE_START ]
+      [ :INTERPOLATESTART ]
     end
     rule /\}/, :default, [:inside_complex_string] do
       pop_state
       unset_flag :inside_complex_string
-      [ :INTERPOLATE_END ]
+      [ :INTERPOLATEEND ]
     end
     rule /(\\"|[^"(\#{)])*/, :complex_string do |e|
       [ :STRING, e.gsub(/\\"/, '"') ]
@@ -62,32 +62,32 @@ module Rubby
     end
 
     %w[ \+ - \* / % \*\* ].each do |op|
-      rule(%r|#{op}|) { |e| [ :ARITHMETIC_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :ARITHMETICOP, e ] }
     end
 
     %w[ == != > < >= <= <=> === ].each do |op|
-      rule(%r|#{op}|) { |e| [ :COMPARISON_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
     end
 
     %w[ = \+= -= \*= /= %= \*\*= ].each do |op|
-      rule(%r|#{op}|) { |e| [ :ASSIGNMENT_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :ASSIGNMENTOP, e ] }
     end
 
     %w[ \& \| \^ ~ << >> ].each do |op|
-      rule(%r|#{op}|) { |e| [ :BITWISE_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :BITWISEOP, e ] }
     end
 
     %w[ && \|\| \! ].each do |op|
-      rule(%r|#{op}|) { |e| [ :LOGICAL_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :LOGICALOP, e ] }
     end
 
     %w[ \.\. \.\.\. ].each do |op|
-      rule(%r|#{op}|) { |e| [ :RANGE_OP, e ] }
+      rule(%r|#{op}|) { |e| [ :RANGEOP, e ] }
     end
 
     rule(/\./) { [ :DOT, '.' ] }
-    rule(/::/) { [ :CONST_INDEX_OP, '::' ] }
-    rule(/\?\?/) { [ :DEFINED_OP, '??' ] }
+    rule(/::/) { [ :CONSTINDEXOP, '::' ] }
+    rule(/\?\?/) { [ :DEFINEDOP, '??' ] }
     rule(/\[/) { [ :LSQUARE, '[' ] }
     rule(/\]/) { [ :RSQUARE, ']' ] }
     rule(/\(/) { [ :LPAREN, '(' ] }

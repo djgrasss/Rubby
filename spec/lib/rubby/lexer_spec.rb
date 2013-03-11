@@ -103,8 +103,8 @@ describe Rubby::Lexer do
           example { expect(uniq_types.size).to eq(6) }
           example { puts uniq_types.inspect }
           example { expect(uniq_types[0]).to eq(:STRING) }
-          example { expect(uniq_types[1]).to eq(:INTERPOLATE_START) }
-          example { expect(uniq_types[-3]).to eq(:INTERPOLATE_END) }
+          example { expect(uniq_types[1]).to eq(:INTERPOLATESTART) }
+          example { expect(uniq_types[-3]).to eq(:INTERPOLATEEND) }
           example { expect(uniq_types[-2]).to eq(:STRING) }
         end
 
@@ -125,44 +125,44 @@ describe Rubby::Lexer do
 
       describe 'arithmetic' do
         %w[ + - * / % ** ].each do |op|
-          describe(op) { it_behaves_like 'operator', :ARITHMETIC_OP, op }
+          describe(op) { it_behaves_like 'operator', :ARITHMETICOP, op }
         end
       end
 
       describe 'comparison' do
         %w[ == != > < >= <= <=> === ].each do |op|
-          describe(op) { it_behaves_like 'operator', :COMPARISON_OP, op }
+          describe(op) { it_behaves_like 'operator', :COMPARISONOP, op }
         end
       end
 
       describe 'assignment' do
         %w[ = += -= *= /= %= **= ].each do |op|
-          describe(op) { it_behaves_like 'operator', :ASSIGNMENT_OP, op }
+          describe(op) { it_behaves_like 'operator', :ASSIGNMENTOP, op }
         end
       end
 
       describe 'bitwise' do
         %w[ & | ^ ~ << >> ].each do |op|
-          describe(op) { it_behaves_like 'operator', :BITWISE_OP, op }
+          describe(op) { it_behaves_like 'operator', :BITWISEOP, op }
         end
       end
 
       describe 'logical' do
         %w[ && || ! ].each do |op|
-          describe(op) { it_behaves_like 'operator', :LOGICAL_OP, op }
+          describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
         end
       end
 
       describe 'range' do
         %w[ .. ... ].each do |op|
-          describe(op) { it_behaves_like 'operator', :RANGE_OP, op }
+          describe(op) { it_behaves_like 'operator', :RANGEOP, op }
         end
       end
 
       describe 'others' do
         describe('.') { it_behaves_like 'operator', :DOT, '.' }
-        describe('::') { it_behaves_like 'operator', :CONST_INDEX_OP, '::' }
-        describe('??') { it_behaves_like 'operator', :DEFINED_OP, '??' }
+        describe('::') { it_behaves_like 'operator', :CONSTINDEXOP, '::' }
+        describe('??') { it_behaves_like 'operator', :DEFINEDOP, '??' }
         describe('[')  { it_behaves_like 'operator', :LSQUARE, '[' }
         describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
         describe('(')  { it_behaves_like 'operator', :LPAREN, '(' }
