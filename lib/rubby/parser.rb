@@ -11,6 +11,7 @@ module Rubby
       clause('constant')                 { |e| e }
       clause('symbol')                   { |e| e }
       clause('array')                    { |e| Array.new(e) }
+      clause('hash')                     { |e| e }
       clause('call')                     { |e| e }
     end
 
@@ -33,7 +34,7 @@ module Rubby
     end
 
     production(:interpolation) do
-      clause('INTERPOLATE_START WHITE? expression WHITE? INTERPOLATE_END') { |_,_,e,_,_| Interpolation.new(e) }
+      clause('INTERPOLATESTART WHITE? expression WHITE? INTERPOLATEEND') { |_,_,e,_,_| Interpolation.new(e) }
     end
 
     production(:simple_string) do
@@ -52,6 +53,15 @@ module Rubby
 
     production(:array) do
       clause('LSQUARE WHITE? expression_list WHITE? RSQUARE') { |_,_,e,_,_| e }
+    end
+
+    production(:hash_element) do
+      clause('IDENTIFIER WHITE? COLON WHITE? expression') { |e0,_,_,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
+      clause('expression WHITE? COLON WHITE? expression') { |e0,_,_,_,e1| HashElement.new(e0,e1) }
+    end
+
+    production(:hash) do
+      clause('hash_element') { |e| Hash.new([e]) }
     end
 
     production(:symbol) do

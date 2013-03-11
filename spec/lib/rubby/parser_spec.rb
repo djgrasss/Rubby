@@ -15,34 +15,78 @@ describe Rubby::Parser do
       example { expect(subject.value).to eq(val) } if val
     end
 
-    describe('1') { it_behaves_like 'node', Rubby::Nodes::Integer, 1 }
-    describe('1.23') { it_behaves_like 'node', Rubby::Nodes::Float, 1.23 }
-    describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
-    describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
+    describe 'Integer literals' do
+      describe('1') { it_behaves_like 'node', Rubby::Nodes::Integer, 1 }
+      describe('10') { it_behaves_like 'node', Rubby::Nodes::Integer, 10 }
+      describe('99') { it_behaves_like 'node', Rubby::Nodes::Integer, 99 }
+      describe('1234567890123456789') { it_behaves_like 'node', Rubby::Nodes::Integer, 1234567890123456789 }
+      describe('0x123') { it_behaves_like 'node', Rubby::Nodes::Integer, 291 }
+      describe('0123') { it_behaves_like 'node', Rubby::Nodes::Integer, 83 }
+      describe('0b10101') { it_behaves_like 'node', Rubby::Nodes::Integer, 21 }
+    end
 
-    describe(':foo')   { it_behaves_like 'node', Rubby::Nodes::Symbol }
-    describe(":'foo'") { it_behaves_like 'node', Rubby::Nodes::Symbol }
-    describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+    describe 'Float literals' do
+      describe('1.23') { it_behaves_like 'node', Rubby::Nodes::Float, 1.23 }
+    end
 
-    # describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+    describe 'String literals' do
+      describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
+      describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
+      disabled do
+        describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+      end
+    end
 
-    describe('[]') { it_behaves_like 'node', Rubby::Nodes::Array }
-    describe('[1]') { it_behaves_like 'node', Rubby::Nodes::Array }
-    describe('[1,2,3]') { it_behaves_like 'node', Rubby::Nodes::Array }
-    describe('[ 1, 2, 3 ]') { it_behaves_like 'node', Rubby::Nodes::Array }
+    describe 'Symbol literals' do
+      describe(':foo')   { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      describe(":'foo'") { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      disabled do
+        describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      end
+    end
 
-    describe('foo') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo 1') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo(1,2,3)') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    # describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+    describe 'Array literals' do
+      describe('[]') { it_behaves_like 'node', Rubby::Nodes::Array }
+      describe('[1]') { it_behaves_like 'node', Rubby::Nodes::Array }
+      describe('[1,2,3]') { it_behaves_like 'node', Rubby::Nodes::Array }
+      describe('[ 1, 2, 3 ]') { it_behaves_like 'node', Rubby::Nodes::Array }
+    end
+
+    describe 'Hash literals' do
+      describe('foo: 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('foo : 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('"foo" : 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe(':foo : 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      disabled 'temporarily' do
+        describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
+        describe('"foo": 1, 2 : 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      end
+    end
+
+    describe 'Method calls' do
+      describe('foo') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo 1') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1,2,3)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+
+      describe 'with blocks' do
+        describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+        describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+        describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+
+        describe 'single-expression blocks' do
+          disabled do
+            describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
+          end
+        end
+      end
+    end
   end
 end
