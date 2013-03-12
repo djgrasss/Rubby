@@ -6,7 +6,7 @@ end
 
 describe Rubby do
   let(:source) { stub(:source) }
-  let(:runner) { stub(:runner, process: nil) }
+  let(:runner) { stub(:runner, :process => nil) }
 
   describe 'runner mock' do
     subject { runner }
@@ -20,7 +20,7 @@ describe Rubby do
     end
 
     it 'runs the transpiler' do
-      Rubby::Transpiler.stub(new: runner)
+      Rubby::Transpiler.stub(:new => runner)
       runner.should_receive(:process)
       subject.transpile(source)
     end
@@ -33,7 +33,7 @@ describe Rubby do
     end
 
     it 'runs the transpiler' do
-      Rubby::Interpreter.stub(new: runner)
+      Rubby::Interpreter.stub(:new => runner)
       runner.should_receive(:process)
       subject.interpret(source)
     end

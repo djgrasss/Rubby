@@ -46,7 +46,8 @@ describe Rubby::Lexer do
     end
 
     describe 'Integers' do
-      shared_examples_for 'integer' do |val=nil|
+      shared_examples_for 'integer' do |*args|
+        val = args.first
         let(:source) { example.example_group.parent_groups[1].description }
         example('length') { expect(subject.length).to eq(2) }
         example('type') { expect(subject.first.type).to eq(:INTEGER) }
@@ -67,7 +68,8 @@ describe Rubby::Lexer do
     end
 
     describe 'Floats' do
-      shared_examples_for 'float' do |val=nil|
+      shared_examples_for 'float' do |*args|
+        val = args.first
         let(:source) { example.example_group.parent_groups[1].description }
         example('length') { expect(subject.length).to eq(2) }
         example('type') { expect(subject.first.type).to eq(:FLOAT) }
@@ -79,7 +81,8 @@ describe Rubby::Lexer do
     end
 
     describe 'Strings' do
-      shared_examples_for 'string' do |val=nil|
+      shared_examples_for 'string' do |*args|
+        val = args.first
         let(:source) { example.example_group.parent_groups[1].description }
         example('length') { expect(subject.length).to eq(4) }
         example('type') { expect(subject[1].type).to eq(:STRING) }
@@ -92,7 +95,8 @@ describe Rubby::Lexer do
       describe(%q["hello \"world\""]) { it_behaves_like 'string', 'hello "world"' }
 
       describe 'String Interpolation' do
-        shared_examples_for 'interpolated_string' do |val=nil|
+        shared_examples_for 'interpolated_string' do |*args|
+          val = args.first
           let(:source) { example.example_group.parent_groups[1].description }
           let(:uniq_types) do
             last = nil
@@ -117,7 +121,9 @@ describe Rubby::Lexer do
     end
 
     describe 'Operators' do
-      shared_examples_for 'operator' do |type, val=nil|
+      shared_examples_for 'operator' do |*args|
+        type = args.first
+        val = args[1]
         let(:source) { example.example_group.parent_groups[1].description }
         example('length') { expect(subject.length).to eq(2) }
         example('type') { expect(subject.first.type).to eq(type) }
@@ -184,7 +190,8 @@ describe Rubby::Lexer do
     end
 
     describe 'Comments' do
-      shared_examples_for 'comment' do |val=nil|
+      shared_examples_for 'comment' do |*args|
+        val = args.first
         let(:source) { example.example_group.parent_groups[1].description }
         example { expect(subject.length).to eq(2) }
         example { expect(subject.first.type).to eq(:COMMENT) }
@@ -251,7 +258,9 @@ describe Rubby::Lexer do
       before { environment.current_indent_level = old_depth / 2 }
       subject { environment.indent_token_for(new_depth) }
 
-      shared_examples_for 'dent token' do |token=:INDENT,value=nil|
+      shared_examples_for 'dent token' do |*args|
+        token = args.first || :INDENT
+        value = args[1]
         it { should be_a(Enumerable) }
         its(:size) { should eq(2) }
         its(:first) { should eq(token) }

@@ -162,6 +162,6 @@ module Rubby
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
     end
 
-    finalize lookahead: false
+    finalize :lookahead => false
   end
 end

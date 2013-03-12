@@ -7,6 +7,8 @@ module Rubby
     class Environment < Environment
       attr_accessor :current_indent_level
 
+      PositiveInfinity = +1.0/0.0
+      NegativeInfinity = -1.0/0.0
 
       def indent_token_for(indent_chars)
         raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars" unless indent_chars % 2 == 0
@@ -19,10 +21,10 @@ module Rubby
         when 1
           self.current_indent_level = new_indent_level
           [ :INDENT, current_indent_level ]
-        when -Float::INFINITY..-1
+        when NegativeInfinity..-1
           self.current_indent_level = new_indent_level
           [ :DEDENT, current_indent_level ]
-        when 2..Float::INFINITY
+        when 2..PositiveInfinity
           raise ::Rubby::Exceptions::Indent, "Abberrant child indent of #{indent_change}"
         end
       end

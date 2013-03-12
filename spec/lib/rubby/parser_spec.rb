@@ -9,7 +9,9 @@ describe Rubby::Parser do
     let(:parsed) { Rubby::Parser.parse(lexed) }
     let(:source) { example.example_group.description }
 
-    shared_examples_for 'node' do |klass,val=nil|
+    shared_examples_for 'node' do |*args|
+      klass = args.first
+      val   = args[1]
       let(:source) { example.example_group.parent_groups[1].description + "\n"}
       example { expect(subject).to be_a(klass) }
       example { expect(subject.value).to eq(val) } if val
