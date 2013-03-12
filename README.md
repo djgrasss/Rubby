@@ -20,6 +20,7 @@ Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 Features required for 1.0 release:
 
  + Lexer
+   - Indent/dedent (✓)
    - Integers (✓)
    - Floats (✓)
    - Strings (✓)

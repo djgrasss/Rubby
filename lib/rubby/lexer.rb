@@ -2,6 +2,31 @@ require 'rltk/lexer'
 
 module Rubby
   class Lexer < RLTK::Lexer
+
+    class Environment < Environment
+      attr_accessor :current_indent_level
+
+
+      def indent_token_for(indent_chars)
+        raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars" unless indent_chars % 2 == 0
+        self.current_indent_level ||= 0
+        new_indent_level = indent_chars / 2
+        indent_change = new_indent_level - current_indent_level
+        case indent_change
+        when 0
+          return
+        when 1
+          self.current_indent_level = new_indent_level
+          [ :INDENT, current_indent_level ]
+        when -Float::INFINITY..-1
+          self.current_indent_level = new_indent_level
+          [ :DEDENT, current_indent_level ]
+        when 2..Float::INFINITY
+          raise ::Rubby::Exceptions::Indent, "Abberrant child indent of #{indent_change}"
+        end
+      end
+    end
+
     rule /([a-z][a-zA-Z0-9_]+[=?!]?)/, :default do |e|
       [ :IDENTIFIER, e ]
     end
@@ -110,7 +135,11 @@ module Rubby
       [ :COMMENT, e ]
     end
 
-    rule /\s+/, :default do |e|
+    rule /([\n\r])(\ )*/, :default do |e|
+      indent_token_for(e.length - 1)
+    end
+
+    rule /[ \t\f]+/, :default do |e|
       [ :WHITE ]
     end
   end

@@ -4,7 +4,8 @@ describe Rubby::Lexer do
   it { should be_a(RLTK::Lexer) }
 
   describe 'Tokens' do
-    subject { Rubby::Lexer.lex(source) }
+    let(:lexed) { Rubby::Lexer.lex(source) }
+    subject { lexed }
     let(:source) { example.example_group.description }
     describe 'Identifiers' do
       shared_examples_for 'identifier' do
@@ -188,6 +189,108 @@ describe Rubby::Lexer do
       describe('#    foo') { it_behaves_like('comment', 'foo') }
       describe('#### foo') { it_behaves_like('comment', 'foo') }
       describe("#foo\n") { it_behaves_like('comment', 'foo') }
+    end
+
+    describe 'Indent/Dedent' do
+      subject { lexed.map(&:type) }
+
+      describe "no indent" do
+        let(:source) { "1\n2\n" }
+        it { should_not include(:INDENT) }
+      end
+
+      describe "single indent" do
+        let(:source) { "1\n  2" }
+        it { should include(:INDENT) }
+      end
+
+      describe 'uneven indent' do
+        let(:source) { "1\n   2" }
+        example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
+      end
+
+      describe "double indent" do
+        let(:source) { "1\n    2" }
+        example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
+      end
+
+      describe "dedent" do
+        let(:source) { "1\n  2\n3" }
+        it { should include(:DEDENT) }
+      end
+    end
+  end
+
+  describe Rubby::Lexer::Environment do
+    describe '#indent_token_for' do
+      let(:environment) { Rubby::Lexer::Environment.new(:default) }
+      let(:old_depth) { 0 }
+      let(:new_depth) { 0 }
+      before { environment.current_indent_level = old_depth / 2 }
+      subject { environment.indent_token_for(new_depth) }
+
+      shared_examples_for 'dent token' do |token=:INDENT,value=nil|
+        it { should be_a(Enumerable) }
+        its(:size) { should eq(2) }
+        its(:first) { should eq(token) }
+        its(:last) { should eq(value) } if value
+      end
+
+      describe 'from 0 to 1.5' do
+        let(:new_depth) { 3 }
+        example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
+      end
+
+      describe 'from 0 to 0' do
+        it { should be_nil }
+      end
+
+      describe 'from 5 to 5' do
+        let(:old_depth) { 10 }
+        let(:new_depth) { 10 }
+        it { should be_nil }
+      end
+
+      describe 'from 0 to 1' do
+        let(:new_depth) { 2 }
+        it_behaves_like 'dent token', :INDENT, 1
+      end
+
+      describe 'from 1 to 2' do
+        let(:old_depth) { 2 }
+        let(:new_depth) { 4 }
+        it_behaves_like 'dent token', :INDENT, 2
+      end
+
+      describe 'from 10 to 11' do
+        let(:old_depth) { 20 }
+        let(:new_depth) { 22 }
+        it_behaves_like 'dent token', :INDENT, 11
+      end
+
+      describe 'from 1 to 3' do
+        let(:old_depth) { 2 }
+        let(:new_depth) { 6 }
+        example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
+      end
+
+      describe 'from 1 to 0' do
+        let(:old_depth) { 2 }
+        let(:new_depth) { 0 }
+        it_behaves_like 'dent token', :DEDENT, 0
+      end
+
+      describe 'from 2 to 0' do
+        let(:old_depth) { 4 }
+        let(:new_depth) { 0 }
+        it_behaves_like 'dent token', :DEDENT, 0
+      end
+
+      describe 'from 50 to 0' do
+        let(:old_depth) { 100 }
+        let(:new_depth) { 0 }
+        it_behaves_like 'dent token', :DEDENT, 0
+      end
     end
   end
 end
