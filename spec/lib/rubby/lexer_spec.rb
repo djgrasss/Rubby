@@ -193,7 +193,18 @@ describe Rubby::Lexer do
       describe('# foo') { it_behaves_like('comment', 'foo') }
       describe('#    foo') { it_behaves_like('comment', 'foo') }
       describe('#### foo') { it_behaves_like('comment', 'foo') }
-      describe("#foo\n") { it_behaves_like('comment', 'foo') }
+    end
+
+    describe 'Keywords' do
+      shared_examples_for 'keyword' do |type|
+        let(:source) { example.example_group.parent_groups[1].description }
+        example { expect(subject.length).to eq(2) }
+        example { expect(subject.first.type).to eq(type) }
+      end
+
+      %w[ class module ].each do |keyword|
+        describe(keyword) { it_behaves_like('keyword', keyword.upcase.to_sym) }
+      end
     end
 
     describe 'Indent/Dedent' do
@@ -219,8 +230,14 @@ describe Rubby::Lexer do
         example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
       end
 
-      describe "dedent" do
+      describe "dedent to zero" do
         let(:source) { "1\n  2\n3" }
+        it { should include(:DEDENT) }
+      end
+
+      describe "dedent to one" do
+        let(:source) { "1\n  2\n    3\n  4" }
+        its(:size) { should eq(11) }
         it { should include(:DEDENT) }
       end
     end

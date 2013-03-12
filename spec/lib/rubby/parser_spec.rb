@@ -4,13 +4,13 @@ describe Rubby::Parser do
   it { should be_a(RLTK::Parser) }
 
   describe 'Nodes' do
-    subject { parsed }
+    subject { parsed.first }
     let(:lexed) { Rubby::Lexer.lex(source) }
     let(:parsed) { Rubby::Parser.parse(lexed) }
     let(:source) { example.example_group.description }
 
     shared_examples_for 'node' do |klass,val=nil|
-      let(:source) { example.example_group.parent_groups[1].description }
+      let(:source) { example.example_group.parent_groups[1].description + "\n"}
       example { expect(subject).to be_a(klass) }
       example { expect(subject.value).to eq(val) } if val
     end
@@ -97,7 +97,17 @@ describe Rubby::Parser do
       disabled do
         describe("foo &>\n  1") { it_behaves_like 'node', Rubby::Nodes::Call }
         describe("foo &>\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
-        describe("foo &>\n  1\nbar") { it_behaves_like 'node', Rubby::Nodes::Call }
+        describe("foo &>\n  1\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
+      end
+    end
+
+    disabled do
+      describe 'class definition' do
+        describe('class Foo') { it_behaves_like 'node', Rubby::Nodes::Class }
+      end
+
+      describe 'module definition' do
+        describe('module Foo') { it_behaves_like 'node', Rubby::Nodes::Module }
       end
     end
   end

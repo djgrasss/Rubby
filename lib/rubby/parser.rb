@@ -10,7 +10,18 @@ module Rubby
     right :MULTIPLY, :DIVIDE, :MODULO
     right :PLUS, :MINUS
 
+    production(:statements) do
+      clause('statement')                { |e| [e] }
+      clause('statements statement')     { |e0,e1| e0 + [e1] }
+    end
+
+    production(:statement) do
+      clause('expression NEWLINE')       { |e,_| e }
+    end
+
     production(:expression) do
+      clause('class')                    { |e| e }
+      clause('module')                   { |e| e }
       clause('integer')                  { |e| e }
       clause('float')                    { |e| e }
       clause('string')                   { |e| e }
@@ -20,6 +31,14 @@ module Rubby
       clause('array')                    { |e| e }
       clause('call')                     { |e| e }
       clause('block')                    { |e| e }
+    end
+
+    production(:class) do
+      clause('CLASS constant') { |_,e| Class.new(e,nil,[]) }
+    end
+
+    production(:module) do
+      clause('MODULE constant') { |_,e| Module.new(e,[]) }
     end
 
     production(:constant) do
@@ -74,15 +93,14 @@ module Rubby
       clause('LSQUARE WHITE expression_list WHITE RSQUARE') { |_,_,e,_,_| Array.new(e) }
     end
 
-    # production(:hash_sep) do
-    #   clause('COLON WHITE') { |_,_| }
-    #   clause('WHITE COLON WHITE') { |_,_,_| }
-    # end
+    production(:hash_sep) do
+      clause('COLON WHITE') { |_,_| }
+      clause('WHITE COLON WHITE') { |_,_,_| }
+    end
 
     production(:hash_element) do
-      clause('IDENTIFIER COLON WHITE expression') { |e0,_,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
-      clause('expression COLON WHITE expression') { |e0,_,_,e1| HashElement.new(e0,e1) }
-      clause('expression WHITE COLON WHITE expression') { |e0,_,_,_,e1| HashElement.new(e0,e1) }
+      clause('IDENTIFIER hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
+      clause('expression hash_sep expression') { |e0,_,e1| HashElement.new(e0,e1) }
     end
 
     production(:hash_element_list) do
@@ -111,6 +129,10 @@ module Rubby
       clause('LPAREN WHITE expression_list WHITE RPAREN') { |_,_,e,_,_| e }
     end
 
+    production(:indented_contents) do
+      clause('INDENT statements') { |_,e| e }
+    end
+
     production(:call_without_arguments) do
       clause('IDENTIFIER') { |e| }
     end
@@ -132,6 +154,7 @@ module Rubby
     production(:block) do
       clause('block_without_contents') { |e| e }
       clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
+      clause('block_without_contents indented_contents') { |e0,e1| e0.tap { |b| b.contents = e1 } }
     end
 
     production(:call) do

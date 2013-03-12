@@ -2,6 +2,7 @@ require 'rltk/lexer'
 
 module Rubby
   class Lexer < RLTK::Lexer
+    KEYWORDS = %w[ module class ]
 
     class Environment < Environment
       attr_accessor :current_indent_level
@@ -24,6 +25,12 @@ module Rubby
         when 2..Float::INFINITY
           raise ::Rubby::Exceptions::Indent, "Abberrant child indent of #{indent_change}"
         end
+      end
+    end
+
+    KEYWORDS.each do |keyword|
+      rule /#{keyword}/, :default do |e|
+        keyword.upcase.to_sym
       end
     end
 
@@ -133,19 +140,28 @@ module Rubby
     rule /#+\s*/, :default do
       push_state :comment
     end
-    rule /\n/, :comment do
+    rule /[\n\r]/, :comment do
       pop_state
+      push_state :indenting
+      :NEWLINE
     end
     rule /.*/, :comment do |e|
       [ :COMMENT, e ]
     end
 
-    rule /([\n\r])(\ )*/, :default do |e|
-      indent_token_for(e.length - 1)
+    rule /[\r\n]+/, :default do |e|
+      push_state :indenting
+      :NEWLINE
+    end
+
+    rule /[ \t\f]*/, :indenting do |e|
+      pop_state
+      indent_token_for(e.size)
     end
 
     rule /[ \t\f]+/, :default do |e|
       [ :WHITE ]
     end
+
   end
 end
