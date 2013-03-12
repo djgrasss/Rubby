@@ -27,14 +27,15 @@ Features required for 1.0 release:
    - Symbols (✓)
    - Regular expressions (X)
    - Methods (✓)
-   - Keywords (X)
+   - Keywords (partial)
  + Parser
    - Integers (✓)
    - Floats (✓)
    - Strings (non-interpolated only)
    - Symbols (non-interpolated only)
    - Regular expressions (X)
-   - Method calls (without blocks only)
+   - Method calls (✓)
+   - Blocks (without indented contents)
  + Transpiler
  + Interpreter
  + Polyglot interface (https://github.com/cjheath/polyglot)
