@@ -4,6 +4,12 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
+    right :COLON
+    right :EXPO
+    right :BANG, :TILDE
+    right :MULTIPLY, :DIVIDE, :MODULO
+    right :PLUS, :MINUS
+
     production(:expression) do
       clause('integer')                  { |e| e }
       clause('float')                    { |e| e }
@@ -13,28 +19,36 @@ module Rubby
       clause('hash')                     { |e| e }
       clause('array')                    { |e| e }
       clause('call')                     { |e| e }
+      clause('block')                    { |e| e }
     end
 
     production(:constant) do
-      clause('WHITE? CONSTANT WHITE?') { |_,e,_| Constant.new(e) }
+      clause('CONSTANT') { |e| Constant.new(e) }
     end
 
     production(:integer) do
-      clause('WHITE? INTEGER WHITE?')    { |_,e,_| Integer.new(e) }
+      clause('INTEGER')    { |e| Integer.new(e) }
     end
 
     production(:float) do
-      clause('WHITE? FLOAT WHITE?')  { |_,e,_| Float.new(e) }
+      clause('FLOAT')  { |e| Float.new(e) }
+    end
+
+    production(:list_sep) do
+      clause('WHITE COMMA WHITE') { |_,_,_| }
+      clause('WHITE COMMA') { |_,_| }
+      clause('COMMA WHITE') { |_,_| }
+      clause('COMMA') { |_| }
     end
 
     production(:expression_list) do
-      clause('') { [] }
       clause('expression') { |e| [e] }
-      clause('expression_list WHITE? COMMA WHITE? expression') { |e0,_,_,_,e1| e0 + [e1] }
+      clause('expression_list list_sep expression') { |e0,_,e1| e0 + [e1] }
     end
 
     production(:interpolation) do
-      clause('INTERPOLATESTART WHITE? expression WHITE? INTERPOLATEEND') { |_,_,e,_,_| Interpolation.new(e) }
+      clause('INTERPOLATESTART expression INTERPOLATEEND') { |_,e,_| Interpolation.new(e) }
+      clause('INTERPOLATESTART WHITE expression WHITE INTERPOLATEEND') { |_,_,e,_,_| Interpolation.new(e) }
     end
 
     production(:simple_string) do
@@ -48,25 +62,38 @@ module Rubby
 
     production(:string) do
       clause('simple_string') { |e| e }
-      clause('interpolated_string') { |e| e }
+      # clause('interpolated_string') { |e| e }
     end
 
     production(:array) do
-      clause('LSQUARE WHITE? expression_list WHITE? RSQUARE') { |_,_,e,_,_| Array.new(e) }
+      clause('LSQUARE RSQUARE') { |_,_| Array.new([]) }
+      clause('LSQUARE WHITE RSQUARE') { |_,_,_| Array.new([]) }
+      clause('LSQUARE expression_list RSQUARE') { |_,e,_| Array.new(e) }
+      clause('LSQUARE WHITE expression_list RSQUARE') { |_,_,e,_| Array.new(e) }
+      clause('LSQUARE expression_list WHITE RSQUARE') { |_,e,_,_| Array.new(e) }
+      clause('LSQUARE WHITE expression_list WHITE RSQUARE') { |_,_,e,_,_| Array.new(e) }
     end
 
+    # production(:hash_sep) do
+    #   clause('COLON WHITE') { |_,_| }
+    #   clause('WHITE COLON WHITE') { |_,_,_| }
+    # end
+
     production(:hash_element) do
-      clause('IDENTIFIER WHITE? COLON WHITE? expression') { |e0,_,_,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
-      clause('expression WHITE? COLON WHITE? expression') { |e0,_,_,_,e1| HashElement.new(e0,e1) }
+      clause('IDENTIFIER COLON WHITE expression') { |e0,_,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
+      clause('expression COLON WHITE expression') { |e0,_,_,e1| HashElement.new(e0,e1) }
+      clause('expression WHITE COLON WHITE expression') { |e0,_,_,_,e1| HashElement.new(e0,e1) }
     end
 
     production(:hash_element_list) do
       clause('hash_element') { |e| [e] }
-      #clause('hash_element_list WHITE? COMMA WHITE? hash_element') { |e0,_,_,_,e1| e0 + [e1] }
+      clause('hash_element_list list_sep hash_element') { |e0,_,e1| e0 + [e1] }
     end
 
     production(:hash) do
       clause('hash_element_list') { |e| Hash.new(e) }
+      clause('LCURLY hash_element_list RCURLY') { |_,e,_| Hash.new(e) }
+      clause('LCURLY WHITE hash_element_list WHITE RCURLY') { |_,_,e,_,_| Hash.new(e) }
     end
 
     production(:symbol) do
@@ -76,23 +103,35 @@ module Rubby
     end
 
     production(:expression_group) do
-      clause('LPAREN WHITE? expression_list WHITE? RPAREN') { |_,_,e,_,_| e }
+      clause('LPAREN RPAREN') { |_,_| [] }
+      clause('LPAREN WHITE RPAREN') { |_,_,_| [] }
+      clause('LPAREN expression_list RPAREN') { |_,e,_| e }
+      clause('LPAREN expression_list WHITE RPAREN') { |_,e,_,_| e }
+      clause('LPAREN WHITE expression_list RPAREN') { |_,_,e,_| e }
+      clause('LPAREN WHITE expression_list WHITE RPAREN') { |_,_,e,_,_| e }
+    end
+
+    production(:call_without_arguments) do
+      clause('IDENTIFIER') { |e| }
     end
 
     production(:call_without_block) do
-      clause('IDENTIFIER') { |n| Call.new(n,[]) }
-      clause('IDENTIFIER WHITE? expression_group') { |n,_,e| Call.new(n,e) }
-      clause('IDENTIFIER WHITE? expression_list') { |n,_,e| Call.new(n,e) }
+      clause('call_without_arguments') { |e| Call.new(e, []) }
+      clause('call_without_arguments expression_list') { |e0,e1| Call.new(e0,e1) }
+      clause('call_without_arguments WHITE expression_list') { |e0,_,e1| Call.new(e0,e1) }
+      clause('call_without_arguments expression_group') { |e0,e1| Call.new(e0,e1) }
+      clause('call_without_arguments WHITE expression_group') { |e0,_,e1| Call.new(e0,e1) }
     end
 
     production(:block_without_contents) do
       clause('BLOCK') { |_| Block.new([],[]) }
-      clause('BLOCK WHITE? expression_group') { |_,_,e| Block.new(e,[]) }
+      clause('BLOCK expression_group') { |_,e| Block.new(e,[]) }
+      clause('BLOCK WHITE expression_group') { |_,_,e| Block.new(e,[]) }
     end
 
     production(:block) do
       clause('block_without_contents') { |e| e }
-      # clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
+      clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
     end
 
     production(:call) do
@@ -100,6 +139,6 @@ module Rubby
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
     end
 
-    finalize explain: true, lookahead: true
+    finalize lookahead: false
   end
 end

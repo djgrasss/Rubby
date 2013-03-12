@@ -125,9 +125,12 @@ describe Rubby::Lexer do
       end
 
       describe 'arithmetic' do
-        %w[ + - * / % ** ].each do |op|
-          describe(op) { it_behaves_like 'operator', :ARITHMETICOP, op }
-        end
+        describe('**') { it_behaves_like 'operator', :EXPO, '**' }
+        describe('+')  { it_behaves_like 'operator', :PLUS, '+' }
+        describe('-')  { it_behaves_like 'operator', :MINUS, '-' }
+        describe('*')  { it_behaves_like 'operator', :MULTIPLY, '*' }
+        describe('/')  { it_behaves_like 'operator', :DEVIDE, '/' }
+        describe('%')  { it_behaves_like 'operator', :MODULO, '%' }
       end
 
       describe 'comparison' do
@@ -143,13 +146,15 @@ describe Rubby::Lexer do
       end
 
       describe 'bitwise' do
-        %w[ & | ^ ~ << >> ].each do |op|
+        %w[ & | ^ << >> ].each do |op|
           describe(op) { it_behaves_like 'operator', :BITWISEOP, op }
         end
       end
 
       describe 'logical' do
-        %w[ && || ! ].each do |op|
+        describe('!') { it_behaves_like 'operator', :BANG, '!' }
+        describe('~') { it_behaves_like 'operator', :TILDE, '~' }
+        %w[ && || ].each do |op|
           describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
         end
       end

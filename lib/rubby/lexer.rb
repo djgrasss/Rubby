@@ -86,9 +86,12 @@ module Rubby
       [ :STRING, '' ]
     end
 
-    %w[ \+ - \* / % \*\* ].each do |op|
-      rule(%r|#{op}|) { |e| [ :ARITHMETICOP, e ] }
-    end
+    rule(/\*\*/) { [ :EXPO, '**' ] }
+    rule(/\+/)   { [ :PLUS, '+' ] }
+    rule(/-/)    { [ :MINUS, '-' ] }
+    rule(/\*/)   { [ :MULTIPLY, '*' ] }
+    rule(/\//)   { [ :DEVIDE, '/' ] }
+    rule(/%/)    { [ :MODULO, '%' ] }
 
     %w[ == != > < >= <= <=> === ].each do |op|
       rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
@@ -98,11 +101,13 @@ module Rubby
       rule(%r|#{op}|) { |e| [ :ASSIGNMENTOP, e ] }
     end
 
-    %w[ \& \| \^ ~ << >> ].each do |op|
+    %w[ \& \| \^ << >> ].each do |op|
       rule(%r|#{op}|) { |e| [ :BITWISEOP, e ] }
     end
 
-    %w[ && \|\| \! ].each do |op|
+    rule(/\!/) { |e| [ :BANG, '!' ] }
+    rule(/~/) { |e| [ :TILDE, '~' ] }
+    %w[ && \|\| ].each do |op|
       rule(%r|#{op}|) { |e| [ :LOGICALOP, e ] }
     end
 
