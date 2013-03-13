@@ -96,7 +96,6 @@ describe Rubby::Lexer do
             end.compact
           end
           example { expect(uniq_types.size).to eq(6) }
-          example { puts uniq_types.inspect }
           example { expect(uniq_types[0]).to eq(:STRING) }
           example { expect(uniq_types[1]).to eq(:INTERPOLATESTART) }
           example { expect(uniq_types[-3]).to eq(:INTERPOLATEEND) }
