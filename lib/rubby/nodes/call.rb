@@ -1,3 +1,7 @@
 module Rubby::Nodes
-  Call = Class.new(Method)
+  class Call < Base
+    value :name, ::String
+    child :args, [Base]
+    child :block, Block
+  end
 end

@@ -36,7 +36,7 @@ module Rubby
       end
     end
 
-    rule /([a-z][a-zA-Z0-9_]+[=?!]?)/, :default do |e|
+    rule /[a-z][a-zA-Z0-9_]+/, :default do |e|
       [ :IDENTIFIER, e ]
     end
 
@@ -108,7 +108,8 @@ module Rubby
       rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
     end
 
-    %w[ = \+= -= \*= /= %= \*\*= ].each do |op|
+    rule(/=/) { |e| [ :ASSIGNEQ, e ] }
+    %w[ \+= -= \*= /= %= \*\*= ].each do |op|
       rule(%r|#{op}|) { |e| [ :ASSIGNMENTOP, e ] }
     end
 
@@ -117,7 +118,8 @@ module Rubby
     end
 
     rule(/\!/) { |e| [ :BANG, '!' ] }
-    rule(/~/) { |e| [ :TILDE, '~' ] }
+    rule(/~/)  { |e| [ :TILDE, '~' ] }
+    rule(/\?/) { |e| [ :QUESTION, '?' ] }
     %w[ && \|\| ].each do |op|
       rule(%r|#{op}|) { |e| [ :LOGICALOP, e ] }
     end

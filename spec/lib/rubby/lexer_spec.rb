@@ -8,28 +8,18 @@ describe Rubby::Lexer do
     subject { lexed }
     let(:source) { example.example_group.description }
     describe 'Identifiers' do
-      shared_examples_for 'identifier' do
+      shared_examples_for 'identifier' do |*args|
+        type = args.first || :IDENTIFIER
         let(:source) { example.example_group.parent_groups[1].description }
         example { expect(subject.length).to eq(2) }
-        example { expect(subject.first.type).to eq(:IDENTIFIER) }
+        example { expect(subject.first.type).to eq(type) }
       end
 
       describe('foo')       { it_behaves_like 'identifier' }
       describe('fooBar')    { it_behaves_like 'identifier' }
       describe('fooBar99')  { it_behaves_like 'identifier' }
       describe('foo99Bar')  { it_behaves_like 'identifier' }
-      describe('foo?')      { it_behaves_like 'identifier' }
-      describe('fooBar?')   { it_behaves_like 'identifier' }
-      describe('foo99Bar?') { it_behaves_like 'identifier' }
-      describe('foo!')      { it_behaves_like 'identifier' }
-      describe('fooBar!')   { it_behaves_like 'identifier' }
-      describe('foo99Bar!') { it_behaves_like 'identifier' }
-      describe('foo=')      { it_behaves_like 'identifier' }
-      describe('fooBar=')   { it_behaves_like 'identifier' }
-      describe('foo99Bar=') { it_behaves_like 'identifier' }
       describe('foo_bar')   { it_behaves_like 'identifier' }
-      describe('foo_bar!')  { it_behaves_like 'identifier' }
-      describe('foo_bar?')  { it_behaves_like 'identifier' }
     end
 
     describe 'Constants' do
@@ -148,7 +138,8 @@ describe Rubby::Lexer do
       end
 
       describe 'assignment' do
-        %w[ = += -= *= /= %= **= ].each do |op|
+        describe('=') { it_behaves_like 'operator', :ASSIGNEQ, '=' }
+        %w[ += -= *= /= %= **= ].each do |op|
           describe(op) { it_behaves_like 'operator', :ASSIGNMENTOP, op }
         end
       end
@@ -162,6 +153,7 @@ describe Rubby::Lexer do
       describe 'logical' do
         describe('!') { it_behaves_like 'operator', :BANG, '!' }
         describe('~') { it_behaves_like 'operator', :TILDE, '~' }
+        describe('?') { it_behaves_like 'operator', :QUESTION, '?' }
         %w[ && || ].each do |op|
           describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
         end

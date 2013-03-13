@@ -16,10 +16,8 @@ module Rubby
     end
 
     production(:statement) do
-      clause('expression NEWLINE')       { |e,_| e }
-      clause('WHITE expression NEWLINE')       { |_,e,_| e }
-      clause('WHITE expression WHITE NEWLINE')       { |_,e,_,_| e }
-      clause('expression') { |e| e }
+      clause('WHITE? expression WHITE? NEWLINE') { |_,e,_,_| e }
+      clause('WHITE? expression WHITE?')         { |_,e,_| e }
     end
 
     production(:expression) do
@@ -34,6 +32,7 @@ module Rubby
       clause('array')                    { |e| e }
       clause('call')                     { |e| e }
       clause('block')                    { |e| e }
+      clause('method')                   { |e| e }
     end
 
     production(:class_without_contents) do
@@ -128,19 +127,32 @@ module Rubby
       clause('LCURLY WHITE hash_element_list WHITE RCURLY') { |_,_,e,_,_| Hash.new(e) }
     end
 
+    production(:any_identifier) do
+      clause('IDENTIFIER')           { |e| e }
+      clause('IDENTIFIER ASSIGNEQ')  { |e,_| "#{e}=" }
+      clause('IDENTIFIER BANG')      { |e,_| "#{e}!" }
+      clause('IDENTIFIER QUESTION')  { |e,_| "#{e}?" }
+    end
+
     production(:symbol) do
-      clause('COLON IDENTIFIER') { |_,e| Symbol.new(SimpleString.new(e)) }
+      clause('COLON any_identifier') { |_,e| Symbol.new(SimpleString.new(e)) }
       clause('COLON CONSTANT') { |_,e| Symbol.new(SimpleString.new(e)) }
       clause('COLON string')     { |_,e| Symbol.new(e) }
     end
 
+    production(:left_paren) do
+      clause('LPAREN') { |_| }
+      clause('LPAREN WHITE') { |_,_| }
+    end
+
+    production(:right_paren) do
+      clause('RPAREN') { |_| }
+      clause('WHITE RPAREN') { |_,_| }
+    end
+
     production(:expression_group) do
-      clause('LPAREN RPAREN') { |_,_| [] }
-      clause('LPAREN WHITE RPAREN') { |_,_,_| [] }
-      clause('LPAREN expression_list RPAREN') { |_,e,_| e }
-      clause('LPAREN expression_list WHITE RPAREN') { |_,e,_,_| e }
-      clause('LPAREN WHITE expression_list RPAREN') { |_,_,e,_| e }
-      clause('LPAREN WHITE expression_list WHITE RPAREN') { |_,_,e,_,_| e }
+      clause('left_paren right_paren') { |_,_| [] }
+      clause('left_paren expression_list right_paren') { |_,e,_| e }
     end
 
     production(:indented_contents) do
@@ -149,7 +161,7 @@ module Rubby
     end
 
     production(:call_without_arguments) do
-      clause('IDENTIFIER') { |e| }
+      clause('any_identifier') { |e| }
     end
 
     production(:call_without_block) do
@@ -162,8 +174,7 @@ module Rubby
 
     production(:block_without_contents) do
       clause('BLOCK') { |_| Block.new([],[]) }
-      clause('BLOCK expression_group') { |_,e| Block.new(e,[]) }
-      clause('BLOCK WHITE expression_group') { |_,_,e| Block.new(e,[]) }
+      clause('BLOCK WHITE? arguments') { |_,_,e| Block.new(e,[]) }
     end
 
     production(:block) do
@@ -175,6 +186,54 @@ module Rubby
     production(:call) do
       clause('call_without_block') { |e| e }
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
+    end
+
+    production('basic_argument') do
+      clause('WHITE? IDENTIFIER WHITE?') { |_,e,_| Argument.new(e) }
+    end
+
+    production('splat_argument') do
+      clause('WHITE? MULTIPLY WHITE? IDENTIFIER WHITE?') { |_,_,_,e,_| SplatArgument.new(e) }
+    end
+
+    production('argument_with_defaults') do
+      clause('WHITE? IDENTIFIER WHITE? ASSIGNEQ WHITE? expression WHITE?') { |_,e0,_,_,_,e1,_| ArgumentWithDefault.new(e0,e1) }
+    end
+
+    production('keyword_argument') do
+      clause('WHITE? IDENTIFIER WHITE? COLON WHITE? expression WHITE?') { |_,e0,_,_,_,e1,_| KeywordArgument.new(e0,e1) }
+    end
+
+    production(:argument) do
+      clause('basic_argument') { |e| e }
+      clause('splat_argument') { |e| e }
+      clause('argument_with_defaults') { |e| e }
+      clause('keyword_argument') { |e| e }
+    end
+
+    production(:argument_list) do
+      clause('argument')  { |e| [e] }
+      clause('argument_list list_sep argument') { |e0,_,e1| e0 + [e1] }
+    end
+
+    production(:arguments) do
+      clause('left_paren right_paren') { |_,_| [] }
+      clause('left_paren argument_list right_paren') { |_,e,_| e }
+    end
+
+    production(:method_proc) do
+      clause('any_identifier WHITE? PROC') { |e,_,_| Method.new(e,[],[]) }
+    end
+
+    production(:method_without_contents) do
+      clause('method_proc') { |e| e }
+      clause('method_proc WHITE? arguments') { |e0,_,e1| e0.tap { |e| e.args = e1 }}
+    end
+
+    production(:method) do
+      clause('method_without_contents') { |e| e }
+      clause('method_without_contents WHITE expression') { |e0,_,e1| e0.tap { |e| e.contents = [e1] } }
+      clause('method_without_contents indented_contents') { |e0,e1| e0.tap { |e| e.contents = e1 } }
     end
 
     finalize :lookahead => false

@@ -27,6 +27,7 @@ Features required for 1.0 release:
    - Symbols (✓)
    - Regular expressions (X)
    - Methods (✓)
+   - Standard operators (✓)
    - Keywords (partial)
  + Parser
    - Integers (✓)
@@ -36,6 +37,12 @@ Features required for 1.0 release:
    - Regular expressions (X)
    - Method calls (✓)
    - Blocks (✓)
+   - Class definitions (✓)
+   - Module definitions (✓)
+   - Method definitions (✓)
+     - Splat arguments (✓)
+     - Default arguments (✓)
+     - Keyword arguments (✓)
  + Transpiler
  + Interpreter
  + Polyglot interface (https://github.com/cjheath/polyglot)

@@ -12,7 +12,7 @@ describe Rubby::Parser do
     shared_examples_for 'node' do |*args|
       klass = args.first
       val   = args[1]
-      let(:source) { example.example_group.parent_groups[1].description + "\n"}
+      let(:source) { example.example_group.parent_groups[1].description }
       example { expect(subject).to be_a(Rubby::Nodes::Base) }
       example { expect(subject).to be_a(klass) }
       example { expect(subject.value).to eq(val) } if val
@@ -101,6 +101,14 @@ describe Rubby::Parser do
     describe 'blocks' do
       describe('&> 1') { it_behaves_like 'node', Rubby::Nodes::Block }
       describe("&>\n  1\n  2") { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo) 1') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe("&> (foo)\n  1\n  2") { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo)') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo,bar)') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo,*bar)') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (*foo)') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo=bar, baz=1)') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe('&> (foo: bar, baz:1)') { it_behaves_like 'node', Rubby::Nodes::Block }
     end
 
     describe 'class definition' do
@@ -113,6 +121,19 @@ describe Rubby::Parser do
     describe 'module definition' do
       describe('module Foo') { it_behaves_like 'node', Rubby::Nodes::Module }
       describe("module Foo\n  1")
+    end
+
+    describe 'method definition' do
+      describe('foo ->') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo -> 1') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe("foo ->\n  1") { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo -> (fred, frieda)') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo -> (*args) 1') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe("foo -> (fred='fred', frieda=nil)\n  1") { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe("foo -> (fred: 'fred', frieda:nil)\n  1") { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo? ->') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo! ->') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo= ->') { it_behaves_like 'node', Rubby::Nodes::Method }
     end
   end
 end
