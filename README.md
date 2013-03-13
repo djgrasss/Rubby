@@ -31,11 +31,11 @@ Features required for 1.0 release:
  + Parser
    - Integers (✓)
    - Floats (✓)
-   - Strings (non-interpolated only)
-   - Symbols (non-interpolated only)
+   - Strings (✓)
+   - Symbols (✓)
    - Regular expressions (X)
    - Method calls (✓)
-   - Blocks (without indented contents)
+   - Blocks (✓)
  + Transpiler
  + Interpreter
  + Polyglot interface (https://github.com/cjheath/polyglot)

@@ -17,6 +17,9 @@ module Rubby
 
     production(:statement) do
       clause('expression NEWLINE')       { |e,_| e }
+      clause('WHITE expression NEWLINE')       { |_,e,_| e }
+      clause('WHITE expression WHITE NEWLINE')       { |_,e,_,_| e }
+      clause('expression') { |e| e }
     end
 
     production(:expression) do
@@ -33,12 +36,23 @@ module Rubby
       clause('block')                    { |e| e }
     end
 
+    production(:class_without_contents) do
+      clause('CLASS WHITE constant') { |_,_,e| Class.new(e,nil,[]) }
+      clause('CLASS WHITE constant WHITE LT WHITE constant') { |_,_,e0,_,_,_,e1| Class.new(e0,e1,[]) }
+    end
+
     production(:class) do
-      clause('CLASS constant') { |_,e| Class.new(e,nil,[]) }
+      clause('class_without_contents') { |e| e }
+      clause('class_without_contents indented_contents') { |e0,e1| e0.tap { e0.contents = e1 } }
+    end
+
+    production(:module_without_contents) do
+      clause('MODULE WHITE constant') { |_,_,e| Module.new(e,[]) }
     end
 
     production(:module) do
-      clause('MODULE constant') { |_,e| Module.new(e,[]) }
+      clause('module_without_contents') { |e| e }
+      clause('module_without_contents indented_contents') { |e0,e1| e0.tap { |e| e.contents = e1 } }
     end
 
     production(:constant) do
@@ -72,7 +86,7 @@ module Rubby
 
     production(:simple_string) do
       clause('STRING')                   { |e| SimpleString.new(e) }
-      clause('string STRING')            { |e0,e1| e0.tap { |s| s.value += e1 } }
+      clause('simple_string STRING')            { |e0,e1| e0.tap { |s| s.value += e1 } }
     end
 
     production(:interpolated_string) do
@@ -81,7 +95,7 @@ module Rubby
 
     production(:string) do
       clause('simple_string') { |e| e }
-      # clause('interpolated_string') { |e| e }
+      clause('interpolated_string') { |e| e }
     end
 
     production(:array) do
@@ -130,7 +144,8 @@ module Rubby
     end
 
     production(:indented_contents) do
-      clause('INDENT statements') { |_,e| e }
+      clause('NEWLINE INDENT statements') { |_,_,e| e }
+      clause('NEWLINE INDENT statements DEDENT') { |_,_,e,_| e }
     end
 
     production(:call_without_arguments) do

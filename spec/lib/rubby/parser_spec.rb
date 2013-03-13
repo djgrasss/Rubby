@@ -13,6 +13,7 @@ describe Rubby::Parser do
       klass = args.first
       val   = args[1]
       let(:source) { example.example_group.parent_groups[1].description + "\n"}
+      example { expect(subject).to be_a(Rubby::Nodes::Base) }
       example { expect(subject).to be_a(klass) }
       example { expect(subject.value).to eq(val) } if val
     end
@@ -34,18 +35,14 @@ describe Rubby::Parser do
     describe 'String literals' do
       describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
       describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
-      disabled do
-        describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
-      end
+      describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
     end
 
     describe 'Symbol literals' do
       describe(':foo')   { it_behaves_like 'node', Rubby::Nodes::Symbol }
       describe(":'foo'") { it_behaves_like 'node', Rubby::Nodes::Symbol }
       describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
-      disabled do
-        describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
-      end
+      describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
     end
 
     describe 'Array literals' do
@@ -96,21 +93,26 @@ describe Rubby::Parser do
       describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo &> bar') { it_behaves_like 'node', Rubby::Nodes::Call }
 
-      disabled do
-        describe("foo &>\n  1") { it_behaves_like 'node', Rubby::Nodes::Call }
-        describe("foo &>\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
-        describe("foo &>\n  1\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
-      end
+      describe("foo &>\n  1") { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe("foo &>\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe("foo &>\n  1\n  bar") { it_behaves_like 'node', Rubby::Nodes::Call }
     end
 
-    disabled do
-      describe 'class definition' do
-        describe('class Foo') { it_behaves_like 'node', Rubby::Nodes::Class }
-      end
+    describe 'blocks' do
+      describe('&> 1') { it_behaves_like 'node', Rubby::Nodes::Block }
+      describe("&>\n  1\n  2") { it_behaves_like 'node', Rubby::Nodes::Block }
+    end
 
-      describe 'module definition' do
-        describe('module Foo') { it_behaves_like 'node', Rubby::Nodes::Module }
-      end
+    describe 'class definition' do
+      describe('class Foo') { it_behaves_like 'node', Rubby::Nodes::Class }
+      describe('class Foo < Bar') { it_behaves_like 'node', Rubby::Nodes::Class }
+      describe("class Foo\n  1\n  2") { it_behaves_like 'node', Rubby::Nodes::Class }
+      describe("class Foo < Bar\n  1\n  2") { it_behaves_like 'node', Rubby::Nodes::Class }
+    end
+
+    describe 'module definition' do
+      describe('module Foo') { it_behaves_like 'node', Rubby::Nodes::Module }
+      describe("module Foo\n  1")
     end
   end
 end

@@ -140,7 +140,9 @@ describe Rubby::Lexer do
       end
 
       describe 'comparison' do
-        %w[ == != > < >= <= <=> === ].each do |op|
+        describe('<') { it_behaves_like 'operator', :LT, '<' }
+        describe('>') { it_behaves_like 'operator', :GT, '<' }
+        %w[ == != >= <= <=> === ].each do |op|
           describe(op) { it_behaves_like 'operator', :COMPARISONOP, op }
         end
       end

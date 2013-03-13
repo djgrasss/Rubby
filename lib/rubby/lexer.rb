@@ -102,6 +102,8 @@ module Rubby
     rule(/\//)   { [ :DEVIDE, '/' ] }
     rule(/%/)    { [ :MODULO, '%' ] }
 
+    rule(/</)    { [ :LT, '<' ] }
+    rule(/>/)    { [ :GT, '<' ] }
     %w[ == != > < >= <= <=> === ].each do |op|
       rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
     end
