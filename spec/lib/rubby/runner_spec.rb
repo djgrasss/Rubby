@@ -12,7 +12,7 @@ describe Rubby::Runner do
   describe '#tokens' do
     subject { runner.tokens }
     it 'lexes the source' do
-      Rubby::Lexer.should_receive(:lex).with(source).and_call_original
+      Rubby::Lexer.should_receive(:lex).with(source)
       subject
     end
   end
@@ -22,7 +22,7 @@ describe Rubby::Runner do
     it 'parses the tokens' do
       tokens = Rubby::Lexer.lex(source)
       runner.stub(:tokens => tokens)
-      Rubby::Parser.should_receive(:parse).with(tokens).and_call_original
+      Rubby::Parser.should_receive(:parse).with(tokens)
       subject
     end
   end
