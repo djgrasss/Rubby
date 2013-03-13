@@ -144,14 +144,15 @@ describe Rubby::Lexer do
       end
 
       describe 'bitwise' do
-        %w[ & | ^ << >> ].each do |op|
+        describe('&') { it_behaves_like 'operator', :AMPER, '&' }
+        describe('!') { it_behaves_like 'operator', :BANG, '!' }
+        describe('~') { it_behaves_like 'operator', :TILDE, '~' }
+        %w[ | ^ << >> ].each do |op|
           describe(op) { it_behaves_like 'operator', :BITWISEOP, op }
         end
       end
 
       describe 'logical' do
-        describe('!') { it_behaves_like 'operator', :BANG, '!' }
-        describe('~') { it_behaves_like 'operator', :TILDE, '~' }
         describe('?') { it_behaves_like 'operator', :QUESTION, '?' }
         %w[ && || ].each do |op|
           describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
@@ -167,7 +168,6 @@ describe Rubby::Lexer do
       describe 'others' do
         describe('.') { it_behaves_like 'operator', :DOT, '.' }
         describe('::') { it_behaves_like 'operator', :CONSTINDEXOP, '::' }
-        describe('??') { it_behaves_like 'operator', :DEFINEDOP, '??' }
         describe('[')  { it_behaves_like 'operator', :LSQUARE, '[' }
         describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
         describe('(')  { it_behaves_like 'operator', :LPAREN, '(' }

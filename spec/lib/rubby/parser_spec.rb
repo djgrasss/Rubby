@@ -75,6 +75,9 @@ describe Rubby::Parser do
       describe('foo 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1,2') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo *bar') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo *bar,*baz') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo bar: 1, baz: 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
@@ -82,6 +85,10 @@ describe Rubby::Parser do
       describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1, 2, 3)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1,2,*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(*foo,*bar)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(foo: 1, bar: 2)') { it_behaves_like 'node', Rubby::Nodes::Call }
 
       describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1 &>') { it_behaves_like 'node', Rubby::Nodes::Call }
@@ -134,6 +141,66 @@ describe Rubby::Parser do
       describe('foo? ->') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo! ->') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo= ->') { it_behaves_like 'node', Rubby::Nodes::Method }
+    end
+
+    describe 'expressions' do
+      describe('(1)')   { it_behaves_like 'node', Rubby::Nodes::Group }
+    end
+
+    describe 'unary operations' do
+      describe('+1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('-1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('!1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('~1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('*1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('&1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+      describe('?1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }
+    end
+
+    describe 'binary operations' do
+
+      # Arithmetic
+      describe('1 + 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 - 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 / 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 * 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 % 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 ** 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+
+      # Comparison
+      describe('1 < 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 > 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 == 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 != 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 >= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 <= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 <=> 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 === 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+
+      # Assignment
+      describe('1 = 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 += 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 -= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 *= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 /= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 %= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 **= 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+
+      # Bitwise
+      describe('1 & 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 | 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 ^ 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 ~ 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 << 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 >> 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+
+      # Logical
+      describe('1 && 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 || 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+
+      # Range
+      describe('1 .. 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+      describe('1 ... 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
     end
   end
 end

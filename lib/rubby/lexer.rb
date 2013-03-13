@@ -113,7 +113,8 @@ module Rubby
       rule(%r|#{op}|) { |e| [ :ASSIGNMENTOP, e ] }
     end
 
-    %w[ \& \| \^ << >> ].each do |op|
+    rule(/\&/) { |e| [ :AMPER, e ] }
+    %w[ \| \^ << >> ].each do |op|
       rule(%r|#{op}|) { |e| [ :BITWISEOP, e ] }
     end
 
@@ -130,7 +131,6 @@ module Rubby
 
     rule(/\./) { [ :DOT, '.' ] }
     rule(/::/) { [ :CONSTINDEXOP, '::' ] }
-    rule(/\?\?/) { [ :DEFINEDOP, '??' ] }
     rule(/\[/) { [ :LSQUARE, '[' ] }
     rule(/\]/) { [ :RSQUARE, ']' ] }
     rule(/\(/) { [ :LPAREN, '(' ] }
