@@ -15,7 +15,7 @@ describe Rubby do
 
   describe '.transpile' do
     it 'creates a new Transpiler' do
-      Rubby::Transpiler.should_receive(:new).with(source).and_return(runner)
+      Rubby::Transpiler.should_receive(:new).with(source,nil).and_return(runner)
       subject.transpile(source)
     end
 
@@ -28,7 +28,7 @@ describe Rubby do
 
   describe '.interpret' do
     it 'creates a new Interpreter' do
-      Rubby::Interpreter.should_receive(:new).with(source).and_return(runner)
+      Rubby::Interpreter.should_receive(:new).with(source,nil).and_return(runner)
       subject.interpret(source)
     end
 

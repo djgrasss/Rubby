@@ -36,7 +36,7 @@ module Rubby
       end
     end
 
-    rule /[a-z][a-zA-Z0-9_]+/, :default do |e|
+    rule /[a-z][a-zA-Z0-9_]*/, :default do |e|
       [ :IDENTIFIER, e ]
     end
 

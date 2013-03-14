@@ -5,19 +5,10 @@ describe Rubby::Transpiler do
   let(:source) { '1' }
   let(:runner) { Rubby::Transpiler.new(source) }
   before { runner.stub(:tree => tree) }
+  subject { runner }
 
-  describe '#process' do
-    subject { runner.process }
-    it 'maps the tree' do
-      tree.stub(:join)
-      tree.should_receive(:map).and_return(tree)
-      subject
-    end
+  it { should respond_to(:target=) }
+  it { should respond_to(:target) }
+  it { should respond_to(:process) }
 
-    it 'joins the result with newlines' do
-      tree.stub(:map => tree)
-      tree.should_receive(:join).with("\n")
-      subject
-    end
-  end
 end

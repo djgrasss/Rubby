@@ -5,7 +5,8 @@ describe Rubby::Nodes::Base do
 
   describe '#to_ruby' do
     let(:base) { Rubby::Nodes::Base.new }
-    subject { base.to_ruby }
+    let(:runner) { stub(:runner) }
+    subject { base.to_ruby(runner) }
 
     context 'when it responds to :value' do
       before { base.stub(:value => 1) }
@@ -16,7 +17,7 @@ describe Rubby::Nodes::Base do
     end
 
     context 'else' do
-      it { should be_nil }
+      example { expect { subject }.to raise_error(Rubby::Exceptions::OverrideMePlease) }
     end
   end
 end

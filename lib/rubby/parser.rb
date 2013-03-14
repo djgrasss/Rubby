@@ -174,7 +174,7 @@ module Rubby
 
     production(:block) do
       clause('block_without_contents') { |e| e }
-      clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
+      # clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
       clause('block_without_contents indented_contents') { |e0,e1| e0.tap { |b| b.contents = e1 } }
     end
 
@@ -227,7 +227,7 @@ module Rubby
 
     production(:method) do
       clause('method_without_contents') { |e| e }
-      clause('method_without_contents WHITE expression') { |e0,_,e1| e0.tap { |e| e.contents = [e1] } }
+      # clause('method_without_contents WHITE expression') { |e0,_,e1| e0.tap { |e| e.contents = [e1] } }
       clause('method_without_contents indented_contents') { |e0,e1| e0.tap { |e| e.contents = e1 } }
     end
 

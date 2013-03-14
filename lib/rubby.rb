@@ -4,17 +4,18 @@ require 'rubby/lexer'
 require 'rubby/nodes'
 require 'rubby/parser'
 require 'rubby/runner'
+require 'rubby/target_version'
 require 'rubby/transpiler'
 require 'rubby/interpreter'
 
 module Rubby
   module_function
 
-  def transpile(source)
-    Transpiler.new(source).process
+  def transpile(source,version=nil)
+    Transpiler.new(source, version).process
   end
 
-  def interpret(source)
-    Interpreter.new(source).process
+  def interpret(source, version=nil)
+    Interpreter.new(source,version=nil).process
   end
 end

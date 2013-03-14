@@ -31,4 +31,16 @@ describe Rubby::Runner do
     subject { runner.process }
     example { expect { subject }.to raise_error(Rubby::Exceptions::OverrideMePlease) }
   end
+
+  describe '#target' do
+    subject { runner.target }
+    it { should be_a(Rubby::TargetVersion) }
+  end
+
+  describe '#target=' do
+    it 'assigns the specified target version' do
+      subject.target = '1.2.3p1'
+      subject.target.to_s.should eq('1.2.3p1')
+    end
+  end
 end

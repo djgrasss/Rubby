@@ -15,6 +15,7 @@ describe Rubby::Lexer do
         example { expect(subject.first.type).to eq(type) }
       end
 
+      describe('x')         { it_behaves_like 'identifier' }
       describe('foo')       { it_behaves_like 'identifier' }
       describe('fooBar')    { it_behaves_like 'identifier' }
       describe('fooBar99')  { it_behaves_like 'identifier' }

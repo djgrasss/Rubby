@@ -1,3 +1,7 @@
 module Rubby::Nodes
-  SplatArgument = Class.new(Argument)
+  class SplatArgument < Argument
+    def to_ruby(runner)
+      [ "*#{name}" ]
+    end
+  end
 end

@@ -134,6 +134,7 @@ describe Rubby::Parser do
       describe('foo ->') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo -> 1') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe("foo ->\n  1") { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('foo -> (fred)') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo -> (fred, frieda)') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo -> (*args) 1') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe("foo -> (fred='fred', frieda=nil)\n  1") { it_behaves_like 'node', Rubby::Nodes::Method }
