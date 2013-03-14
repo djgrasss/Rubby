@@ -13,3 +13,11 @@ end
 Given(/^I am targetting Ruby ([\d\.p]+)$/) do |ver|
   @target_version = ver
 end
+
+When(/^I enter$/) do |source|
+  @source = source
+end
+
+Then(/^I should get$/) do |what|
+  @transpiler_output.chomp.should eq(what)
+end

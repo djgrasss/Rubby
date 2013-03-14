@@ -1,4 +1,4 @@
-Feature: I should be able to define methods
+Feature: Method definition
 
   Scenario: I define an empty method without any arguments
     When I enter 'my_method ->'

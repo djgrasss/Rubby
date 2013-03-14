@@ -21,8 +21,10 @@ module Rubby
         result = ""
         process_ary = proc do |chunk|
           if chunk.is_a? Array
-            depth = depth + 1
+            indent = chunk.none? { |n| n.is_a? Array }
+            depth = depth + 1 if indent
             chunk.each(&process_ary)
+            depth = depth - 1 if indent
           elsif chunk.is_a? String
             result << prepend_with_indent(depth, chunk)
           end

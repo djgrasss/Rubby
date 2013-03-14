@@ -1,3 +1,7 @@
 module Rubby::Nodes
-  Constant = Class.new(Value)
+  class Constant < Value
+    def to_ruby(runner)
+      [ value ]
+    end
+  end
 end

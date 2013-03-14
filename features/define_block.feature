@@ -1,4 +1,4 @@
-Feature: I should be able to define blocks
+Feature: Block definition
 
   Scenario: I define an empty block without any arguments
     Given I am targetting Ruby 1.8
