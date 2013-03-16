@@ -13,7 +13,7 @@ Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 
 ## Status
 
-[![Build Status](https://travis-ci.org/jamesotron/Rubby.png)](https://travis-ci.org/jamesotron/Rubby)
+[![Build Status](https://travis-ci.org/jamesotron/Rubby.png?branch=master)](https://travis-ci.org/jamesotron/Rubby)
 [![Dependency Status](https://gemnasium.com/jamesotron/Rubby.png)](https://gemnasium.com/jamesotron/Rubby)
 [![Code Climate](https://codeclimate.com/github/jamesotron/Rubby.png)](https://codeclimate.com/github/jamesotron/Rubby)
 
