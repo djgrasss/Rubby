@@ -260,15 +260,21 @@ end
 
 Add this line to your application's Gemfile:
 
-    gem 'rubby'
+```ruby
+gem 'rubby'
+```
 
 And then execute:
 
-    $ bundle
+```shell
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install rubby
+```shell
+$ gem install rubby
+```
 
 ## Copyright
 
