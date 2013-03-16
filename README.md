@@ -283,6 +283,7 @@ Copyright (c) 2013 [Sociable Limited](http://sociable.co.nz) and named contribut
 ### Contributors
 
  + [James Harton](https://github.com/jamesotron)
+ + [Philip Arndt](https://github.com/parndt)
 
 ## License
 
