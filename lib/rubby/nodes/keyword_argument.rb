@@ -1,3 +1,9 @@
 module Rubby::Nodes
-  KeywordArgument = Class.new(ArgumentWithDefault)
+  class KeywordArgument < ArgumentWithDefault
+
+    def to_ruby(runner)
+      [ "#{name}: #{default.to_ruby(runner).first}" ]
+    end
+
+  end
 end

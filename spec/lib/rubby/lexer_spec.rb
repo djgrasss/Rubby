@@ -177,9 +177,14 @@ describe Rubby::Lexer do
         describe('{')  { it_behaves_like 'operator', :LCURLY, '{' }
         describe(',')  { it_behaves_like 'operator', :COMMA, ',' }
         describe('@')  { it_behaves_like 'operator', :AT, '@' }
+        describe(':')  { it_behaves_like 'operator', :COLON, ':' }
+
         describe('->')  { it_behaves_like 'operator', :PROC, '->' }
         describe('&>')  { it_behaves_like 'operator', :BLOCK, '&>' }
-        describe(':')  { it_behaves_like 'operator', :COLON, ':' }
+        describe('->(')  { it_behaves_like 'operator', :PROCWITHARGS, '->' }
+        describe('&>(')  { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
+        describe('-> (')  { it_behaves_like 'operator', :PROCWITHARGS, '->' }
+        describe('&> (')  { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
       end
     end
 
@@ -214,6 +219,7 @@ describe Rubby::Lexer do
       describe "no indent" do
         let(:source) { "1\n2\n" }
         it { should_not include(:INDENT) }
+        it { should include(:NEWLINE) }
       end
 
       describe "single indent" do
@@ -233,13 +239,13 @@ describe Rubby::Lexer do
 
       describe "dedent to zero" do
         let(:source) { "1\n  2\n3" }
-        it { should include(:DEDENT) }
+        it { should include(:OUTDENT) }
       end
 
       describe "dedent to one" do
         let(:source) { "1\n  2\n    3\n  4" }
-        its(:size) { should eq(11) }
-        it { should include(:DEDENT) }
+        its(:size) { should eq(8) }
+        it { should include(:OUTDENT) }
       end
     end
   end
@@ -250,71 +256,78 @@ describe Rubby::Lexer do
       let(:old_depth) { 0 }
       let(:new_depth) { 0 }
       before { environment.current_indent_level = old_depth / 2 }
-      subject { environment.indent_token_for(new_depth) }
+      subject { environment.indent_token_for("\n#{' ' * new_depth}").flatten }
 
-      shared_examples_for 'dent token' do |*args|
+      shared_examples_for 'token' do |*args|
         token = args.first || :INDENT
         value = args[1]
         it { should be_a(Enumerable) }
-        its(:size) { should eq(2) }
         its(:first) { should eq(token) }
         its(:last) { should eq(value) } if value
       end
 
-      describe 'from 0 to 1.5' do
+      shared_examples_for 'tokens' do |*args|
+        token = args.first || :INDENT
+        count = args[1]
+        it { should be_a(Enumerable) }
+        its(:size) { should eq(count * 2) }
+        example { subject.each_slice(2).map(&:first).uniq.should eq([token]) }
+      end
+
+      describe 'from 0 to 3' do
         let(:new_depth) { 3 }
         example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
       end
 
       describe 'from 0 to 0' do
-        it { should be_nil }
+        it_behaves_like 'token', :NEWLINE
       end
 
-      describe 'from 5 to 5' do
+      describe 'from 10 to 10' do
         let(:old_depth) { 10 }
         let(:new_depth) { 10 }
-        it { should be_nil }
+        it_behaves_like 'token', :NEWLINE
       end
 
-      describe 'from 0 to 1' do
+      describe 'from 0 to 2' do
         let(:new_depth) { 2 }
-        it_behaves_like 'dent token', :INDENT, 1
+        it_behaves_like 'token', :INDENT, 1
       end
 
-      describe 'from 1 to 2' do
+      describe 'from 2 to 4' do
         let(:old_depth) { 2 }
         let(:new_depth) { 4 }
-        it_behaves_like 'dent token', :INDENT, 2
+        it_behaves_like 'token', :INDENT, 2
       end
 
-      describe 'from 10 to 11' do
-        let(:old_depth) { 20 }
-        let(:new_depth) { 22 }
-        it_behaves_like 'dent token', :INDENT, 11
+      describe 'from 10 to 12' do
+        let(:old_depth) { 10 }
+        let(:new_depth) { 12 }
+        it_behaves_like 'token', :INDENT, 6
       end
 
-      describe 'from 1 to 3' do
+      describe 'from 2 to 6' do
         let(:old_depth) { 2 }
         let(:new_depth) { 6 }
         example { expect { subject }.to raise_error(Rubby::Exceptions::Indent) }
       end
 
-      describe 'from 1 to 0' do
+      describe 'from 2 to 0' do
         let(:old_depth) { 2 }
         let(:new_depth) { 0 }
-        it_behaves_like 'dent token', :DEDENT, 0
+        it_behaves_like 'token', :OUTDENT, 0
       end
 
-      describe 'from 2 to 0' do
+      describe 'from 4 to 0' do
         let(:old_depth) { 4 }
         let(:new_depth) { 0 }
-        it_behaves_like 'dent token', :DEDENT, 0
+        it_behaves_like 'tokens', :OUTDENT, 2
       end
 
       describe 'from 50 to 0' do
-        let(:old_depth) { 100 }
+        let(:old_depth) { 50 }
         let(:new_depth) { 0 }
-        it_behaves_like 'dent token', :DEDENT, 0
+        it_behaves_like 'tokens', :OUTDENT, 25
       end
     end
   end

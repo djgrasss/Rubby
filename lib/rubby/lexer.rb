@@ -10,20 +10,24 @@ module Rubby
       PositiveInfinity = +1.0/0.0
       NegativeInfinity = -1.0/0.0
 
-      def indent_token_for(indent_chars)
+      def indent_token_for(str)
+        indent_chars = /[\r\n]([ \t\f]*)/.match(str)[1].size
         raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars" unless indent_chars % 2 == 0
         self.current_indent_level ||= 0
         new_indent_level = indent_chars / 2
         indent_change = new_indent_level - current_indent_level
         case indent_change
         when 0
-          return
+          [ :NEWLINE ]
         when 1
           self.current_indent_level = new_indent_level
           [ :INDENT, current_indent_level ]
         when NegativeInfinity..-1
+          result = (new_indent_level...current_indent_level).to_a.reverse.map do |i|
+            [ :OUTDENT, i ]
+          end
           self.current_indent_level = new_indent_level
-          [ :DEDENT, current_indent_level ]
+          result
         when 2..PositiveInfinity
           raise ::Rubby::Exceptions::Indent, "Abberrant child indent of #{indent_change}"
         end
@@ -139,30 +143,28 @@ module Rubby
     rule(/\}/) { [ :RCURLY, '}' ] }
     rule(/,/) { [ :COMMA, ',' ] }
     rule(/@/) { [ :AT, '@' ] }
+    rule(/:/) { [ :COLON, ':' ] }
+
     rule(/->/) { [ :PROC, '->' ] }
     rule(/\&>/) { [ :BLOCK, '&>' ] }
-    rule(/:/) { [ :COLON, ':' ] }
+    rule(/->[ \t\f]*\(/) { [ :PROCWITHARGS, '->' ] }
+    rule(/\&>[ \t\f]*\(/) { [ :BLOCKWITHARGS, '&>' ] }
 
     rule /#+\s*/, :default do
       push_state :comment
     end
-    rule /[\n\r]/, :comment do
+    rule /[\n\r]/, :comment do |e|
       pop_state
-      push_state :indenting
-      :NEWLINE
+      # push_state :indenting
+      # :NEWLINE
+      indent_token_for(e)
     end
     rule /.*/, :comment do |e|
       [ :COMMENT, e ]
     end
 
-    rule /[\r\n]+/, :default do |e|
-      push_state :indenting
-      :NEWLINE
-    end
-
-    rule /[ \t\f]*/, :indenting do |e|
-      pop_state
-      indent_token_for(e.size)
+    rule /[\r\n]+[ \t\f]*/, :default do |e|
+      indent_token_for(e)
     end
 
     rule /[ \t\f]+/, :default do |e|

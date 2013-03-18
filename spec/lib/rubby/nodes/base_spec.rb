@@ -12,7 +12,7 @@ describe Rubby::Nodes::Base do
       before { base.stub(:value => 1) }
 
       it 'returns the value as a string' do
-        expect(subject).to eq('1')
+        expect(subject).to eq(['1'])
       end
     end
 

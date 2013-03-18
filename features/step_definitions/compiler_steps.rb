@@ -1,4 +1,5 @@
 When(/^I enter (?:['"])(.*?)(?:['"])$/) do |source|
+  source << "\n" unless source[-1] == "\n"
   @source = source
 end
 
@@ -15,6 +16,7 @@ Given(/^I am targetting Ruby ([\d\.p]+)$/) do |ver|
 end
 
 When(/^I enter$/) do |source|
+  source << "\n" unless source[-1] == "\n"
   @source = source
 end
 

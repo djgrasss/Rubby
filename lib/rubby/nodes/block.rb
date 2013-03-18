@@ -22,11 +22,15 @@ module Rubby::Nodes
     def process_to_block(runner,inside_args=true)
       case contents.size
       when 0
-        ["{#{process_arguments(runner,inside_args)}}"]
+        if (inside_args && args.size == 0) || (!inside_args)
+          ['{}']
+        else
+          ["{#{process_arguments(runner,inside_args)}}"]
+        end
       when 1
-        ["{#{process_arguments(runner,inside_args)}#{contents[0].to_ruby(runner)} }"]
+        ["{#{process_arguments(runner,inside_args)}#{contents[0].to_ruby(runner).first} }"]
       else
-        ["do #{process_arguments(runner,inside_args)}", contents.map { |n| n.to_ruby(runner) }, 'end']
+        ["do#{process_arguments(runner,inside_args)}", contents.map { |n| n.to_ruby(runner) }, 'end']
       end
     end
 
@@ -38,15 +42,20 @@ module Rubby::Nodes
 
     def process_to_stabby_lambda(runner)
       ruby = process_to_block(runner, false)
-      ruby[0] = "-> #{process_arguments(runner,'')}#{ruby[0]}"
+      if args.size > 0
+        args = process_arguments(runner,true,['(',')'])
+        ruby[0] = "->#{args}#{ruby[0]}"
+      else
+        ruby[0] = "-> #{ruby[0]}"
+      end
       ruby
     end
 
-    def process_arguments(runner,run=true,delim='|')
+    def process_arguments(runner,run=true,delim=['|'])
       if run && args.size > 0
-        " #{delim} #{args.map { |n| n.to_ruby(runner) }.join(', ')} #{delim} "
+        " #{delim.first}#{args.map { |n| n.to_ruby(runner) }.join(', ')}#{delim.last} "
       else
-        ''
+        ' '
       end
     end
   end

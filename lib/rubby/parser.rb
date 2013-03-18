@@ -4,6 +4,18 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
+    right :CALL
+    right :CALLARGS
+    right :HASH
+    right :HASHSEP
+    right :HASHSYM
+
+    production(:default) do
+      clause('statements') { |e| e }
+      clause('statements expression') { |e0,e1| e0 + [e1] }
+      clause('expression') { |e| [e] }
+    end
+
     production(:statements) do
       clause('statement')                { |e| [e] }
       clause('statements statement')     { |e0,e1| e0 + [e1] }
@@ -11,7 +23,6 @@ module Rubby
 
     production(:statement) do
       clause('WHITE? expression WHITE? NEWLINE') { |_,e,_,_| e }
-      clause('WHITE? expression WHITE?')         { |_,e,_| e }
     end
 
     production(:expression) do
@@ -64,12 +75,17 @@ module Rubby
     end
 
     production(:list_sep) do
-      clause('WHITE? COMMA WHITE?') { |_,_,_| }
+      clause('COMMA WHITE?') { |_,_| }
+    end
+
+    production(:expression_list_member) do
+      clause('MULTIPLY expression') { |_,e| SplatExpression.new(e) }
+      clause('expression')  { |e| e }
     end
 
     production(:expression_list) do
-      clause('expression') { |e| [e] }
-      clause('expression_list list_sep expression') { |e0,_,e1| e0 + [e1] }
+      clause('expression_list_member') { |e| [e] }
+      clause('expression_list list_sep expression_list_member') { |e0,_,e1| e0 + [e1] }
     end
 
     production(:interpolate_start) do
@@ -86,7 +102,7 @@ module Rubby
 
     production(:simple_string) do
       clause('STRING')                   { |e| SimpleString.new(e) }
-      clause('simple_string STRING')            { |e0,e1| e0.tap { |s| s.value += e1 } }
+      clause('simple_string STRING')     { |e0,e1| e0.tap { |s| s.value += e1 } }
     end
 
     production(:interpolated_string) do
@@ -112,11 +128,13 @@ module Rubby
     end
 
     production(:hash_sep) do
-      clause('WHITE? COLON WHITE') { |_,_,_| }
+      clause('COLON WHITE?', :HASHSEP) { |_,_| }
     end
 
+    production(:hash_identifier, 'IDENTIFIER', :HASHSYM) { |e| e }
+
     production(:hash_element) do
-      clause('IDENTIFIER hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
+      clause('hash_identifier hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
       clause('expression hash_sep expression') { |e0,_,e1| HashElement.new(e0,e1) }
     end
 
@@ -126,8 +144,8 @@ module Rubby
     end
 
     production(:hash) do
-      clause('hash_element_list') { |e| Hash.new(e) }
-      clause('LCURLY WHITE? hash_element_list WHITE? RCURLY') { |_,_,e,_,_| Hash.new(e) }
+      clause('hash_element_list', :HASH) { |e| Hash.new(e) }
+      clause('LCURLY WHITE? hash_element_list WHITE? RCURLY', :HASH) { |_,_,e,_,_| Hash.new(e) }
     end
 
     production(:method_identifier) do
@@ -152,29 +170,32 @@ module Rubby
     end
 
     production(:indented_contents) do
-      clause('NEWLINE INDENT statements') { |_,_,e| e }
-      clause('NEWLINE INDENT statements DEDENT') { |_,_,e,_| e }
+      clause('INDENT expression OUTDENT') { |_,e,_| [e] }
+      clause('INDENT statements expression OUTDENT') { |_,e0,e1,_| e0 + [e1] }
+      clause('INDENT statement expression OUTDENT') { |_,e0,e1,_| [e0] + [e1] }
     end
 
-    production(:passed_arguments) do
-      clause('WHITE? left_paren expression_list right_paren') { |_,_,e,_| e }
-      clause('WHITE expression_list') { |_,e| e }
-      clause('WHITE? left_paren right_paren') { |_,_,_| [] }
+    production(:call_identifier, 'method_identifier', :CALL) { |e| e }
+
+    production(:call_arguments) do
+      clause('WHITE? expression_list', :CALLARGS) { |_,e| e }
+      clause('left_paren expression_list right_paren', :CALLARGS) { |_,e,_| e }
+      clause('left_paren right_paren', :CALLARGS) { |_,_| [] }
     end
 
     production(:call_without_block) do
-      clause('method_identifier') { |e| Call.new(e, []) }
-      clause('method_identifier passed_arguments') { |e0,e1| Call.new(e0,e1) }
+      clause('call_identifier') { |e| Call.new(e, []) }
+      clause('call_identifier call_arguments') { |e0,e1| Call.new(e0,e1) }
     end
 
     production(:block_without_contents) do
       clause('BLOCK') { |_| Block.new([],[]) }
-      clause('BLOCK WHITE? arguments') { |_,_,e| Block.new(e,[]) }
+      clause('BLOCKWITHARGS argument_list right_paren') { |_,e,_| Block.new(e,[]) }
     end
 
     production(:block) do
       clause('block_without_contents') { |e| e }
-      # clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
+      clause('block_without_contents WHITE expression') { |e0,_,e1| e0.tap { |b| b.contents = [e1] } }
       clause('block_without_contents indented_contents') { |e0,e1| e0.tap { |b| b.contents = e1 } }
     end
 
@@ -211,23 +232,14 @@ module Rubby
       clause('argument_list list_sep argument') { |e0,_,e1| e0 + [e1] }
     end
 
-    production(:arguments) do
-      clause('left_paren right_paren') { |_,_| [] }
-      clause('left_paren argument_list right_paren') { |_,e,_| e }
-    end
-
-    production(:method_def) do
-      clause('method_identifier WHITE? PROC') { |e,_,_| Method.new(e,[],[]) }
-    end
-
     production(:method_without_contents) do
-      clause('method_def') { |e| e }
-      clause('method_def WHITE? arguments') { |e0,_,e1| e0.tap { |e| e.args = e1 }}
+      clause('method_identifier WHITE? PROC') { |e,_,_| Method.new(e,[],[]) }
+      clause('method_identifier WHITE? PROCWITHARGS WHITE? argument_list right_paren') { |e0,_,_,_,e1,_| Method.new(e0,e1,[]) }
     end
 
     production(:method) do
       clause('method_without_contents') { |e| e }
-      # clause('method_without_contents WHITE expression') { |e0,_,e1| e0.tap { |e| e.contents = [e1] } }
+      clause('method_without_contents WHITE expression') { |e0,_,e1| e0.tap { |e| e.contents = [e1] } }
       clause('method_without_contents indented_contents') { |e0,e1| e0.tap { |e| e.contents = e1 } }
     end
 
@@ -236,7 +248,6 @@ module Rubby
       clause('MINUS')    { |e| e }
       clause('BANG')     { |e| e }
       clause('TILDE')    { |e| e }
-      clause('MULTIPLY') { |e| e }
       clause('AMPER')    { |e| e }
       clause('QUESTION') { |e| e }
     end
@@ -289,7 +300,7 @@ module Rubby
     end
 
     production(:binary_operation) do
-      clause('expression WHITE? binary_operator WHITE? expression') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
+      clause('expression WHITE binary_operator WHITE expression') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
     end
 
     finalize :lookahead => false
