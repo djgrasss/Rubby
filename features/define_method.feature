@@ -57,3 +57,23 @@ Feature: Method definition
       foo
     end
     """
+
+  Scenario: I define a method with inline contents
+    When I enter 'my_method -> 1'
+    And I transpile it
+    Then I should get
+    """
+    def my_method
+      1
+    end
+    """
+
+  Scenario: I define a method with arguments and inline contents
+    When I enter 'sum -> (*args) args.inject(&:+)'
+    And I transpile it
+    Then I should get
+    """
+    def sum(*args)
+      args.inject(&:+)
+    end
+    """

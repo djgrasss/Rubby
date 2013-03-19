@@ -36,6 +36,7 @@ module Rubby
       clause('hash')                     { |e| e }
       clause('array')                    { |e| e }
       clause('call')                     { |e| e }
+      clause('call_chain')               { |e| e }
       clause('block')                    { |e| e }
       clause('method')                   { |e| e }
       clause('unary_operation')          { |e| e }
@@ -155,9 +156,28 @@ module Rubby
       clause('IDENTIFIER QUESTION')  { |e,_| "#{e}?" }
     end
 
+    production(:symbol_chars) do
+      clause('PLUS')       { |e| e }
+      clause('MINUS')      { |e| e }
+      clause('BANG')       { |e| e }
+      clause('HAT')        { |e| e }
+      clause('AMPER')      { |e| e }
+      clause('MULTIPLY')   { |e| e }
+      clause('EXPO')       { |e| e }
+      clause('DEVIDE')     { |e| e }
+    end
+
+    production(:symbol_identifier) do
+      clause('method_identifier') { |e| e }
+      clause('CONSTANT')   { |e| e }
+    end
+
     production(:symbol) do
-      clause('COLON method_identifier') { |_,e| Symbol.new(SimpleString.new(e)) }
-      clause('COLON CONSTANT') { |_,e| Symbol.new(SimpleString.new(e)) }
+      clause('COLON symbol_chars') { |_,e| Symbol.new(SimpleString.new(e)) }
+      clause('COLON symbol_identifier') { |_,e| Symbol.new(SimpleString.new(e)) }
+      clause('COLON AT symbol_identifier') { |_,_,e| Symbol.new(SimpleString.new("@" + e)) }
+      clause('COLON AT AT symbol_identifier') { |_,_,_,e| Symbol.new(SimpleString.new("@@" + e)) }
+      clause('COLON DOLLAR symbol_identifier') { |_,_,e| Symbol.new(SimpleString.new("$" + e)) }
       clause('COLON string')     { |_,e| Symbol.new(e) }
     end
 
@@ -202,6 +222,11 @@ module Rubby
     production(:call) do
       clause('call_without_block') { |e| e }
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
+    end
+
+    production(:call_chain) do
+      clause('call DOT call') { |e0,_,e1| CallChain.new(e0,e1) }
+      clause('call_chain DOT call') { |e0,_,e1| CallChain.new(e0,e1) }
     end
 
     production('basic_argument') do
@@ -279,6 +304,7 @@ module Rubby
     production(:bitwise_operator) do
       clause('AMPER')     { |e| e }
       clause('TILDE')     { |e| e }
+      clause('HAT')       { |e| e }
       clause('BITWISEOP') { |e| e }
     end
 

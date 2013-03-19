@@ -13,7 +13,6 @@ describe Rubby::Parser do
       klass = args.first
       val   = args[1]
       let(:source) { example.example_group.parent_groups[1].description + "\n" }
-      example { puts source.inspect }
       example { expect(subject).to be_a(Rubby::Nodes::Base) }
       example { expect(subject).to be_a(klass) }
       example { expect(subject.value).to eq(val) } if val
@@ -44,6 +43,9 @@ describe Rubby::Parser do
       describe(":'foo'") { it_behaves_like 'node', Rubby::Nodes::Symbol }
       describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
       describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      %w[ + - * / ! ^ & ** _foo @bar @@baz ].each do |sym|
+        describe(":#{sym}") { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      end
     end
 
     describe 'Array literals' do

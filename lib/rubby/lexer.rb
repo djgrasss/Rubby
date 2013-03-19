@@ -40,7 +40,7 @@ module Rubby
       end
     end
 
-    rule /[a-z][a-zA-Z0-9_]*/, :default do |e|
+    rule /[a-z_][a-zA-Z0-9_]*/, :default do |e|
       [ :IDENTIFIER, e ]
     end
 
@@ -118,7 +118,8 @@ module Rubby
     end
 
     rule(/\&/) { |e| [ :AMPER, e ] }
-    %w[ \| \^ << >> ].each do |op|
+    rule(/\^/) { |e| [ :HAT, e ] }
+    %w[ \| << >> ].each do |op|
       rule(%r|#{op}|) { |e| [ :BITWISEOP, e ] }
     end
 
@@ -144,6 +145,7 @@ module Rubby
     rule(/,/) { [ :COMMA, ',' ] }
     rule(/@/) { [ :AT, '@' ] }
     rule(/:/) { [ :COLON, ':' ] }
+    rule(/\$/) { [ :DOLLAR, '$' ] }
 
     rule(/->/) { [ :PROC, '->' ] }
     rule(/\&>/) { [ :BLOCK, '&>' ] }

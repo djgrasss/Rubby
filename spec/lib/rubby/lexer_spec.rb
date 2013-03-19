@@ -148,7 +148,8 @@ describe Rubby::Lexer do
         describe('&') { it_behaves_like 'operator', :AMPER, '&' }
         describe('!') { it_behaves_like 'operator', :BANG, '!' }
         describe('~') { it_behaves_like 'operator', :TILDE, '~' }
-        %w[ | ^ << >> ].each do |op|
+        describe('^') { it_behaves_like 'operator', :HAT, '^' }
+        %w[ | << >> ].each do |op|
           describe(op) { it_behaves_like 'operator', :BITWISEOP, op }
         end
       end
