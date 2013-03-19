@@ -257,9 +257,15 @@ module Rubby
       clause('argument_list list_sep argument') { |e0,_,e1| e0 + [e1] }
     end
 
+    production(:method_modifier) do
+      clause('UNDERSCORE') { |e| e }
+      clause('AT')         { |e| e }
+      clause('')           { '' }
+    end
+
     production(:method_without_contents) do
-      clause('method_identifier WHITE? PROC') { |e,_,_| Method.new(e,[],[]) }
-      clause('method_identifier WHITE? PROCWITHARGS WHITE? argument_list right_paren') { |e0,_,_,_,e1,_| Method.new(e0,e1,[]) }
+      clause('method_modifier method_identifier WHITE? PROC') { |e0,e1,_,_| Method.new(e0+e1,[],[]) }
+      clause('method_modifier method_identifier WHITE? PROCWITHARGS WHITE? argument_list right_paren') { |e0,e1,_,_,_,e2,_| Method.new(e0+e1,e2,[]) }
     end
 
     production(:method) do

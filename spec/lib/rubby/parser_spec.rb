@@ -142,6 +142,9 @@ describe Rubby::Parser do
       describe('foo? ->') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo! ->') { it_behaves_like 'node', Rubby::Nodes::Method }
       describe('foo= ->') { it_behaves_like 'node', Rubby::Nodes::Method }
+
+      describe('_foo->') { it_behaves_like 'node', Rubby::Nodes::Method }
+      describe('@foo->') { it_behaves_like 'node', Rubby::Nodes::Method }
     end
 
     describe 'expressions' do

@@ -77,3 +77,29 @@ Feature: Method definition
       args.inject(&:+)
     end
     """
+
+  Scenario: I define a private method
+    When I enter '_my_private_method->'
+    And I transpile it
+    Then I should get
+    """
+    private
+    def my_private_method; end
+    """
+
+  Scenario: I define a class method
+    When I enter '@my_class_method->'
+    And I transpile it
+    Then I should get
+    """
+    def self.my_class_method; end
+    """
+
+  Scenario: I define a private class method
+    When I enter '@_my_private_class_method->'
+    And I transpile it
+    Then I should get
+    """
+    def self.my_private_class_method; end
+    private_class_method :my_private_class_method
+    """
