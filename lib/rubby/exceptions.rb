@@ -1,6 +1,8 @@
 module Rubby
   module Exceptions
-    OverrideMePlease = Class.new(Exception)
-    Indent           = Class.new(Exception)
+    Base             = Class.new(Exception)
+    OverrideMePlease = Class.new(Base)
+    Indent           = Class.new(Base)
+    Inline           = Class.new(Base)
   end
 end

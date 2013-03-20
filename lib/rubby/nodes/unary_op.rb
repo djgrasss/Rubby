@@ -4,7 +4,7 @@ module Rubby::Nodes
     child :right, Base
 
     def to_ruby(runner)
-      [ "#{operator}#{right.to_ruby(runner).first}" ]
+      [ "#{operator}#{inline(right,runner)}" ]
     end
   end
 end

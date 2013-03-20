@@ -17,20 +17,20 @@ module Rubby::Nodes
     def define_class_with_contents(runner)
       [].tap do |ruby|
         if superclass
-          ruby << "class #{name.to_ruby(runner).first} < #{superclass.to_ruby(runner).first}"
+          ruby << "class #{inline(name,runner)} < #{inline(superclass,runner)}"
         else
-          ruby << "class #{name.to_ruby(runner).first}"
+          ruby << "class #{inline(name,runner)}"
         end
-        ruby << contents.map { |n| n.to_ruby(runner) }
+        ruby << recurse(contents,runner)
         ruby << "end"
       end
     end
 
     def define_singleton_class(runner)
       if superclass
-        [ "#{name.to_ruby(runner).first} = Class.new(#{superclass.to_ruby(runner).first})" ]
+        [ "#{inline(name,runner)} = Class.new(#{inline(superclass,runner)})" ]
       else
-        [ "#{name.to_ruby(runner).first} = Class.new" ]
+        [ "#{inline(name,runner)} = Class.new" ]
       end
     end
   end

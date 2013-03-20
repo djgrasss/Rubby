@@ -45,7 +45,7 @@ describe Rubby::Lexer do
         example('value') { expect(subject.first.value).to eq(val) } if val
       end
 
-      describe('1') { it_behaves_like 'integer', 1 }
+      describe('0') { it_behaves_like 'integer', 0 }
       describe('1') { it_behaves_like 'integer', 1 }
       describe('100') { it_behaves_like 'integer', 100 }
       describe('123456789') { it_behaves_like 'integer', 123456789 }
@@ -131,7 +131,7 @@ describe Rubby::Lexer do
 
       describe 'comparison' do
         describe('<') { it_behaves_like 'operator', :LT, '<' }
-        describe('>') { it_behaves_like 'operator', :GT, '<' }
+        describe('>') { it_behaves_like 'operator', :GT, '>' }
         %w[ == != >= <= <=> === ].each do |op|
           describe(op) { it_behaves_like 'operator', :COMPARISONOP, op }
         end
@@ -180,12 +180,13 @@ describe Rubby::Lexer do
         describe('@')  { it_behaves_like 'operator', :AT, '@' }
         describe(':')  { it_behaves_like 'operator', :COLON, ':' }
 
-        describe('->')  { it_behaves_like 'operator', :PROC, '->' }
-        describe('&>')  { it_behaves_like 'operator', :BLOCK, '&>' }
+        describe('->')   { it_behaves_like 'operator', :PROC, '->' }
+        describe('&>')   { it_behaves_like 'operator', :BLOCK, '&>' }
         describe('->(')  { it_behaves_like 'operator', :PROCWITHARGS, '->' }
         describe('&>(')  { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
-        describe('-> (')  { it_behaves_like 'operator', :PROCWITHARGS, '->' }
-        describe('&> (')  { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
+        describe('-> (') { it_behaves_like 'operator', :PROCWITHARGS, '->' }
+        describe('&> (') { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
+        describe('<-')   { it_behaves_like 'operator', :RETURN, '<-' }
       end
     end
 
@@ -209,7 +210,7 @@ describe Rubby::Lexer do
         example { expect(subject.first.type).to eq(type) }
       end
 
-      %w[ class module ].each do |keyword|
+      %w[ class module if else elsif unless ].each do |keyword|
         describe(keyword) { it_behaves_like('keyword', keyword.upcase.to_sym) }
       end
     end

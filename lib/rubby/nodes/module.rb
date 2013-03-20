@@ -14,13 +14,13 @@ module Rubby::Nodes
     private
 
     def define_singleton_module(runner)
-      ["#{name.to_ruby(runner).first} = Module.new"]
+      ["#{inline(name,runner)} = Module.new"]
     end
 
     def define_module_with_contents(runner)
       [].tap do |ruby|
-        ruby << "module #{name.to_ruby(runner).first}"
-        ruby << contents.map { |n| n.to_ruby(runner) }
+        ruby << "module #{inline(name,runner)}"
+        ruby << recurse(contents,runner)
         ruby << "end"
       end
     end

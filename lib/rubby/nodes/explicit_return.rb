@@ -1,9 +1,9 @@
 module Rubby::Nodes
-  class Group < Base
+  class ExplicitReturn < Base
     child :content, Base
 
     def to_ruby(runner)
-      ["(#{inline(content,runner)})"]
+      [ "return #{inline(content,runner)}" ]
     end
   end
 end

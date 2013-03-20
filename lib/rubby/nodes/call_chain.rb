@@ -1,10 +1,10 @@
 module Rubby::Nodes
   class CallChain < Base
-    child :left, Call
+    child :left, Base
     child :right, Call
 
     def to_ruby(runner)
-      "#{left.to_ruby(runner).first}.#{right.to_ruby(runner).first}"
+      [  "#{inline(left,runner)}.#{inline(right,runner)}" ]
     end
   end
 end

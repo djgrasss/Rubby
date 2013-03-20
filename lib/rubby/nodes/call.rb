@@ -8,7 +8,7 @@ module Rubby::Nodes
       if args.size == 0
         [ "#{name}" ]
       else
-        [ "#{name}(#{args.map { |a| a.to_ruby(runner) }.join(', ')})" ]
+        [ "#{name}(#{inline(args,runner,', ')})" ]
       end
     end
   end

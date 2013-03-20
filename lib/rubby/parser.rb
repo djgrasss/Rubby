@@ -41,6 +41,25 @@ module Rubby
       clause('method')                   { |e| e }
       clause('unary_operation')          { |e| e }
       clause('binary_operation')         { |e| e }
+      clause('expr_group')               { |e| e }
+      clause('explicit_return')          { |e| e }
+      clause('control_flow')     { |e| e }
+    end
+
+    production(:chainable_expression) do
+      clause('integer')                  { |e| e }
+      clause('float')                    { |e| e }
+      clause('string')                   { |e| e }
+      clause('constant')                 { |e| e }
+      clause('symbol')                   { |e| e }
+      clause('array')                    { |e| e }
+      clause('call')                     { |e| e }
+      clause('call_chain')               { |e| e }
+      clause('block')                    { |e| e }
+      clause('expr_group')               { |e| e }
+    end
+
+    production(:expr_group) do
       clause('left_paren expression right_paren') { |_,e,_| Group.new(e) }
     end
 
@@ -225,8 +244,7 @@ module Rubby
     end
 
     production(:call_chain) do
-      clause('call DOT call') { |e0,_,e1| CallChain.new(e0,e1) }
-      clause('call_chain DOT call') { |e0,_,e1| CallChain.new(e0,e1) }
+      clause('chainable_expression DOT call') { |e0,_,e1| CallChain.new(e0,e1) }
     end
 
     production('basic_argument') do
@@ -334,6 +352,34 @@ module Rubby
 
     production(:binary_operation) do
       clause('expression WHITE binary_operator WHITE expression') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
+    end
+
+    production(:explicit_return) do
+      clause('RETURN WHITE? expression') { |_,_,e| ExplicitReturn.new(e) }
+    end
+
+    production(:outer_control_flow_word) do
+      clause('IF')      { |_| If.new(nil,[]) }
+      clause('UNLESS')  { |_| Unless.new(nil,[]) }
+    end
+
+    production(:control_flow_word) do
+      clause('outer_control_flow_word') { |e| e }
+      clause('ELSIF')   { |_| ElseIf.new(nil,[]) }
+      clause('ELSE')    { |_| Else.new(nil,[]) }
+    end
+
+    production(:control_flow) do
+      clause('postfix_control_flow') { |e| e }
+      clause('prefix_control_flow')  { |e| e }
+    end
+
+    production(:postfix_control_flow) do
+      clause('expression WHITE outer_control_flow_word WHITE expression') { |e0,_,e1,_,e2| e1.tap { |e| e.contents = [e0]; e.test = e2 } }
+    end
+
+    production(:prefix_control_flow) do
+      clause('outer_control_flow_word WHITE expression indented_contents') { |e0,_,e1,e2| e0.tap { |e| e.test = e1; e.contents = e2 } }
     end
 
     finalize :lookahead => false

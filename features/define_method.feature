@@ -103,3 +103,19 @@ Feature: Method definition
     def self.my_private_class_method; end
     private_class_method :my_private_class_method
     """
+
+  Scenario: I define a method with explicit return
+    When I enter
+    """
+    fib -> (n)
+      <- n if (0 .. 1).include? n
+      fib(n - 1) + fib(n - 2) if n > 1
+    """
+    And I transpile it
+    Then I should get
+    """
+    def fib(n)
+      return n if (0 .. 1).include?(n)
+      fib(n - 1) + fib(n - 2) if n > 1
+    end
+    """

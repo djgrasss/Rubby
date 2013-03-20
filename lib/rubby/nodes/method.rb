@@ -11,12 +11,12 @@ module Rubby::Nodes
       [].tap do |ruby|
         ruby << 'private' if is_private? && !is_class?
         if args.any?
-          ruby << "def #{method_name}(#{args.map { |n| n.to_ruby(runner) }.join(', ')})"
+          ruby << "def #{method_name}(#{inline(args,runner,', ')})"
         else
           ruby << "def #{method_name}"
         end
         if contents.any?
-          ruby << contents.map { |n| n.to_ruby(runner) }
+          ruby << recurse(contents,runner)
           ruby << 'end'
         else
           ruby.last << '; end'
@@ -26,7 +26,6 @@ module Rubby::Nodes
     end
 
     private
-
     def is_private?
       modifiers.include? '_'
     end
@@ -40,7 +39,11 @@ module Rubby::Nodes
     end
 
     def method_name
-      "#{is_class? ? 'self.': ''}#{basic_method_name}"
+      if is_class?
+        "self.#{basic_method_name}"
+      else
+        basic_method_name
+      end
     end
 
     def modifiers

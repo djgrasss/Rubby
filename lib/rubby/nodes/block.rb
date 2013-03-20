@@ -53,7 +53,7 @@ module Rubby::Nodes
 
     def process_arguments(runner,run=true,delim=['|'])
       if run && args.size > 0
-        " #{delim.first}#{args.map { |n| n.to_ruby(runner) }.join(', ')}#{delim.last} "
+        " #{delim.first}#{inline(args,runner,', ')}#{delim.last} "
       else
         ' '
       end

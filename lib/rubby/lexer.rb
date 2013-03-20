@@ -2,7 +2,7 @@ require 'rltk/lexer'
 
 module Rubby
   class Lexer < RLTK::Lexer
-    KEYWORDS = %w[ module class ]
+    KEYWORDS = %w[ module class if else elsif unless ]
 
     class Environment < Environment
       attr_accessor :current_indent_level
@@ -54,6 +54,7 @@ module Rubby
     rule /([1-9][0-9]*)/, :default do |e|
       [ :INTEGER, e.to_i ]
     end
+    rule(/0/, :default) { [ :INTEGER, 0 ] }
     rule /(0x[0-9a-fA-F]+)/, :default do |e|
       [ :INTEGER, e.to_i(16) ]
     end
@@ -107,7 +108,7 @@ module Rubby
     rule(/%/)    { [ :MODULO, '%' ] }
 
     rule(/</)    { [ :LT, '<' ] }
-    rule(/>/)    { [ :GT, '<' ] }
+    rule(/>/)    { [ :GT, '>' ] }
     %w[ == != > < >= <= <=> === ].each do |op|
       rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
     end
@@ -151,6 +152,7 @@ module Rubby
     rule(/\&>/) { [ :BLOCK, '&>' ] }
     rule(/->[ \t\f]*\(/) { [ :PROCWITHARGS, '->' ] }
     rule(/\&>[ \t\f]*\(/) { [ :BLOCKWITHARGS, '&>' ] }
+    rule(/<-/) { [ :RETURN, '<-' ] }
 
     rule /#+\s*/, :default do
       push_state :comment

@@ -149,6 +149,7 @@ describe Rubby::Parser do
 
     describe 'expressions' do
       describe('(1)')   { it_behaves_like 'node', Rubby::Nodes::Group }
+      describe('<- 1')  { it_behaves_like 'node', Rubby::Nodes::ExplicitReturn }
     end
 
     describe 'unary operations' do
@@ -204,6 +205,14 @@ describe Rubby::Parser do
       # Range
       describe('1 .. 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
       describe('1 ... 1') { it_behaves_like 'node', Rubby::Nodes::BinaryOp }
+    end
+
+    describe 'Control flow' do
+      describe('1 if 1') { it_behaves_like 'node', Rubby::Nodes::If }
+      describe('1 unless 1') { it_behaves_like 'node', Rubby::Nodes::Unless }
+
+      describe("if 1\n  foo\n") { it_behaves_like 'node', Rubby::Nodes::If }
+      describe("unless 1\n  foo\n") { it_behaves_like 'node', Rubby::Nodes::Unless }
     end
   end
 end
