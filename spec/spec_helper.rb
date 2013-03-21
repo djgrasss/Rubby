@@ -7,6 +7,17 @@ module Helpers
   end
 end
 
+module ExampleHelpers
+  def tokens_for(source)
+    Rubby::Lexer.lex(source)
+  end
+
+  def ast_for(source)
+    Rubby::Parser.parse(tokens_for(source))
+  end
+end
+
 RSpec.configure do |c|
   c.extend Helpers
+  c.include ExampleHelpers
 end

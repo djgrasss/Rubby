@@ -1,7 +1,22 @@
 require 'rltk/lexer'
 
 module Rubby
+
   class Lexer < RLTK::Lexer
+
+    def self.lex(*args)
+      # compress consecutive string tokens together because it's much more
+      # performant to do it here than in the parser.
+      super(*args).inject([]) do |result, token|
+        if (token.type == :STRING) && result.last && (result.last.type == :STRING)
+          result.last.value << token.value
+          result
+        else
+          result << token
+        end
+      end
+    end
+
     KEYWORDS = %w[ module class if else elsif unless ]
 
     class Environment < Environment
@@ -92,8 +107,11 @@ module Rubby
       unset_flag :inside_complex_string
       [ :INTERPOLATEEND ]
     end
-    rule /(\\"|[^"(\#{)])*/, :complex_string do |e|
-      [ :STRING, e.gsub(/\\"/, '"') ]
+    rule /\\"/, :complex_string do |e|
+      [ :STRING, '"' ]
+    end
+    rule /[^"]/, :complex_string do |e|
+      [ :STRING, e ]
     end
     rule /"/, :complex_string do
       pop_state

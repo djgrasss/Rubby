@@ -75,9 +75,9 @@ describe Rubby::Lexer do
       shared_examples_for 'string' do |*args|
         val = args.first
         let(:source) { example.example_group.parent_groups[1].description }
-        example('length') { expect(subject.length).to eq(4) }
-        example('type') { expect(subject[1].type).to eq(:STRING) }
-        example('value') { expect(subject[1].value).to eq(val) } if val
+        example('length') { expect(subject.length).to eq(2) }
+        example('type') { expect(subject[0].type).to eq(:STRING) }
+        example('value') { expect(subject[0].value).to eq(val) } if val
       end
 
       describe(%q['hello']) { it_behaves_like 'string', 'hello' }

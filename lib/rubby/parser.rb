@@ -363,12 +363,6 @@ module Rubby
       clause('UNLESS')  { |_| Unless.new(nil,[]) }
     end
 
-    production(:control_flow_word) do
-      clause('outer_control_flow_word') { |e| e }
-      clause('ELSIF')   { |_| ElseIf.new(nil,[]) }
-      clause('ELSE')    { |_| Else.new(nil,[]) }
-    end
-
     production(:control_flow) do
       clause('postfix_control_flow') { |e| e }
       clause('prefix_control_flow')  { |e| e }
@@ -378,8 +372,32 @@ module Rubby
       clause('expression WHITE outer_control_flow_word WHITE expression') { |e0,_,e1,_,e2| e1.tap { |e| e.contents = [e0]; e.test = e2 } }
     end
 
-    production(:prefix_control_flow) do
+    production(:elsif_control_flow) do
+      clause('ELSIF WHITE expression indented_contents') { |_,_,e0,e1| ElseIf.new(e0,e1) }
+    end
+
+    production(:elsif_control_flow_list) do
+      clause('elsif_control_flow') { |e| e }
+      clause('elsif_control_flow_list elsif_control_flow') { |e0,e1| e0.tap { |e| e.next = e1 } }
+    end
+
+    production(:else_control_flow) do
+      clause('ELSE indented_contents') { |_,e1| Else.new(nil,e1) }
+    end
+
+    production(:inner_control_flow) do
+      clause('elsif_control_flow_list') { |e| e }
+      clause('else_control_flow')       { |e| e }
+      clause('elsif_control_flow_list else_control_flow') { |e0,e1| e0.tap { |e| e.next = e1 } }
+    end
+
+    production(:outer_prefix_control_flow) do
       clause('outer_control_flow_word WHITE expression indented_contents') { |e0,_,e1,e2| e0.tap { |e| e.test = e1; e.contents = e2 } }
+    end
+
+    production(:prefix_control_flow) do
+      clause('outer_prefix_control_flow') { |e| e }
+      clause('outer_prefix_control_flow inner_control_flow') { |e0,e1| e0.tap { |e| e.next = e1 } }
     end
 
     finalize :lookahead => false
