@@ -45,7 +45,7 @@ Features required for 1.0 release:
      - Keyword arguments (✓)
  + Transpiler
  + Interpreter
- + Polyglot interface (https://github.com/cjheath/polyglot)
+ + Polyglot interface (https://github.com/cjheath/polyglot) (✓)
 
 Rubby is in it's infancy, pull requests are greatly appreciated.
 
