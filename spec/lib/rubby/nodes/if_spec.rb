@@ -32,7 +32,7 @@ describe Rubby::Nodes::If do
       end
 
       context 'with a next condition' do
-        let(:next_condition) { ast_for("if 1\n  foo\nelse\n  foo\n", ).first.next }
+        let(:next_condition) { ast_for("if 1\n  foo\nelse\n  foo\n").first.next }
         it { should be_false }
       end
     end
