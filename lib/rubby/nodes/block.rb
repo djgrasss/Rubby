@@ -44,6 +44,7 @@ module Rubby::Nodes
     def process_to_outline_block(runner,inside_args)
       header = [ 'do' ]
       header << process_arguments(runner,inside_args) if inside_args
+      header = header.delete_if { |i| i == '' }.compact
       [ header.join(' '), recurse(contents,runner), 'end' ]
     end
 
