@@ -1,3 +1,4 @@
+require 'pry'
 module Rubby::Nodes
   class ControlFlow < Base
     child :test, Base
@@ -22,7 +23,7 @@ module Rubby::Nodes
     end
 
     def should_be_inlined?
-      !should_prefix?
+      should_prefix?
     end
 
     def should_prefix?

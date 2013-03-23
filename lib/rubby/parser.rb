@@ -10,8 +10,7 @@ module Rubby
       ast
     end
 
-    right :CALL
-    right :CALLARGS
+    left :CALLARGS
     right :HASH
     right :HASHSEP
     right :HASHSYM

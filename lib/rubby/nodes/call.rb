@@ -5,7 +5,7 @@ module Rubby::Nodes
     child :block, Block
 
     def should_be_inlined?
-      block && block.should_be_inlined?
+      (block && block.should_be_inlined?) || true
     end
 
     def to_ruby(runner)

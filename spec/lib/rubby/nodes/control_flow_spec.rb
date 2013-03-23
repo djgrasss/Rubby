@@ -6,5 +6,4 @@ describe Rubby::Nodes::ControlFlow do
   it { should be_a(Rubby::Nodes::Base) }
   it { should respond_to(:test) }
   it { should respond_to(:contents) }
-
 end

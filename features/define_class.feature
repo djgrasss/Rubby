@@ -71,7 +71,7 @@ Feature: Class definition
     Then I should get
     """
     class ThinkingSphinx::Facet
-      attr_reader :name, :properties
+      attr_reader(:name, :properties)
 
       def initialize(name, properties)
         @name = name

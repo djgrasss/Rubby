@@ -48,11 +48,11 @@ Feature: I should be able to call methods.
     And I transpile it
     Then I should get
     """
-    foo.bar do |poping,hats|
+    foo.bar do |poping, hats|
       if poping
-        puts 'hats are' + hats
+        puts('hats are' + hats)
       else
-        puts 'there are other hats'
+        puts('there are other hats')
       end
     end
     """

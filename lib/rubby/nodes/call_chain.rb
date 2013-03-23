@@ -8,17 +8,10 @@ module Rubby::Nodes
     end
 
     def to_ruby(runner)
-      lhs = inline(left,runner)
-      if should_be_inlined?
-        puts "I think I should be inlined"
-        [ "#{lhs}.#{inline(right, runner)}" ]
-      else
-        puts "I think I should be outlined"
-        rhs = squash_array(recurse(right,runner))
-        top = rhs.shift
-        rhs.unshift "#{lhs}.#{rhs}"
-        rhs
-      end
+      _right = squash_array(recurse(right, runner))
+      str = _right.shift
+      _right.unshift "#{inline(left,runner)}.#{str}"
+      _right
     end
   end
 end
