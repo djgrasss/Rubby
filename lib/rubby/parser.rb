@@ -4,16 +4,13 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
-    def self.parse(*args)
+    def self.parse(token, opts = {})
+      puts token.inspect
       ast = super
+      puts token.inspect
       ast.each(&:walk)
       ast
     end
-
-    left :CALLARGS
-    right :HASH
-    right :HASHSEP
-    right :HASHSYM
 
     production(:default) do
       clause('statements') { |e| e }
@@ -128,7 +125,7 @@ module Rubby
     end
 
     production(:simple_string) do
-      clause('STRING')                   { |e| SimpleString.new(e) }
+      clause('WHITE? STRING')                   { |_,e| SimpleString.new(e) }
       clause('simple_string STRING')     { |e0,e1| e0.tap { |s| s.value += e1 } }
     end
 
@@ -249,6 +246,9 @@ module Rubby
     production(:call) do
       clause('call_without_block') { |e| e }
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
+      clause('call_without_block WHITE? binary_operation' ) { |e0,_,e1| e0.args = [e1]; e0 } 
+      #clause('call_without_block WHITE? STRING WHITE? binary_operator WHITE? simple_identifier' ) { |e0,_,e1,_,e2,_,e3| 
+      #  e0.args = [BinaryOp.new(e2,SimpleString.new(e1),e3)];  e0 }
     end
 
     production(:call_chain) do
@@ -365,7 +365,15 @@ module Rubby
 
     production(:binary_operation) do
       clause('expression WHITE binary_operator WHITE expression') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
+      #clause('STRING WHITE? binary_operator WHITE? simple_identifier' ) { |e0,_,e1,_,e2,_,e3| 
+      #  e0.args = [BinaryOp.new(e2,SimpleString.new(e1),e3)];  e0 }
+      #clause('STRING WHITE binary_operator WHITE simple_identifier') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
     end
+
+    production(:simple_identifier) do
+      clause('IDENTIFIER') {|e| SimpleString.new(e) }
+    end
+
 
     production(:explicit_return) do
       clause('RETURN WHITE? expression') { |_,_,e| ExplicitReturn.new(e) }
