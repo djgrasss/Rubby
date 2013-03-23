@@ -48,6 +48,11 @@ describe Rubby::Parser do
       end
     end
 
+    describe 'constants' do
+      describe('Foo') { it_behaves_like 'node', Rubby::Nodes::Constant, 'Foo' }
+      describe('Foo::Bar') { it_behaves_like 'node', Rubby::Nodes::Constant, 'Foo::Bar' }
+    end
+
     describe 'Array literals' do
       describe('[]') { it_behaves_like 'node', Rubby::Nodes::Array }
       describe('[1]') { it_behaves_like 'node', Rubby::Nodes::Array }
@@ -65,6 +70,7 @@ describe Rubby::Parser do
       describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1, bar: 2}') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{"foo": 1, 2: 3}') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('{}') { it_behaves_like 'node', Rubby::Nodes::Hash }
     end
 
     describe 'Method calls' do

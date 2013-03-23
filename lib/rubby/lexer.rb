@@ -22,11 +22,13 @@ module Rubby
     class Environment < Environment
       attr_accessor :current_indent_level
 
-      PositiveInfinity = +1.0/0.0
-      NegativeInfinity = -1.0/0.0
+      POSITIVE_INFINITY = +1.0/0.0
+      NEGATIVE_INFINITY = -1.0/0.0
 
       def indent_token_for(str)
-        indent_chars = /[\r\n]([ \t\f]*)/.match(str)[1].size
+        match = /([\r\n]+)([ \t\f]*)/.match(str)
+        newlines     = match[1].split('').group_by { |c| c == "\n" }.values.map(&:size).max || 0
+        indent_chars = match[2].size
         raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars" unless indent_chars % 2 == 0
         self.current_indent_level ||= 0
         new_indent_level = indent_chars / 2
@@ -37,13 +39,14 @@ module Rubby
         when 1
           self.current_indent_level = new_indent_level
           [ :INDENT, current_indent_level ]
-        when NegativeInfinity..-1
+        when NEGATIVE_INFINITY..-1
           result = (new_indent_level...current_indent_level).to_a.reverse.map do |i|
             [ :OUTDENT, i ]
           end
+          result << [ :NEWLINE ] if newlines >= 2
           self.current_indent_level = new_indent_level
           result
-        when 2..PositiveInfinity
+        when 2..POSITIVE_INFINITY
           raise ::Rubby::Exceptions::Indent, "Abberrant child indent of #{indent_change}"
         end
       end

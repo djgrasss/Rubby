@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Rubby::Nodes::Base do
   it { should be_a(RLTK::ASTNode) }
+  let(:base) { Rubby::Nodes::Base.new }
+  let(:runner) { stub(:runner) }
 
   describe '#to_ruby' do
-    let(:base) { Rubby::Nodes::Base.new }
-    let(:runner) { stub(:runner) }
     subject { base.to_ruby(runner) }
 
     context 'when it responds to :value' do
@@ -19,5 +19,9 @@ describe Rubby::Nodes::Base do
     context 'else' do
       example { expect { subject }.to raise_error(Rubby::Exceptions::OverrideMePlease) }
     end
+  end
+
+  describe '#walk' do
+    pending
   end
 end

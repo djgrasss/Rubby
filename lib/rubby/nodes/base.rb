@@ -27,6 +27,15 @@ module Rubby::Nodes
       wrap(nodes).flatten.size > 1
     end
 
+    def walk(child=children)
+      if child.is_a? ::Array
+        child.each { |c| walk(c) }
+      else
+        child.walk if child.respond_to? :walk
+      end
+      true
+    end
+
     private
 
     def to_ruby_or_to_s(e, runner)

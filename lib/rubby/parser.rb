@@ -4,6 +4,12 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
+    def self.parse(*args)
+      ast = super
+      ast.each(&:walk)
+      ast
+    end
+
     right :CALL
     right :CALLARGS
     right :HASH
@@ -82,8 +88,10 @@ module Rubby
       clause('module_without_contents indented_contents') { |e0,e1| e0.tap { |e| e.contents = e1 } }
     end
 
-    production(:constant) do
-      clause('CONSTANT') { |e| Constant.new(e) }
+    nonempty_list(:constant_list, 'CONSTANT', 'CONSTINDEXOP')
+
+    production('constant') do
+      clause('constant_list') { |e| Constant.new(e.join('::')) }
     end
 
     production(:integer) do
@@ -166,6 +174,7 @@ module Rubby
     production(:hash) do
       clause('hash_element_list', :HASH) { |e| Hash.new(e) }
       clause('LCURLY WHITE? hash_element_list WHITE? RCURLY', :HASH) { |_,_,e,_,_| Hash.new(e) }
+      clause('LCURLY WHITE? RCURLY') { |_,_,_| Hash.new([]) }
     end
 
     production(:method_identifier) do
@@ -255,6 +264,10 @@ module Rubby
       clause('MULTIPLY WHITE? IDENTIFIER') { |_,_,e| SplatArgument.new(e) }
     end
 
+    production('instance_argument') do
+      clause('AT IDENTIFIER') { |_,e| InstanceArgument.new(e) }
+    end
+
     production('argument_with_defaults') do
       clause('IDENTIFIER WHITE? ASSIGNEQ WHITE? expression') { |e0,_,_,_,e1| ArgumentWithDefault.new(e0,e1) }
     end
@@ -266,6 +279,7 @@ module Rubby
     production(:argument) do
       clause('basic_argument') { |e| e }
       clause('splat_argument') { |e| e }
+      clause('instance_argument') { |e| e }
       clause('argument_with_defaults') { |e| e }
       clause('keyword_argument') { |e| e }
     end
