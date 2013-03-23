@@ -1,4 +1,18 @@
 #!/usr/bin/env rubby
 
+require 'rubby'
 
-puts "Hello user"
+@source_file = ARGV.first if ARGV.size >= 1
+@destination_file = ARGV[1] if ARGV.size >= 2
+
+unless @source_file
+  $stderr.puts <<USAGE
+Usage: rubby source_file [destination_file]
+
+Compile rubby source code into ruby.
+
+USAGE
+  exit 1
+end
+
+Rubby.transpile_file(@source_file, @destination_file)

@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  gem.executables   = %w[rubby irbb]
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency dep
   end
 
-  %w[polyglot rltk thor].each do |dep|
+  %w[polyglot rltk].each do |dep|
     gem.add_dependency dep
   end
 end

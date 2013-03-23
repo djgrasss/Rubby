@@ -1,0 +1,19 @@
+#!/usr/bin/env rubby
+
+require 'rubby'
+
+def repl
+  loop do
+    print prompt
+    result = Rubby.interpret(gets)
+    puts " => %s" % result.inspect
+  end
+end
+
+def prompt
+  '>> '
+end
+
+puts "Rubby version #{Rubby::VERSION}, starting REPL"
+repl
+
