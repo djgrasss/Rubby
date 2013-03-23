@@ -1,4 +1,3 @@
-require 'pry'
 module Rubby::Nodes
   class ControlFlow < Base
     child :test, Base
