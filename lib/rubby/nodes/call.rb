@@ -5,11 +5,16 @@ module Rubby::Nodes
     child :block, Block
 
     def to_ruby(runner)
+      result = []
       if args.size == 0
-        [ "#{name}" ]
+        result << "#{name}"
       else
-        [ "#{name}(#{inline(args,runner,', ')})" ]
+        result <<  "#{name}(#{inline(args,runner,', ')})"
       end
+      result << recurse(block,runner) if block
+      puts "result #{result.inspect}"
+      result
+
     end
   end
 end

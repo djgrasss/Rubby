@@ -2,7 +2,7 @@ module Rubby
   class Transpiler
     class RubyFormatter
       attr_accessor :ruby_ary
-      attr_writer   :indent
+      attr :indent_count, true
 
       def self.process(ruby_ary)
         self.new(ruby_ary).process
@@ -10,36 +10,33 @@ module Rubby
 
       def initialize(ruby_ary)
         @ruby_ary = ruby_ary
+        @indent_count   = -1
       end
 
       def indent
-        @indent ||= '  '
+        '  '
       end
 
-      def process
-        depth = 0
-        result = ""
-        process_ary = proc do |chunk|
-          if chunk.is_a? Array
-            indent = chunk.none? { |n| n.is_a? Array }
-            depth = depth + 1 if indent
-            chunk.each(&process_ary)
-            depth = depth - 1 if indent
-          elsif chunk.is_a? String
-            result << prepend_with_indent(depth, chunk)
+
+      def process(nodes=ruby_ary)
+
+        if nodes.is_a? Array
+          if nodes.all? {|node| node.is_a? Array}
+            puts "node count: #{nodes.size}"
+            process(nodes.flatten(1))
+
+          else
+            self.indent_count += 1
+            result = nodes.map {|n| process(n) }.join("\n")
+            self.indent_count -= 1
+            return result
           end
+
+        else
+          "#{indent*indent_count}#{nodes}"
         end
-        ruby_ary.each do |statement|
-          statement.each(&process_ary)
-        end
-        result
       end
 
-      private
-
-      def prepend_with_indent(depth,str)
-        "#{indent * depth}#{str}\n"
-      end
 
     end
   end

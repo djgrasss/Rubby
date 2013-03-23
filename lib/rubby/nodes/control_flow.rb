@@ -15,7 +15,7 @@ module Rubby::Nodes
             ruby << name
           end
           ruby << recurse(contents, runner)
-          ruby << self.next.to_ruby(runner) if self.next
+          ruby.concat(self.next.to_ruby(runner)) if self.next
           ruby << 'end' if should_end?
         end
       end
