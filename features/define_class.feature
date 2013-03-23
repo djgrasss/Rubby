@@ -38,6 +38,7 @@ Feature: Class definition
     end
     """
 
+    @todo
   Scenario: I define a class with some methods
     When I enter
     """

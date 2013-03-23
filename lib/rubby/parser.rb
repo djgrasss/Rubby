@@ -5,9 +5,7 @@ module Rubby
     include ::Rubby::Nodes
 
     def self.parse(token, opts = {})
-      puts token.inspect
       ast = super
-      puts token.inspect
       ast.each(&:walk)
       ast
     end
@@ -152,10 +150,10 @@ module Rubby
     end
 
     production(:hash_sep) do
-      clause('COLON WHITE?', :HASHSEP) { |_,_| }
+      clause('COLON WHITE?') { |_,_| }
     end
 
-    production(:hash_identifier, 'IDENTIFIER', :HASHSYM) { |e| e }
+    production(:hash_identifier, 'IDENTIFIER') { |e| e }
 
     production(:hash_element) do
       clause('hash_identifier hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
@@ -168,8 +166,8 @@ module Rubby
     end
 
     production(:hash) do
-      clause('hash_element_list', :HASH) { |e| Hash.new(e) }
-      clause('LCURLY WHITE? hash_element_list WHITE? RCURLY', :HASH) { |_,_,e,_,_| Hash.new(e) }
+      clause('hash_element_list') { |e| Hash.new(e) }
+      clause('LCURLY WHITE? hash_element_list WHITE? RCURLY') { |_,_,e,_,_| Hash.new(e) }
       clause('LCURLY WHITE? RCURLY') { |_,_,_| Hash.new([]) }
     end
 
@@ -219,12 +217,13 @@ module Rubby
       clause('INDENT statement expression OUTDENT') { |_,e0,e1,_| [e0] + [e1] }
     end
 
-    production(:call_identifier, 'method_identifier', :CALL) { |e| e }
+    production(:call_identifier, 'method_identifier') { |e| e }
 
     production(:call_arguments) do
-      clause('WHITE? expression_list', :CALLARGS) { |_,e| e }
-      clause('left_paren expression_list right_paren', :CALLARGS) { |_,e,_| e }
-      clause('left_paren right_paren', :CALLARGS) { |_,_| [] }
+      clause('WHITE binary_operation') { |_,e| [e] }
+      clause('WHITE? expression_list') { |_,e| e }
+      clause('left_paren expression_list right_paren') { |_,e,_| e }
+      clause('left_paren right_paren') { |_,_| [] }
     end
 
     production(:call_without_block) do
@@ -246,9 +245,6 @@ module Rubby
     production(:call) do
       clause('call_without_block') { |e| e }
       clause('call_without_block WHITE block') { |e0,_,e1| e0.tap { |c| c.block = e1 }}
-      clause('call_without_block WHITE? binary_operation' ) { |e0,_,e1| e0.args = [e1]; e0 } 
-      #clause('call_without_block WHITE? STRING WHITE? binary_operator WHITE? simple_identifier' ) { |e0,_,e1,_,e2,_,e3| 
-      #  e0.args = [BinaryOp.new(e2,SimpleString.new(e1),e3)];  e0 }
     end
 
     production(:call_chain) do
@@ -365,9 +361,6 @@ module Rubby
 
     production(:binary_operation) do
       clause('expression WHITE binary_operator WHITE expression') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
-      #clause('STRING WHITE? binary_operator WHITE? simple_identifier' ) { |e0,_,e1,_,e2,_,e3| 
-      #  e0.args = [BinaryOp.new(e2,SimpleString.new(e1),e3)];  e0 }
-      #clause('STRING WHITE binary_operator WHITE simple_identifier') { |e0,_,e1,_,e2| BinaryOp.new(e1,e0,e2) }
     end
 
     production(:simple_identifier) do

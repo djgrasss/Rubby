@@ -36,6 +36,7 @@ Feature: I should be able to call methods.
     And I transpile it
     Then I should get 'foo.bar { 1 }'
 
+    @todo
   Scenario: I call a method on an object passing a more complex block
     When I enter
     """
@@ -55,4 +56,16 @@ Feature: I should be able to call methods.
         puts('there are other hats')
       end
     end
+    """
+
+    @todo
+  Scenario: I call a with a binary operation
+    When I enter
+    """
+    puts 'hats are' + hats
+    """
+    And I transpile it
+    Then I should get
+    """
+    puts("hats are" + hats)
     """

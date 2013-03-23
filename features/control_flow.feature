@@ -14,12 +14,12 @@ Feature: control flow
     When I enter
     """
     if this_is_true
-      puts 'it was true!'
+      puts "it was true!"
     """
     And I transpile it
     Then I should get
     """
-    puts('it was true!') if this_is_true
+    puts("it was true!") if this_is_true
     """
 
   Scenario: if with more than one indented expression
@@ -27,14 +27,14 @@ Feature: control flow
     """
     if this_is_true
       the_thing_was true
-      puts 'it was true!'
+      puts "it was true!"
     """
     And I transpile it
     Then I should get
     """
     if this_is_true
       the_thing_was(true)
-      puts('it was true!')
+      puts("it was true!")
     end
     """
 
@@ -43,14 +43,14 @@ Feature: control flow
     """
     unless this_is_true
       the_thing_was false
-      puts 'it was false!'
+      puts "it was false!"
     """
     And I transpile it
     Then I should get
     """
     unless this_is_true
       the_thing_was(false)
-      puts('it was false!')
+      puts("it was false!")
     end
     """
 
@@ -58,17 +58,17 @@ Feature: control flow
     When I enter
     """
     if this_is_true
-      puts 'this was true!'
+      puts "this was true!"
     elsif that_was_true
-      puts 'that was true!'
+      puts "that was true!"
     """
     And I transpile it
     Then I should get
     """
     if this_is_true
-      puts('this was true!')
+      puts("this was true!")
     elsif that_was_true
-      puts('that was true!')
+      puts("that was true!")
     end
     """
 
@@ -76,17 +76,17 @@ Feature: control flow
     When I enter
     """
     if this_is_true
-      puts 'it was true!'
+      puts "it was true!"
     else
-      puts 'it was false!'
+      puts "it was false!"
     """
     And I transpile it
     Then I should get
     """
     if this_is_true
-      puts('it was true!')
+      puts("it was true!")
     else
-      puts('it was false!')
+      puts("it was false!")
     end
     """
 
@@ -94,20 +94,20 @@ Feature: control flow
     When I enter
     """
     if thing1_is_true?
-      puts 'thing one is true!'
+      puts "thing one is true!"
     elsif thing2_is_true?
-      puts 'thing two is true!'
+      puts "thing two is true!"
     else
-      puts 'no things are true :('
+      puts "no things are true :("
     """
     And I transpile it
     Then I should get
     """
     if thing1_is_true?
-      puts('thing one is true!')
+      puts("thing one is true!")
     elsif thing2_is_true?
-      puts('thing two is true!')
+      puts("thing two is true!")
     else
-      puts('no things are true :(')
+      puts("no things are true :(")
     end
     """
