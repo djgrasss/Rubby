@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency dep
   end
 
-  %w[polyglot rltk].each do |dep|
+  %w[polyglot rltk thor].each do |dep|
     gem.add_dependency dep
   end
 end
