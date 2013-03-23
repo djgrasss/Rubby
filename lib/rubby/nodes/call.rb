@@ -4,17 +4,25 @@ module Rubby::Nodes
     child :args, [Base]
     child :block, Block
 
+    def should_be_inlined?
+      block && block.should_be_inlined?
+    end
+
     def to_ruby(runner)
-      result = []
+      result = ''
       if args.size == 0
         result << "#{name}"
       else
         result <<  "#{name}(#{inline(args,runner,', ')})"
       end
-      result << recurse(block,runner) if block
-      puts "result #{result.inspect}"
-      result
-
+      if block
+        result << ' '
+        _block = squash_array(recurse(block,runner))
+        result << _block.shift
+        [result] + _block
+      else
+        [result]
+      end
     end
   end
 end

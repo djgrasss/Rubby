@@ -20,18 +20,30 @@ module Rubby::Nodes
     end
 
     def process_to_block(runner,inside_args=true)
-      case contents.size
-      when 0
-        if (inside_args && args.size == 0) || (!inside_args)
-          ['{}']
-        else
-          ["{#{process_arguments(runner,inside_args)}}"]
-        end
-      when 1
-        ["{#{process_arguments(runner,inside_args)}#{contents[0].to_ruby(runner).first} }"]
+      if should_be_inlined?
+        process_to_inline_block(runner,inside_args)
       else
-        ["do#{process_arguments(runner,inside_args)}", contents.map { |n| n.to_ruby(runner) }, 'end']
+        process_to_outline_block(runner,inside_args)
       end
+    end
+
+    def process_to_inline_block(runner,inside_args)
+      result = [ '{' ]
+      result << process_arguments(runner,inside_args) if inside_args
+      result << inline(contents,runner)
+      result << '}'
+      result = result.delete_if { |i| i == '' }.compact
+      if result.size == 2
+        [ '{}' ]
+      else
+        result.join(' ')
+      end
+    end
+
+    def process_to_outline_block(runner,inside_args)
+      header = [ 'do' ]
+      header << process_arguments(runner,inside_args) if inside_args
+      [ header.join(' '), recurse(contents,runner), 'end' ]
     end
 
     def process_to_lambda(runner)
@@ -44,7 +56,7 @@ module Rubby::Nodes
       ruby = process_to_block(runner, false)
       if args.size > 0
         args = process_arguments(runner,true,['(',')'])
-        ruby[0] = "->#{args}#{ruby[0]}"
+        ruby[0] = "-> #{args} #{ruby[0]}"
       else
         ruby[0] = "-> #{ruby[0]}"
       end
@@ -53,9 +65,9 @@ module Rubby::Nodes
 
     def process_arguments(runner,run=true,delim=['|'])
       if run && args.size > 0
-        " #{delim.first}#{inline(args,runner,', ')}#{delim.last} "
+        "#{delim.first}#{inline(args,runner,', ')}#{delim.last}"
       else
-        ' '
+        ''
       end
     end
   end

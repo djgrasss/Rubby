@@ -21,6 +21,14 @@ module Rubby::Nodes
       end
     end
 
+    def should_be_inlined?
+      !should_prefix?
+    end
+
+    def should_prefix?
+      (contents.size <= 1) && !self.next
+    end
+
     def name
       self.class.to_s.split('::').last.downcase
     end

@@ -18,13 +18,16 @@ module Rubby::Nodes
       wrap(nodes).flatten.map { |n| to_ruby_or_to_s(n,runner) }.join(delim)
     end
 
-    def inline!(nodes,runner,delim=nil)
-      raise Rubby::Exceptions::Inline, "asked to inline AST nodes with nested content" unless should_be_inlined?(nodes)
-      inline(nodes,runner,delim)
-    end
-
-    def should_be_inlined?(nodes)
-      wrap(nodes).flatten.size > 1
+    def should_be_inlined?
+      return true unless respond_to? :contents
+      case contents.size
+      when 0
+        true
+      when 1
+        contents.first.should_be_inlined?
+      else
+        false
+      end
     end
 
     def walk(child=children)
@@ -51,6 +54,14 @@ module Rubby::Nodes
         ary
       else
         [ary]
+      end
+    end
+
+    def squash_array(ary)
+      if ary.first.is_a? ::Array
+        squash_array(ary.first)
+      else
+        ary
       end
     end
   end

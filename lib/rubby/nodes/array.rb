@@ -3,7 +3,7 @@ module Rubby::Nodes
     child :values, [Base]
 
     def to_ruby(runner)
-     ["[#{inline(values, runner)}]"]
+     ["[#{inline(values, runner, ', ')}]"]
     end
 
   end
