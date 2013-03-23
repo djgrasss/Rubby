@@ -22,7 +22,6 @@ module Rubby
 
         if nodes.is_a? Array
           if nodes.all? {|node| node.is_a? Array}
-            puts "node count: #{nodes.size}"
             process(nodes.flatten(1))
 
           else

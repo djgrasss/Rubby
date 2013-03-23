@@ -24,7 +24,6 @@ module Rubby::Nodes
       when 0
         true
       when 1
-        puts "Contents.first is a #{contents.first.class}"
         contents.first.should_be_inlined?
       else
         false

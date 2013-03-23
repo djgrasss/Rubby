@@ -20,7 +20,6 @@ module Rubby::Nodes
     end
 
     def process_to_block(runner,inside_args=true)
-      puts "should_be_inlined = #{should_be_inlined?}"
       if should_be_inlined?
         process_to_inline_block(runner,inside_args)
       else
