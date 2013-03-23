@@ -56,7 +56,7 @@ although those with even rudimentary metaprogramming skills can work around
 this should they desire.  Don't send PR's for these features, they won't be
 accepted:
 
- + Class and instance variable access. Use accessors instead (yes, I know this is tricky. I'm working on it)
+ + Class and instance variable access. Use accessors instead (yes, I know this is tricky. I'm working on it).
 
 ## Syntax examples
 
