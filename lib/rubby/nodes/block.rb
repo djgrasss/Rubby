@@ -1,6 +1,6 @@
 module Rubby::Nodes
   class Block < Base
-    child :args, [Base]
+    child :args, [AbstractArgument]
     child :contents, [Base]
 
     def to_ruby(runner)
