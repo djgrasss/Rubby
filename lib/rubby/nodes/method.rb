@@ -4,13 +4,14 @@ module Rubby::Nodes
     MODIFIERS = /^[@_]{1,2}/
 
     value :name, ::String
-    child :args, [Argument]
+    child :args, [AbstractArgument]
     child :contents, [Base]
 
     def to_ruby(runner)
       [].tap do |ruby|
         ruby << 'private' if is_private? && !is_class?
         if args.any?
+
           ruby << "def #{method_name}(#{inline(args,runner,', ')})"
         else
           ruby << "def #{method_name}"

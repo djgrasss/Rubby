@@ -12,7 +12,7 @@ module Rubby
     end
 
     def tree
-      @tree ||= Rubby::Parser.parse(tokens)
+      @tree ||= tree_constructor
     end
 
     def process
@@ -27,5 +27,12 @@ module Rubby
       @target ||= TargetVersion.new
     end
 
+    private
+
+    def tree_constructor
+      Rubby::Parser.parse(tokens).each do |node|
+        node.walk(node.children, self)
+      end
+    end
   end
 end
