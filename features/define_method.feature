@@ -98,7 +98,7 @@ Feature: Method definition
     Then I should get
     """
     private
-    def my_private_method; end
+    def _my_private_method; end
     """
 
   Scenario: I define a class method
@@ -114,8 +114,8 @@ Feature: Method definition
     And I transpile it
     Then I should get
     """
-    def self.my_private_class_method; end
-    private_class_method :my_private_class_method
+    def self._my_private_class_method; end
+    private_class_method :_my_private_class_method
     """
 
   Scenario: I define a method with explicit return
