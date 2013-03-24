@@ -179,10 +179,8 @@ module Rubby
     rule /#+\s*/, :default do
       push_state :comment
     end
-    rule /[\n\r]/, :comment do |e|
+    rule /[\r\n]+[ \t\f]*/, :comment do |e|
       pop_state
-      # push_state :indenting
-      # :NEWLINE
       indent_token_for(e)
     end
     rule /.*/, :comment do |e|

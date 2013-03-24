@@ -18,6 +18,10 @@ describe Rubby::Parser do
       example { expect(subject.value).to eq(val) } if val
     end
 
+    describe 'Comment literals' do
+      describe("#foo") { it_behaves_like 'node', Rubby::Nodes::Comment }
+    end
+
     describe 'Integer literals' do
       describe('1') { it_behaves_like 'node', Rubby::Nodes::Integer, 1 }
       describe('10') { it_behaves_like 'node', Rubby::Nodes::Integer, 10 }
