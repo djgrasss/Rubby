@@ -16,7 +16,7 @@ module Rubby::Nodes
         result <<  "#{name}(#{inline(args,runner,', ')})"
       end
       if block
-        result << ' '
+        result << " "
         _block = squash_array(recurse(block,runner))
         result << _block.shift
         [result] + _block

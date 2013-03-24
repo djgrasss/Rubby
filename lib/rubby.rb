@@ -20,9 +20,9 @@ module Rubby
   end
 
   def transpile_file(source, destination = source.gsub(/\.rbb$/, '.rb'), version=nil)
-    File.open(source, 'r') do |src|
+    File.open(source, "r") do |src|
       begin
-        File.open(destination, 'w') do |dest|
+        File.open(destination, "w") do |dest|
           dest.write(transpile(src.read) + "\n")
         end
       rescue Errno::ENOENT => e

@@ -99,7 +99,7 @@ module Rubby
 
     rule /"/, :default do
       push_state :complex_string
-      [ :STRING, '"' ]
+      [ :STRING, "\"" ]
     end
     rule /\#\{/, :complex_string do
       push_state :default
@@ -119,18 +119,18 @@ module Rubby
     end
     rule /"/, :complex_string do
       pop_state
-      [ :STRING, '"' ]
+      [ :STRING, "\"" ]
     end
 
     rule(/\*\*/) { [ :EXPO, '**' ] }
-    rule(/\+/)   { [ :PLUS, '+' ] }
-    rule(/-/)    { [ :MINUS, '-' ] }
-    rule(/\*/)   { [ :MULTIPLY, '*' ] }
-    rule(/\//)   { [ :DEVIDE, '/' ] }
-    rule(/%/)    { [ :MODULO, '%' ] }
+    rule(/\+/)   { [ :PLUS, "+" ] }
+    rule(/-/)    { [ :MINUS, "-" ] }
+    rule(/\*/)   { [ :MULTIPLY, "*" ] }
+    rule(/\//)   { [ :DEVIDE, "/" ] }
+    rule(/%/)    { [ :MODULO, "%" ] }
 
-    rule(/</)    { [ :LT, '<' ] }
-    rule(/>/)    { [ :GT, '>' ] }
+    rule(/</)    { [ :LT, "<" ] }
+    rule(/>/)    { [ :GT, ">" ] }
     %w[ == != > < >= <= <=> === ].each do |op|
       rule(%r|#{op}|) { |e| [ :COMPARISONOP, e ] }
     end
@@ -146,9 +146,9 @@ module Rubby
       rule(%r|#{op}|) { |e| [ :BITWISEOP, e ] }
     end
 
-    rule(/\!/) { |e| [ :BANG, '!' ] }
-    rule(/~/)  { |e| [ :TILDE, '~' ] }
-    rule(/\?/) { |e| [ :QUESTION, '?' ] }
+    rule(/\!/) { |e| [ :BANG, "!" ] }
+    rule(/~/)  { |e| [ :TILDE, "~" ] }
+    rule(/\?/) { |e| [ :QUESTION, "?" ] }
     %w[ && \|\| ].each do |op|
       rule(%r|#{op}|) { |e| [ :LOGICALOP, e ] }
     end
@@ -157,18 +157,18 @@ module Rubby
       rule(%r|#{op}|) { |e| [ :RANGEOP, e ] }
     end
 
-    rule(/\./) { [ :DOT, '.' ] }
+    rule(/\./) { [ :DOT, "." ] }
     rule(/::/) { [ :CONSTINDEXOP, '::' ] }
-    rule(/\[/) { [ :LSQUARE, '[' ] }
-    rule(/\]/) { [ :RSQUARE, ']' ] }
-    rule(/\(/) { [ :LPAREN, '(' ] }
-    rule(/\)/) { [ :RPAREN, ')' ] }
-    rule(/\{/) { [ :LCURLY, '{' ] }
-    rule(/\}/) { [ :RCURLY, '}' ] }
-    rule(/,/) { [ :COMMA, ',' ] }
-    rule(/@/) { [ :AT, '@' ] }
-    rule(/:/) { [ :COLON, ':' ] }
-    rule(/\$/) { [ :DOLLAR, '$' ] }
+    rule(/\[/) { [ :LSQUARE, "[" ] }
+    rule(/\]/) { [ :RSQUARE, "]" ] }
+    rule(/\(/) { [ :LPAREN, "(" ] }
+    rule(/\)/) { [ :RPAREN, ")" ] }
+    rule(/\{/) { [ :LCURLY, "{" ] }
+    rule(/\}/) { [ :RCURLY, "}" ] }
+    rule(/,/) { [ :COMMA, "," ] }
+    rule(/@/) { [ :AT, "@" ] }
+    rule(/:/) { [ :COLON, ":" ] }
+    rule(/\$/) { [ :DOLLAR, "$" ] }
 
     rule(/->/) { [ :PROC, '->' ] }
     rule(/\&>/) { [ :BLOCK, '&>' ] }

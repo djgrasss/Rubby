@@ -43,6 +43,12 @@ Feature: Block definition
     lambda { foo }
     """
 
+  Scenario: Simple inline block on 1.8
+    Given I am targetting Ruby 1.8
+    When I enter '&> true'
+    And I transpile it
+    Then I should get 'lambda { true }'
+
   Scenario: I define a block with simple contents and no arguments on Ruby 1.9
     Given I am targetting Ruby 1.9
     When I enter

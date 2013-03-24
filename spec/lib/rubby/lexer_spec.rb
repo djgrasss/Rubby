@@ -15,7 +15,7 @@ describe Rubby::Lexer do
         example { expect(subject.first.type).to eq(type) }
       end
 
-      describe('x')         { it_behaves_like 'identifier' }
+      describe("x")         { it_behaves_like 'identifier' }
       describe('foo')       { it_behaves_like 'identifier' }
       describe('fooBar')    { it_behaves_like 'identifier' }
       describe('fooBar99')  { it_behaves_like 'identifier' }
@@ -45,11 +45,11 @@ describe Rubby::Lexer do
         example('value') { expect(subject.first.value).to eq(val) } if val
       end
 
-      describe('0') { it_behaves_like 'integer', 0 }
-      describe('1') { it_behaves_like 'integer', 1 }
+      describe("0") { it_behaves_like 'integer', 0 }
+      describe("1") { it_behaves_like 'integer', 1 }
       describe('100') { it_behaves_like 'integer', 100 }
       describe('123456789') { it_behaves_like 'integer', 123456789 }
-      describe('9') { it_behaves_like 'integer', 9 }
+      describe("9") { it_behaves_like 'integer', 9 }
 
       describe('0x1f') { it_behaves_like 'integer', 31 }
 
@@ -122,40 +122,40 @@ describe Rubby::Lexer do
 
       describe 'arithmetic' do
         describe('**') { it_behaves_like 'operator', :EXPO, '**' }
-        describe('+')  { it_behaves_like 'operator', :PLUS, '+' }
-        describe('-')  { it_behaves_like 'operator', :MINUS, '-' }
-        describe('*')  { it_behaves_like 'operator', :MULTIPLY, '*' }
-        describe('/')  { it_behaves_like 'operator', :DEVIDE, '/' }
-        describe('%')  { it_behaves_like 'operator', :MODULO, '%' }
+        describe("+")  { it_behaves_like 'operator', :PLUS, "+" }
+        describe("-")  { it_behaves_like 'operator', :MINUS, "-" }
+        describe("*")  { it_behaves_like 'operator', :MULTIPLY, "*" }
+        describe("/")  { it_behaves_like 'operator', :DEVIDE, "/" }
+        describe("%")  { it_behaves_like 'operator', :MODULO, "%" }
       end
 
       describe 'comparison' do
-        describe('<') { it_behaves_like 'operator', :LT, '<' }
-        describe('>') { it_behaves_like 'operator', :GT, '>' }
+        describe("<") { it_behaves_like 'operator', :LT, "<" }
+        describe(">") { it_behaves_like 'operator', :GT, ">" }
         %w[ == != >= <= <=> === ].each do |op|
           describe(op) { it_behaves_like 'operator', :COMPARISONOP, op }
         end
       end
 
       describe 'assignment' do
-        describe('=') { it_behaves_like 'operator', :ASSIGNEQ, '=' }
+        describe("=") { it_behaves_like 'operator', :ASSIGNEQ, "=" }
         %w[ += -= *= /= %= **= ].each do |op|
           describe(op) { it_behaves_like 'operator', :ASSIGNMENTOP, op }
         end
       end
 
       describe 'bitwise' do
-        describe('&') { it_behaves_like 'operator', :AMPER, '&' }
-        describe('!') { it_behaves_like 'operator', :BANG, '!' }
-        describe('~') { it_behaves_like 'operator', :TILDE, '~' }
-        describe('^') { it_behaves_like 'operator', :HAT, '^' }
+        describe("&") { it_behaves_like 'operator', :AMPER, "&" }
+        describe("!") { it_behaves_like 'operator', :BANG, "!" }
+        describe("~") { it_behaves_like 'operator', :TILDE, "~" }
+        describe("^") { it_behaves_like 'operator', :HAT, "^" }
         %w[ | << >> ].each do |op|
           describe(op) { it_behaves_like 'operator', :BITWISEOP, op }
         end
       end
 
       describe 'logical' do
-        describe('?') { it_behaves_like 'operator', :QUESTION, '?' }
+        describe("?") { it_behaves_like 'operator', :QUESTION, "?" }
         %w[ && || ].each do |op|
           describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
         end
@@ -168,17 +168,17 @@ describe Rubby::Lexer do
       end
 
       describe 'others' do
-        describe('.') { it_behaves_like 'operator', :DOT, '.' }
+        describe(".") { it_behaves_like 'operator', :DOT, "." }
         describe('::') { it_behaves_like 'operator', :CONSTINDEXOP, '::' }
-        describe('[')  { it_behaves_like 'operator', :LSQUARE, '[' }
-        describe(']')  { it_behaves_like 'operator', :RSQUARE, ']' }
-        describe('(')  { it_behaves_like 'operator', :LPAREN, '(' }
-        describe(')')  { it_behaves_like 'operator', :RPAREN, ')' }
-        describe('{')  { it_behaves_like 'operator', :LCURLY, '{' }
-        describe('{')  { it_behaves_like 'operator', :LCURLY, '{' }
-        describe(',')  { it_behaves_like 'operator', :COMMA, ',' }
-        describe('@')  { it_behaves_like 'operator', :AT, '@' }
-        describe(':')  { it_behaves_like 'operator', :COLON, ':' }
+        describe("[")  { it_behaves_like 'operator', :LSQUARE, "[" }
+        describe("]")  { it_behaves_like 'operator', :RSQUARE, "]" }
+        describe("(")  { it_behaves_like 'operator', :LPAREN, "(" }
+        describe(")")  { it_behaves_like 'operator', :RPAREN, ")" }
+        describe("{")  { it_behaves_like 'operator', :LCURLY, "{" }
+        describe("{")  { it_behaves_like 'operator', :LCURLY, "{" }
+        describe(",")  { it_behaves_like 'operator', :COMMA, "," }
+        describe("@")  { it_behaves_like 'operator', :AT, "@" }
+        describe(":")  { it_behaves_like 'operator', :COLON, ":" }
 
         describe('->')   { it_behaves_like 'operator', :PROC, '->' }
         describe('&>')   { it_behaves_like 'operator', :BLOCK, '&>' }
@@ -259,7 +259,7 @@ describe Rubby::Lexer do
       let(:old_depth) { 0 }
       let(:new_depth) { 0 }
       before { environment.current_indent_level = old_depth / 2 }
-      subject { environment.indent_token_for("\n#{' ' * new_depth}").flatten }
+      subject { environment.indent_token_for("\n#{" " * new_depth}").flatten }
 
       shared_examples_for 'token' do |*args|
         token = args.first || :INDENT

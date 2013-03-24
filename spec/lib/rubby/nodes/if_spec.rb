@@ -9,7 +9,7 @@ describe Rubby::Nodes::If do
   it { should be_a(Rubby::Nodes::ControlFlow) }
 
   describe '#should_prefix?' do
-    let(:test) { ast_for('1').first }
+    let(:test) { ast_for("1").first }
     subject { node.should_prefix? }
     context 'contents contains only one expression' do
       let(:contents) { ast_for('puts "Great Scott!"') }

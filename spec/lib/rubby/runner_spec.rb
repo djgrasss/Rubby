@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Rubby::Runner do
-  let(:source) { '1' }
+  let(:source) { "1" }
   let(:runner) { Rubby::Runner.new(source) }
   subject { runner }
   it { should respond_to(:source) }

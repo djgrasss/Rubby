@@ -28,11 +28,11 @@ module Rubby::Nodes
 
     private
     def is_private?
-      modifiers.include? '_'
+      modifiers.include? "_"
     end
 
     def is_class?
-      modifiers.include? '@'
+      modifiers.include? "@"
     end
 
     def basic_method_name

@@ -28,7 +28,7 @@ module Rubby::Nodes
             fetch_call = Call.new('fetch', [name_symbol, node.default])
             kw_arg_splat = Call.new(KW_ARG_SPLAT, [])
             index = CallChain.new(kw_arg_splat, fetch_call)
-            assign = BinaryOp.new('=', name, index)
+            assign = BinaryOp.new("=", name, index)
             assign.parent = parent
             parent.contents ||= []
             parent.contents.push assign

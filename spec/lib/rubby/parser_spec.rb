@@ -23,7 +23,7 @@ describe Rubby::Parser do
     end
 
     describe 'Integer literals' do
-      describe('1') { it_behaves_like 'node', Rubby::Nodes::Integer, 1 }
+      describe("1") { it_behaves_like 'node', Rubby::Nodes::Integer, 1 }
       describe('10') { it_behaves_like 'node', Rubby::Nodes::Integer, 10 }
       describe('99') { it_behaves_like 'node', Rubby::Nodes::Integer, 99 }
       describe('1234567890123456789') { it_behaves_like 'node', Rubby::Nodes::Integer, 1234567890123456789 }

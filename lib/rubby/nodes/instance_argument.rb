@@ -14,7 +14,7 @@ module Rubby::Nodes
 
     def inject_into_parent
       if parent.is_a? Method
-        assign = BinaryOp.new('=', InstanceVariable.new("@#{name}"), Call.new(name, []))
+        assign = BinaryOp.new("=", InstanceVariable.new("@#{name}"), Call.new(name, []))
         assign.parent = parent
         parent.contents ||= []
         parent.contents.push assign

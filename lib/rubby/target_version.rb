@@ -4,8 +4,9 @@ module Rubby
 
     attr_accessor :version
 
-    def initialize(version=nil)
-      @version = version || "#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}"
+    def initialize(v=nil)
+      @version = v
+      @version = "#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}" if v.nil? || v == ""
     end
 
     def r18?
@@ -25,11 +26,11 @@ module Rubby
     end
 
     def minor
-      version.split('.')[2].to_i
+      version.split(".")[2].to_i
     end
 
     def patch
-      version.split('p')[1].to_i
+      version.split("p")[1].to_i
     end
 
     def to_s

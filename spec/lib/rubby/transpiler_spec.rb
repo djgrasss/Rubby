@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Rubby::Transpiler do
   let(:tree) { stub(:tree) }
-  let(:source) { '1' }
+  let(:source) { "1" }
   let(:runner) { Rubby::Transpiler.new(source) }
   before { runner.stub(:tree => tree) }
   subject { runner }

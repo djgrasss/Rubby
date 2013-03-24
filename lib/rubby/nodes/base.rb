@@ -30,7 +30,7 @@ module Rubby::Nodes
       end
     end
 
-    def walk(child=children, runner)
+    def walk(child, runner)
       if child.is_a? ::Array
         child.each { |c| walk(c, runner) }
       else
