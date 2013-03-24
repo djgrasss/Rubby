@@ -39,6 +39,7 @@ module Rubby
       clause('constant')                 { |e| e }
       clause('symbol')                   { |e| e }
       clause('hash')                     { |e| e }
+      clause('index')                    { |e| e }
       clause('array')                    { |e| e }
       clause('call')                     { |e| e }
       clause('call_chain')               { |e| e }
@@ -62,10 +63,15 @@ module Rubby
       clause('call_chain')               { |e| e }
       clause('block')                    { |e| e }
       clause('expr_group')               { |e| e }
+      clause('index')                    { |e| e }
     end
 
     production(:expr_group) do
       clause('left_paren expression right_paren') { |_,e,_| Group.new(e) }
+    end
+
+    production(:index) do
+      clause('chainable_expression LSQUARE WHITE? chainable_expression WHITE? RSQUARE') { |e0,_,_,e1,_,_| Index.new('[]', e0, e1) }
     end
 
     production(:class_without_contents) do
@@ -244,7 +250,7 @@ module Rubby
 
     production(:call_arguments) do
       clause('WHITE binary_operation') { |_,e| [e] }
-      clause('WHITE? expression_list') { |_,e| e }
+      clause('WHITE expression_list') { |_,e| e }
       clause('left_paren expression_list right_paren') { |_,e,_| e }
       clause('left_paren right_paren') { |_,_| [] }
     end

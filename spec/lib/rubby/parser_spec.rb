@@ -105,6 +105,10 @@ describe Rubby::Parser do
       describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
 
+      describe('foo[1]') { it_behaves_like 'node', Rubby::Nodes::Index }
+      describe('foo[:foo]') { it_behaves_like 'node', Rubby::Nodes::Index }
+      describe('foo[bar[baz]]') { it_behaves_like 'node', Rubby::Nodes::Index }
+
       describe('foo &> 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo &> bar') { it_behaves_like 'node', Rubby::Nodes::Call }
 
