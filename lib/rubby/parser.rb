@@ -13,6 +13,7 @@ module Rubby
     production(:default) do
       clause('statements') { |e| e }
       clause('statements expression') { |e0,e1| e0 + [e1] }
+      clause('comment')  { |e| [e] }
       clause('expression') { |e| [e] }
     end
 
@@ -23,6 +24,10 @@ module Rubby
 
     production(:statement) do
       clause('WHITE? expression WHITE? NEWLINE') { |_,e,_,_| e }
+    end
+
+    production(:comment) do
+      clause("COMMENT NEWLINE")                  { |e,_| Comment.new(e) }
     end
 
     production(:expression) do
@@ -43,7 +48,7 @@ module Rubby
       clause('binary_operation')         { |e| e }
       clause('expr_group')               { |e| e }
       clause('explicit_return')          { |e| e }
-      clause('control_flow')     { |e| e }
+      clause('control_flow')             { |e| e }
     end
 
     production(:chainable_expression) do
