@@ -5,5 +5,8 @@ module Rubby::Nodes
       [ "#{name}: #{default.to_ruby(runner).first}" ]
     end
 
+    def is_keyword?
+      true
+    end
   end
 end

@@ -4,12 +4,6 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
-    def self.parse(token, opts = {})
-      ast = super
-      ast.each(&:walk)
-      ast
-    end
-
     production(:default) do
       clause('statements') { |e| e }
       clause('statements expression') { |e0,e1| e0 + [e1] }
@@ -305,12 +299,23 @@ module Rubby
       clause('splat_argument') { |e| e }
       clause('instance_argument') { |e| e }
       clause('argument_with_defaults') { |e| e }
-      clause('keyword_argument') { |e| e }
+      # clause('keyword_argument_list') { |e| e }
+    end
+
+    production(:argument_list_intermediate) do
+      clause('argument')  { |e| [e] }
+      clause('argument_list list_sep argument') { |e0,_,e1| e0 + [e1] }
     end
 
     production(:argument_list) do
-      clause('argument')  { |e| [e] }
-      clause('argument_list list_sep argument') { |e0,_,e1| e0 + [e1] }
+      clause('argument_list_intermediate list_sep keyword_argument_list') { |e0,_,e1| e0 + [e1] }
+      clause('keyword_argument_list') { |e0| [e0] }
+      clause('argument_list_intermediate') { |e0| e0 }
+    end
+
+    production(:keyword_argument_list) do
+      clause('keyword_argument') { |e| KeywordArgumentSet.new([e]) }
+      clause('keyword_argument_list list_sep keyword_argument') { |e0,_,e1| e0.contents << e1; e0 }
     end
 
     production(:method_modifier) do

@@ -5,6 +5,16 @@ Feature: Method definition
     And I transpile it
     Then I should get 'def my_method; end'
 
+  Scenario: I define an empty method with an instance argument
+    When I enter 'my_method -> (@foo)'
+    And I transpile it
+    Then I should get
+    """
+    def my_method(foo)
+      @foo = foo
+    end
+    """
+
   Scenario: I define an empty method which takes an argument
     When I enter 'my_method -> (arg1)'
     And I transpile it
@@ -26,12 +36,17 @@ Feature: Method definition
     And I transpile it
     Then I should get 'def my_method(foo: 1, bar: nil); end'
 
-  @todo
   Scenario: I define an empty method which takes keyword arguments on Ruby 1.9
     Given I am targetting Ruby 1.9
     When I enter 'my_method -> (foo: 1, bar: nil)'
     And I transpile it
-    Then I should get 'some amazing solution'
+    Then I should get
+    """
+    def my_method(_keyword_args={})
+      foo = _keyword_args.fetch(:foo, 1)
+      bar = _keyword_args.fetch(:bar, nil)
+    end
+    """
 
   Scenario: I define a method with an inline expression and no arguments
     When I enter 'my_method -> foo'

@@ -1,7 +1,7 @@
 module Rubby::Nodes
   class InstanceArgument < Argument
 
-    def walk
+    def walk(*args)
       super
       inject_into_parent
     end
