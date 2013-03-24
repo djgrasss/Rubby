@@ -20,8 +20,4 @@ describe Rubby::Nodes::Base do
       example { expect { subject }.to raise_error(Rubby::Exceptions::OverrideMePlease) }
     end
   end
-
-  describe '#walk' do
-    pending
-  end
 end
