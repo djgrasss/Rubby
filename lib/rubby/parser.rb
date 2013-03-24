@@ -153,11 +153,26 @@ module Rubby
       clause('COLON WHITE?') { |_,_| }
     end
 
-    production(:hash_identifier, 'IDENTIFIER') { |e| e }
+    production(:hash_normal_identifier) do
+      clause('STRING')           { |e| e }
+      clause('CONSTANT')         { |e| e }
+      clause('IDENTIFIER')       { |e| e }
+      clause('COLON IDENTIFIER') { |_,e| e }
+    end
+
+    production(:hash_numerical_identifier) do
+      clause('integer')          { |e| e }
+      clause('float')            { |e| e }
+    end
+
+    production(:hash_identifier_expression) do
+      clause('expr_group') { |e| e }
+    end
 
     production(:hash_element) do
-      clause('hash_identifier hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
-      clause('expression hash_sep expression') { |e0,_,e1| HashElement.new(e0,e1) }
+      clause('hash_normal_identifier hash_sep expression') { |e0,_,e1| HashElement.new(Symbol.new(SimpleString.new(e0)),e1) }
+      clause('hash_numerical_identifier hash_sep expression') { |e0,_,e1| HashElement.new(e0,e1) }
+      clause('hash_identifier_expression hash_sep expression') { |e0,_,e1| HashElement.new(e0,e1) }
     end
 
     production(:hash_element_list) do

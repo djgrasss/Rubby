@@ -64,6 +64,7 @@ describe Rubby::Parser do
       describe('foo: 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('(foo baz): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1}') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
@@ -80,9 +81,7 @@ describe Rubby::Parser do
       describe('foo *bar') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo *bar,*baz') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo {bar: 1, baz: 2}') { it_behaves_like 'node', Rubby::Nodes::Call }
-      disabled "until I figure out why my precedence settings aren't working as expected" do
-        describe('foo bar: 1, baz: 2') { it_behaves_like 'node', Rubby::Nodes::Call }
-      end
+      describe('foo bar: 1, baz: 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
