@@ -5,7 +5,6 @@ Feature: Method definition
     And I transpile it
     Then I should get 'def my_method; end'
 
-  @todo
   Scenario: I define an empty method which takes an argument
     When I enter 'my_method -> (arg1)'
     And I transpile it
