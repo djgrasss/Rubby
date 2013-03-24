@@ -63,7 +63,6 @@ describe Rubby::Parser do
     describe 'Hash literals' do
       describe('foo: 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
-      describe(':foo: 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1}') { it_behaves_like 'node', Rubby::Nodes::Hash }
