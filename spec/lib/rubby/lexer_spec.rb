@@ -80,10 +80,10 @@ describe Rubby::Lexer do
         example('value') { expect(subject[0].value).to eq(val) } if val
       end
 
-      describe(%q['hello']) { it_behaves_like 'string', 'hello' }
-      describe(%q['hello \'world\'']) { it_behaves_like 'string', "hello 'world'" }
-      describe(%q["hello"]) { it_behaves_like 'string', 'hello' }
-      describe(%q["hello \"world\""]) { it_behaves_like 'string', 'hello "world"' }
+      describe(%q['hello']) { it_behaves_like 'string', %q['hello'] }
+      describe(%q['hello \'world\'']) { it_behaves_like 'string', %q['hello \'world\''] }
+      describe(%q["hello"]) { it_behaves_like 'string', %q["hello"] }
+      describe(%q["hello \"world\""]) { it_behaves_like 'string', %q["hello \"world\""] }
 
       describe 'String Interpolation' do
         shared_examples_for 'interpolated_string' do |*args|
@@ -106,7 +106,7 @@ describe Rubby::Lexer do
         describe(%q["hello #{foo} world"]) { it_behaves_like 'interpolated_string' }
         describe(%q["#{foo}"]) { it_behaves_like 'interpolated_string' }
 
-        describe(%q['hello #{foo} world']) { it_behaves_like 'string', 'hello #{foo} world' }
+        describe(%q['hello #{foo} world']) { it_behaves_like 'string', %q['hello #{foo} world'] }
       end
     end
 
@@ -187,6 +187,7 @@ describe Rubby::Lexer do
         describe('-> (') { it_behaves_like 'operator', :PROCWITHARGS, '->' }
         describe('&> (') { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
         describe('<-')   { it_behaves_like 'operator', :RETURN, '<-' }
+        describe('o_O')   { it_behaves_like 'operator', :RAISE, 'o_O' }
       end
     end
 

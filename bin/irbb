@@ -4,16 +4,37 @@ require 'rubby'
 
 def repl
   loop do
-    print prompt
-    result = Rubby.interpret(gets)
+    line = collect_lines
+    begin
+      result = Rubby.interpret(line)
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace.join("\n")
+    end
     puts " => %s" % result.inspect
   end
 end
 
-def prompt
-  '>> '
+def collect_lines(multiline=false)
+  print prompt(multiline)
+  line = gets
+  unless line
+    puts "Exiting Rubby REPL"
+    exit 0
+  end
+  line = line.chomp
+  if line[-1] == "\\"
+    line = line[0..-2] + "\n"
+    line += collect_lines(true)
+  end
+  line + "\n"
+end
+
+def prompt(multiline=false)
+  multiline ? '>| ' :  '>> '
 end
 
 puts "Rubby version #{Rubby::VERSION}, starting REPL"
+puts "  use '\\' on the end of line for multiline input."
 repl
 

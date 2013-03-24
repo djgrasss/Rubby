@@ -33,8 +33,8 @@ describe Rubby::Parser do
     end
 
     describe 'String literals' do
-      describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
-      describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, 'foo' }
+      describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, '"foo"' }
+      describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, "'foo'" }
       describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
     end
 
@@ -156,6 +156,7 @@ describe Rubby::Parser do
     describe 'expressions' do
       describe('(1)')   { it_behaves_like 'node', Rubby::Nodes::Group }
       describe('<- 1')  { it_behaves_like 'node', Rubby::Nodes::ExplicitReturn }
+      describe('o_O "foo"') { it_behaves_like 'node', Rubby::Nodes::Call }
     end
 
     describe 'unary operations' do

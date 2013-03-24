@@ -6,7 +6,6 @@ require 'rubby/parser'
 require 'rubby/runner'
 require 'rubby/target_version'
 require 'rubby/transpiler'
-require 'rubby/interpreter'
 require 'rubby/rubby_loader'
 
 module Rubby

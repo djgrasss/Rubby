@@ -57,6 +57,7 @@ module Rubby
         keyword.upcase.to_sym
       end
     end
+    rule(/o_O/) { [ :RAISE, 'o_O' ] }
 
     rule /[a-z_][a-zA-Z0-9_]*/, :default do |e|
       [ :IDENTIFIER, e ]
@@ -86,19 +87,19 @@ module Rubby
 
     rule /'/, :default do
       push_state :simple_string
-      [ :STRING, '' ]
+      [ :STRING, "'" ]
     end
     rule /(\\'|[^'])*/, :simple_string do |e|
-      [ :STRING, e.gsub(/\\'/, "'") ]
+      [ :STRING, e ]
     end
     rule /'/, :simple_string do
       pop_state
-      [ :STRING, '' ]
+      [ :STRING, "'" ]
     end
 
     rule /"/, :default do
       push_state :complex_string
-      [ :STRING, '' ]
+      [ :STRING, '"' ]
     end
     rule /\#\{/, :complex_string do
       push_state :default
@@ -111,14 +112,14 @@ module Rubby
       [ :INTERPOLATEEND ]
     end
     rule /\\"/, :complex_string do |e|
-      [ :STRING, '"' ]
+      [ :STRING, '\"' ]
     end
     rule /[^"]/, :complex_string do |e|
       [ :STRING, e ]
     end
     rule /"/, :complex_string do
       pop_state
-      [ :STRING, '' ]
+      [ :STRING, '"' ]
     end
 
     rule(/\*\*/) { [ :EXPO, '**' ] }

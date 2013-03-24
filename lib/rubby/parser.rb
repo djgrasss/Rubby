@@ -217,7 +217,10 @@ module Rubby
       clause('INDENT statement expression OUTDENT') { |_,e0,e1,_| [e0] + [e1] }
     end
 
-    production(:call_identifier, 'method_identifier') { |e| e }
+    production(:call_identifier) do
+      clause('method_identifier') { |e| e }
+      clause('RAISE') { |_| 'raise' }
+    end
 
     production(:call_arguments) do
       clause('WHITE binary_operation') { |_,e| [e] }

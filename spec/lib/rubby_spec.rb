@@ -25,27 +25,9 @@ describe Rubby do
       subject.transpile(source)
     end
   end
-
-  describe '.interpret' do
-    it 'creates a new Interpreter' do
-      Rubby::Interpreter.should_receive(:new).with(source,nil).and_return(runner)
-      subject.interpret(source)
-    end
-
-    it 'runs the transpiler' do
-      Rubby::Interpreter.stub(:new => runner)
-      runner.should_receive(:process)
-      subject.interpret(source)
-    end
-  end
 end
 
 describe Rubby::Transpiler do
   subject { Rubby::Transpiler.new('') }
-  it_should_behave_like 'Runner'
-end
-
-describe Rubby::Interpreter do
-  subject { Rubby::Interpreter.new('') }
   it_should_behave_like 'Runner'
 end
