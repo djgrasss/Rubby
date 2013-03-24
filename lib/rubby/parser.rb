@@ -17,6 +17,7 @@ module Rubby
     end
 
     production(:statement) do
+      clause('NEWLINE') { |_| Swallow.new }
       clause('WHITE? expression WHITE? NEWLINE') { |_,e,_,_| e }
     end
 

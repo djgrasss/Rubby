@@ -28,7 +28,7 @@ Features required for 1.0 release:
    - Regular expressions (X)
    - Methods (✓)
    - Standard operators (✓)
-   - Keywords (partial)
+   - Keywords (✓)
  + Parser
    - Integers (✓)
    - Floats (✓)

@@ -36,7 +36,7 @@ module Rubby::Nodes
     end
 
     def basic_method_name
-      name.gsub(MODIFIERS,'')
+      name.gsub(/@/,'')
     end
 
     def method_name

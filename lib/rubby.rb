@@ -19,7 +19,8 @@ module Rubby
     Kernel.eval(transpile(source,version), TOPLEVEL_BINDING)
   end
 
-  def transpile_file(source, destination = source.gsub(/\.rbb$/, '.rb'), version=nil)
+  def transpile_file(source, destination=nil, version=nil)
+    destination = source.gsub(/\.rbb$/, '.rb') unless destination
     File.open(source, "r") do |src|
       begin
         File.open(destination, "w") do |dest|
