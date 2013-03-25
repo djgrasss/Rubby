@@ -5,10 +5,10 @@ module Rubby
     include ::Rubby::Nodes
 
     production(:default) do
-      clause('statements') { |e| e }
-      clause('statements expression') { |e0,e1| e0 + [e1] }
-      clause('comment')  { |e| [e] }
-      clause('expression') { |e| [e] }
+      clause('statements') { |e| Root.new(e) }
+      clause('statements expression') { |e0,e1| Root.new(e0 + [e1]) }
+      clause('comment')  { |e| Root.new([e]) }
+      clause('expression') { |e| Root.new([e]) }
     end
 
     production(:statements) do

@@ -12,9 +12,9 @@ module Rubby::Nodes
       end
     end
 
-    def walk (walker, runner)
-      # Not calling super as children are too simple
+    def modify_ast(runner)
       inject_into_parent(runner)
+      false
     end
 
     private

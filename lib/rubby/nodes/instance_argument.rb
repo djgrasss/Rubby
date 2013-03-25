@@ -1,13 +1,12 @@
 module Rubby::Nodes
   class InstanceArgument < Argument
 
-    def walk(*args)
-      super
-      inject_into_parent
-    end
-
     def to_ruby(runner)
       [ name ]
+    end
+
+    def modify_ast(runner)
+      inject_into_parent
     end
 
     private

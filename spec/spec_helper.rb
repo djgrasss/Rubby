@@ -13,7 +13,7 @@ module ExampleHelpers
   end
 
   def ast_for(source)
-    Rubby::Parser.parse(tokens_for(source))
+    Rubby::Parser.parse(tokens_for(source)).root.contents
   end
 end
 

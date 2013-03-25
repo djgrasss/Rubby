@@ -31,13 +31,19 @@ module Rubby::Nodes
     end
 
     def walk(child, runner)
-      if child.is_a? ::Array
-        child.each { |c| walk(c, runner) }
+      if modify_ast(runner)
+        if child.is_a? ::Array
+          child.each { |c| walk(c, runner) }
+        else
+          child.walk(child.children, runner) if child.respond_to? :walk
+        end
+        true
       else
-        child.walk(child.children, runner) if child.respond_to? :walk
+        false
       end
-      true
     end
+
+    def modify_ast(runner); end
 
     private
 

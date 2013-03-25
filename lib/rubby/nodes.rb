@@ -1,4 +1,5 @@
 require 'rubby/nodes/base'
+require 'rubby/nodes/root'
 require 'rubby/nodes/value'
 require 'rubby/nodes/integer'
 require 'rubby/nodes/float'

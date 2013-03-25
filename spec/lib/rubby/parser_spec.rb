@@ -4,7 +4,7 @@ describe Rubby::Parser do
   it { should be_a(RLTK::Parser) }
 
   describe 'Nodes' do
-    subject { parsed.first }
+    subject { parsed.contents.first }
     let(:lexed) { Rubby::Lexer.lex(source) }
     let(:parsed) { Rubby::Parser.parse(lexed) }
     let(:source) { example.example_group.description }
