@@ -3,7 +3,7 @@
 .bundle
 .config
 .yardoc
-Gemfile.lock
+.rbx
 InstalledFiles
 _yardoc
 coverage
