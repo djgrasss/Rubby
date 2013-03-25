@@ -25,7 +25,7 @@ Features required for 1.0 release:
    - Floats (✓)
    - Strings (✓)
    - Symbols (✓)
-   - Regular expressions (X)
+   - Regular expressions
    - Methods (✓)
    - Standard operators (✓)
    - Keywords (✓)
@@ -34,7 +34,7 @@ Features required for 1.0 release:
    - Floats (✓)
    - Strings (✓)
    - Symbols (✓)
-   - Regular expressions (X)
+   - Regular expressions
    - Method calls (✓)
    - Blocks (✓)
    - Class definitions (✓)
@@ -43,20 +43,40 @@ Features required for 1.0 release:
      - Splat arguments (✓)
      - Default arguments (✓)
      - Keyword arguments (✓)
+     - Fix ambiguous parsing of method arguments in some sitations.
  + Transpiler
- + Interpreter
+   - Ruby output formatter (✓)
+   - Class/Module tidying
+ + Interpreter (✓)
  + Polyglot interface (https://github.com/cjheath/polyglot) (✓)
+ + REPL (✓)
 
 Rubby is in it's infancy, pull requests are greatly appreciated.
 
-## "Removed" features
+## Usage
 
-Rubby provides no syntactical way of accessing some Ruby language features,
-although those with even rudimentary metaprogramming skills can work around
-this should they desire.  Don't send PR's for these features, they won't be
-accepted:
+### Require
 
- + Class and instance variable access. Use accessors instead (yes, I know this is tricky. I'm working on it).
+Rubby defines a polyglot hook so that you can require `.rbb` files straight from your Ruby projects.
+
+### Transpiler
+
+You can transpile Rubby code into Ruby:
+
+```shell
+$ rubby my_amazing_rubby_script.rbb [optional_ruby_file_name.rb]
+```
+
+### REPL
+
+Rubby has a (very basic) REPL:
+
+```shell
+$ irbb
+Rubby version 0.1.2, starting REPL
+use '\' on the end of line for multiline input.
+>> 
+```
 
 ## Syntax examples
 
@@ -254,6 +274,28 @@ class Cat
     puts "Cat cannot open #{what}"
   end
 end
+```
+
+#### Extras
+
+Shorter raise syntax:
+
+```rubby
+  o_O "WTF!?"
+```
+
+```ruby
+  raise "WTF!?"
+```
+
+Explicit return syntax:
+
+```rubby
+  <- "b00m!"
+```
+
+```ruby
+  return "b00m!"
 ```
 
 ## Installation
