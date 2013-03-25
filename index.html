@@ -1,38 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-
     <title>Rubby by jamesotron</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
-
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/jamesotron/Rubby">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/jamesotron/Rubby/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/jamesotron/Rubby/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <header>
-      <div class="container">
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Rubby</h1>
+          <p>Rubby is a little language on top of Ruby.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/jamesotron">jamesotron</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
         <h1>Rubby</h1>
-        <h2>Rubby is a little language on top of Ruby.</h2>
 
-        <section id="downloads">
-          <a href="https://github.com/jamesotron/Rubby/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/jamesotron/Rubby/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/jamesotron/Rubby" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+<p>Rubby is a little language on top of Ruby. Rubby has a simpler,
+more concise syntax than Ruby, but gives you access to most of Ruby's
+primitives and capabilities. Rubby is billed as "Ruby; the good parts" and
+as such is an opinionated language, it does it's best to give you access to
+the expressiveness and flexibility of Ruby whilst getting rid of some of the
+unnecessary syntax and removing some of Ruby's language features which may
+be considered traps for young players.</p>
 
-    <div class="container">
-      <section id="main_content">
-        <h1>Rubby</h1>
-
-<p>Rubby is a little language on top of Ruby. Rubby has a simpler, more concise syntax than Ruby, but gives you access to most of Ruby's primitives and capabilities. Rubby is billed as "Ruby; the good parts" and as such is an opinionated language, it does it's best to give you access to the expressiveness and flexibility of Ruby whilst getting rid of some of the unnecessary syntax and removing some of Ruby's language features which may be considered traps for young players.</p>
-
-<p>Rubby consists of a transpiler, which outputs idiomatic Ruby, and an "interpreter" which executes Rubby as if it was the corresponding Ruby code.</p>
+<p>Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
+"interpreter" which executes Rubby as if it was the corresponding Ruby code.</p>
 
 <h2>Status</h2>
 
@@ -51,7 +68,7 @@
 <li>Floats (✓)</li>
 <li>Strings (✓)</li>
 <li>Symbols (✓)</li>
-<li>Regular expressions (X)</li>
+<li>Regular expressions</li>
 <li>Methods (✓)</li>
 <li>Standard operators (✓)</li>
 <li>Keywords (✓)</li>
@@ -64,7 +81,7 @@
 <li>Floats (✓)</li>
 <li>Strings (✓)</li>
 <li>Symbols (✓)</li>
-<li>Regular expressions (X)</li>
+<li>Regular expressions</li>
 <li>Method calls (✓)</li>
 <li>Blocks (✓)</li>
 <li>Class definitions (✓)</li>
@@ -75,7 +92,7 @@
 <li>Splat arguments (✓)</li>
 <li>Default arguments (✓)</li>
 <li>Keyword arguments (✓)</li>
-<li>Fix ambiguous parsing of method arguments in some situations.</li>
+<li>Fix ambiguous parsing of method arguments in some sitations.</li>
 </ul>
 </li>
 </ul>
@@ -84,13 +101,36 @@
 
 <ul>
 <li>Ruby output formatter (✓)</li>
-<li>Class/Module tidying (X)</li>
+<li>Class/Module tidying</li>
 </ul>
 </li>
 <li>Interpreter (✓)</li>
 <li>Polyglot interface (<a href="https://github.com/cjheath/polyglot">https://github.com/cjheath/polyglot</a>) (✓)</li>
 <li>REPL (✓)</li>
 </ul><p>Rubby is in it's infancy, pull requests are greatly appreciated.</p>
+
+<h2>Usage</h2>
+
+<h3>Require</h3>
+
+<p>Rubby defines a polyglot hook so that you can require <code>.rbb</code> files straight from your Ruby projects.</p>
+
+<h3>Transpiler</h3>
+
+<p>You can transpile Rubby code into Ruby:</p>
+
+<pre lang="shell"><code>$ rubby my_amazing_rubby_script.rbb [optional_ruby_file_name.rb]
+</code></pre>
+
+<h3>REPL</h3>
+
+<p>Rubby has a (very basic) REPL:</p>
+
+<pre lang="shell"><code>$ irbb
+Rubby version 0.1.2, starting REPL
+use '\' on the end of line for multiline input.
+&gt;&gt; 
+</code></pre>
 
 <h2>Syntax examples</h2>
 
@@ -280,7 +320,7 @@ class Cat
 <pre lang="rubby"><code>  o_O "WTF!?"
 </code></pre>
 
-<div class="highlight"><pre>  <span class="k">raise</span> <span class="s2">"WTF?!"</span>
+<div class="highlight"><pre>  <span class="k">raise</span> <span class="s2">"WTF!?"</span>
 </pre></div>
 
 <p>Explicit return syntax:</p>
@@ -340,8 +380,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
-    </div>
 
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
