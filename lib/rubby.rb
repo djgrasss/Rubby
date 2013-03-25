@@ -11,20 +11,21 @@ require 'rubby/rubby_loader'
 module Rubby
   module_function
 
-  def transpile(source,version=nil)
-    Transpiler.new(source, version).process
+  def transpile(source,filename='STDIN', version=nil)
+    Transpiler.new(source, filename, version).process
   end
 
   def interpret(source, version=nil)
-    Kernel.eval(transpile(source,version), TOPLEVEL_BINDING)
+    Kernel.eval(transpile(source,'STDIN', version), TOPLEVEL_BINDING)
   end
 
   def transpile_file(source, destination=nil, version=nil)
     destination = source.gsub(/\.rbb$/, '.rb') unless destination
     File.open(source, "r") do |src|
       begin
+        ruby = transpile(src.read, src.path)
         File.open(destination, "w") do |dest|
-          dest.write(transpile(src.read) + "\n")
+          dest.write("#{ruby}\n")
         end
       rescue Errno::ENOENT => e
         $stderr.puts "Unable to open destination file: #{e.message}"

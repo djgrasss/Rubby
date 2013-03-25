@@ -7,6 +7,7 @@ end
 describe Rubby do
   let(:source) { stub(:source) }
   let(:runner) { stub(:runner, :process => nil) }
+  let(:filename) { __FILE__ }
 
   describe 'runner mock' do
     subject { runner }
@@ -15,14 +16,14 @@ describe Rubby do
 
   describe '.transpile' do
     it 'creates a new Transpiler' do
-      Rubby::Transpiler.should_receive(:new).with(source,nil).and_return(runner)
-      subject.transpile(source)
+      Rubby::Transpiler.should_receive(:new).with(source,filename,nil).and_return(runner)
+      subject.transpile(source, filename)
     end
 
     it 'runs the transpiler' do
       Rubby::Transpiler.stub(:new => runner)
       runner.should_receive(:process)
-      subject.transpile(source)
+      subject.transpile(source, filename)
     end
   end
 end

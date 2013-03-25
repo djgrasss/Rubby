@@ -4,5 +4,6 @@ module Rubby
     OverrideMePlease = Class.new(Base)
     Indent           = Class.new(Base)
     Inline           = Class.new(Base)
+    SyntaxError      = Class.new(Base)
   end
 end

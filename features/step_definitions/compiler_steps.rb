@@ -1,10 +1,14 @@
+Before do |scenario|
+  @feature_name = scenario.feature.name
+end
+
 When(/^I enter (?:['"])(.*?)(?:['"])$/) do |source|
   source << "\n" unless source[-1] == "\n"
   @source = source
 end
 
 When(/^I transpile it$/) do
-  @transpiler_output = Rubby.transpile(@source, @target_version)
+  @transpiler_output = Rubby.transpile(@source, @feature_name, @target_version)
 end
 
 Then(/^I should get (?:['"])(.*?)(?:['"])$/) do |what|

@@ -1,4 +1,4 @@
-#!/usr/bin/env rubby
+#!/usr/bin/env ruby
 
 require 'rubby'
 
@@ -8,7 +8,7 @@ def repl
     begin
       result = Rubby.interpret(line)
     rescue Exception => e
-      puts e.message
+      puts "#{e.class}: #{e.message}"
       puts e.backtrace.join("\n")
     end
     puts " => %s" % result.inspect

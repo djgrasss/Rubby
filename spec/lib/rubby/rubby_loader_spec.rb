@@ -34,7 +34,7 @@ describe Rubby::RubbyLoader do
 
     context 'when the file contains bad Rubby' do
       let(:filename) { File.expand_path('../../../fixtures/broken_loader.rbb', __FILE__) }
-      example { expect { subject }.to raise_error(RLTK::NotInLanguage) }
+      example { expect { subject }.to raise_error(Rubby::Exceptions::SyntaxError) }
     end
   end
 

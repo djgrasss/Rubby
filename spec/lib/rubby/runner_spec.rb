@@ -12,7 +12,7 @@ describe Rubby::Runner do
   describe '#tokens' do
     subject { runner.tokens }
     it 'lexes the source' do
-      Rubby::Lexer.should_receive(:lex).with(source)
+      Rubby::Lexer.should_receive(:lex).with(source, 'STDIN')
       subject
     end
   end

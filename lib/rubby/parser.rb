@@ -4,6 +4,14 @@ module Rubby
   class Parser < RLTK::Parser
     include ::Rubby::Nodes
 
+    def self.parse(tokens, opts={})
+      super
+    rescue RLTK::NotInLanguage => e
+      position = e.token.position
+      raise Rubby::Exceptions::SyntaxError,
+        "Unexpected token #{e.token.type} at #{position.file_name || "STDIN"}:#{position.line_number} [col #{position.line_offset}]"
+    end
+
     production(:default) do
       clause('statements') { |e| Root.new(e) }
       clause('statements expression') { |e0,e1| Root.new(e0 + [e1]) }

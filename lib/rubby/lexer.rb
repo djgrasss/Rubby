@@ -29,7 +29,7 @@ module Rubby
         match = /([\r\n]+)([ \t\f]*)/.match(str)
         newlines     = match[1].split('').group_by { |c| c == "\n" }.values.map(&:size).max || 0
         indent_chars = match[2].size
-        raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars" unless indent_chars % 2 == 0
+        raise ::Rubby::Exceptions::Indent, "Screwy indent of #{indent_chars} chars at " unless indent_chars % 2 == 0
         self.current_indent_level ||= 0
         new_indent_level = indent_chars / 2
         indent_change = new_indent_level - current_indent_level

@@ -1,14 +1,16 @@
 module Rubby
   class Runner
     attr_accessor :source
+    attr_accessor :filename
 
-    def initialize(source, target_version=nil)
+    def initialize(source, filename='STDIN', target_version=nil)
       self.source = source
+      self.filename = filename
       self.target = target_version
     end
 
     def tokens
-      @tokens ||= Rubby::Lexer.lex(source)
+      @tokens ||= Rubby::Lexer.lex(source, filename)
     end
 
     def tree
