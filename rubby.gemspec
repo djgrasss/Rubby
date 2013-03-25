@@ -22,7 +22,6 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency dep
   end
 
-  %w[polyglot rubby-rltk].each do |dep|
-    gem.add_dependency dep
-  end
+  gem.add_dependency 'polyglot'
+  gem.add_dependency 'rubby-rltk', '>= 7.0.1'
 end
