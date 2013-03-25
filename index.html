@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Rubby by jamesotron</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Rubby</h1>
+        <h2>Rubby is a little language on top of Ruby.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/jamesotron/Rubby/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/jamesotron/Rubby/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/jamesotron/Rubby" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>Rubby</h1>
+
+<p>Rubby is a little language on top of Ruby. Rubby has a simpler, more concise syntax than Ruby, but gives you access to most of Ruby's primitives and capabilities. Rubby is billed as "Ruby; the good parts" and as such is an opinionated language, it does it's best to give you access to the expressiveness and flexibility of Ruby whilst getting rid of some of the unnecessary syntax and removing some of Ruby's language features which may be considered traps for young players.</p>
+
+<p>Rubby consists of a transpiler, which outputs idiomatic Ruby, and an "interpreter" which executes Rubby as if it was the corresponding Ruby code.</p>
+
+<h2>Status</h2>
+
+<p><a href="https://travis-ci.org/jamesotron/Rubby"><img src="https://travis-ci.org/jamesotron/Rubby.png?branch=master" alt="Build Status"></a>
+<a href="https://gemnasium.com/jamesotron/Rubby"><img src="https://gemnasium.com/jamesotron/Rubby.png" alt="Dependency Status"></a>
+<a href="https://codeclimate.com/github/jamesotron/Rubby"><img src="https://codeclimate.com/github/jamesotron/Rubby.png" alt="Code Climate"></a></p>
+
+<p>Features required for 1.0 release:</p>
+
+<ul>
+<li>Lexer
+
+<ul>
+<li>Indent/dedent (✓)</li>
+<li>Integers (✓)</li>
+<li>Floats (✓)</li>
+<li>Strings (✓)</li>
+<li>Symbols (✓)</li>
+<li>Regular expressions (X)</li>
+<li>Methods (✓)</li>
+<li>Standard operators (✓)</li>
+<li>Keywords (✓)</li>
+</ul>
+</li>
+<li>Parser
+
+<ul>
+<li>Integers (✓)</li>
+<li>Floats (✓)</li>
+<li>Strings (✓)</li>
+<li>Symbols (✓)</li>
+<li>Regular expressions (X)</li>
+<li>Method calls (✓)</li>
+<li>Blocks (✓)</li>
+<li>Class definitions (✓)</li>
+<li>Module definitions (✓)</li>
+<li>Method definitions (✓)
+
+<ul>
+<li>Splat arguments (✓)</li>
+<li>Default arguments (✓)</li>
+<li>Keyword arguments (✓)</li>
+<li>Fix ambiguous parsing of method arguments in some situations.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Transpiler
+
+<ul>
+<li>Ruby output formatter (✓)</li>
+<li>Class/Module tidying (X)</li>
+</ul>
+</li>
+<li>Interpreter (✓)</li>
+<li>Polyglot interface (<a href="https://github.com/cjheath/polyglot">https://github.com/cjheath/polyglot</a>) (✓)</li>
+<li>REPL (✓)</li>
+</ul><p>Rubby is in it's infancy, pull requests are greatly appreciated.</p>
+
+<h2>Syntax examples</h2>
+
+<h3>Primitives:</h3>
+
+<h4>Comments:</h4>
+
+<pre lang="rubby"><code># I am a comment
+</code></pre>
+
+<h4>Integers</h4>
+
+<pre lang="rubby"><code>123    # decimal
+0x123  # hexidecimal
+0123   # octal
+0x101  # binary
+</code></pre>
+
+<h4>Floating point</h4>
+
+<pre lang="rubby"><code>1.23
+</code></pre>
+
+<h4>Strings</h4>
+
+<pre lang="rubby"><code>'foo'            # basic string with no special characters
+"foo\n"          # complex string, which can contain escaped characters
+"foo #{bar} baz" # complex string with interpolation
+</code></pre>
+
+<h4>Symbols</h4>
+
+<pre lang="rubby"><code>:foo              # simple symbol, which contain upper and lower case letters, numbers and underscores
+:"foo bar"        # complex symbol which can contain any string
+:"foo #{bar} baz" # complex symbol with interpolation
+</code></pre>
+
+<h4>Regular expressions</h4>
+
+<pre lang="rubby"><code>/^foo$/    # basic regular expression
+/^#{bar}$/ # regular expression with interpolation
+</code></pre>
+
+<h4>Arrays</h4>
+
+<pre lang="rubby"><code>[1,1.2,'foo',"foo",:foo]
+</code></pre>
+
+<h4>Hashes</h4>
+
+<pre lang="rubby"><code>foo: 1, 'bar': 2, 3: 4
+</code></pre>
+
+<p>Rubby will detect the Ruby environment and decide whether to output old fashioned (Ruby 1.8 style)
+hashes:</p>
+
+<div class="highlight"><pre><span class="p">{</span> <span class="ss">:foo</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'bar'</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="o">=&gt;</span> <span class="mi">4</span> <span class="p">}</span>
+</pre></div>
+
+<p>or the newer (Ruby &gt;= 1.9) syntax:</p>
+
+<div class="highlight"><pre><span class="p">{</span> <span class="ss">foo</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'bar'</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="o">=&gt;</span> <span class="mi">4</span> <span class="p">}</span>
+</pre></div>
+
+<p>This can be overridden by specifying the target version on the transpiler command line.</p>
+
+<h4>Defining methods</h4>
+
+<p>Methods are defined using the following format:</p>
+
+<pre><code>|modifiers|method name|-&gt; (arguments)
+</code></pre>
+
+<p>Method modifiers are <code>@</code> to indicate a class method and <code>_</code> to indicate a private method.</p>
+
+<pre lang="rubby"><code># an empty instance method
+my_method-&gt; (arg1, arg2)
+
+# an isntance method with contents
+my_second_method-&gt; (*args)
+  puts args.inspect
+
+# a private method
+_my_private_method-&gt; (*args)
+  args
+
+# a class method
+@my_class_method-&gt; (*args)
+  args
+
+# a private class method
+@_my_private_class_method-&gt; (*args)
+  args
+</code></pre>
+
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">);</span> <span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">my_second_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="n">args</span><span class="o">.</span><span class="n">inspect</span>
+<span class="k">end</span>
+
+<span class="kp">private</span>
+<span class="k">def</span> <span class="nf">my_private_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">args</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">my_class_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">args</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">my_private_class_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">args</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Blocks</h4>
+
+<p>Blocks are passed using the special <code>&amp;&gt;</code> operator. Blocks can take arguments
+(specified within braces <code>()</code> after the <code>&amp;&gt;</code>) and either a single expression
+on the same line, or multiple expressions indented below:</p>
+
+<pre lang="rubby"><code>(1..5).each &amp;&gt; (i) puts i  # single expression block with argument
+
+(1..5).chunk &amp;&gt; (i)
+  if i.prime?
+    i**i
+  else
+    i
+</code></pre>
+
+<div class="highlight"><pre><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">i</span> <span class="p">}</span>
+
+<span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">prime?</span>
+    <span class="n">i</span> <span class="o">**</span> <span class="n">i</span>
+  <span class="k">else</span>
+    <span class="n">i</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Modules</h4>
+
+<pre lang="rubby"><code>module Foo # simple module with no contents
+
+module Bar
+  bar-&gt;
+    puts "raise the bar!"
+</code></pre>
+
+<div class="highlight"><pre><span class="no">Foo</span> <span class="o">=</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span>
+
+<span class="k">module</span> <span class="nn">Bar</span>
+  <span class="k">def</span> <span class="nf">bar</span>
+    <span class="nb">puts</span> <span class="s2">"raise the bar!"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Classes</h4>
+
+<pre lang="rubby"><code>class Foo             # simple class with no contents
+class Foo &lt; Exception # simple class, which inherits from Exception with no contents
+
+class Cat
+  @open-&gt;(what)
+    puts "Cat cannot open #{what}"
+</code></pre>
+
+<div class="highlight"><pre><span class="no">Foo</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span>
+<span class="no">Foo</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Exception</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Cat</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">open</span><span class="p">(</span><span class="n">what</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="s2">"Cat cannot open </span><span class="si">#{</span><span class="n">what</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h4>Extras</h4>
+
+<p>Shorter raise syntax:</p>
+
+<pre lang="rubby"><code>  o_O "WTF!?"
+</code></pre>
+
+<div class="highlight"><pre>  <span class="k">raise</span> <span class="s2">"WTF?!"</span>
+</pre></div>
+
+<p>Explicit return syntax:</p>
+
+<pre lang="rubby"><code>  &lt;- "b00m!"
+</code></pre>
+
+<div class="highlight"><pre>  <span class="k">return</span> <span class="s2">"b00m!"</span>
+</pre></div>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight"><pre><span class="n">gem</span> <span class="s1">'rubby'</span>
+</pre></div>
+
+<p>And then execute:</p>
+
+<pre lang="shell"><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre lang="shell"><code>$ gem install rubby
+</code></pre>
+
+<h2>Copyright</h2>
+
+<p>Copyright (c) 2013 <a href="http://sociable.co.nz">Sociable Limited</a> and named contributors:</p>
+
+<h3>Contributors</h3>
+
+<ul>
+<li><a href="https://github.com/jamesotron">James Harton</a></li>
+<li><a href="https://github.com/parndt">Philip Arndt</a></li>
+</ul><h2>License</h2>
+
+<h3>MIT License</h3>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-4396183-15");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
