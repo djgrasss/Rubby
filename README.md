@@ -1,6 +1,6 @@
 # Rubby
 
-Rubby (ru bub ee) is a little language on top of Ruby. Rubby has a simpler,
+Rubby is a little language on top of Ruby. Rubby has a simpler,
 more concise syntax than Ruby, but gives you access to most of Ruby's
 primitives and capabilities. Rubby is billed as "Ruby; the good parts" and
 as such is an opinionated language, it does it's best to give you access to
@@ -193,7 +193,7 @@ def my_second_method(*args)
 end
 
 private
-def my_private_method(*args)
+def _my_private_method(*args)
   args
 end
 
@@ -203,7 +203,7 @@ end
 
 class << self
   private
-  def my_private_class_method(*args)
+  def _my_private_class_method(*args)
     args
   end
 end
