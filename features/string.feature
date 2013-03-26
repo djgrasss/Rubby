@@ -21,3 +21,27 @@ Feature: I like strings.
     """
     "double ticks, bitches!"
     """
+
+    @todo
+  Scenario: I interpolate some Rubby
+    Given I am targetting Ruby 1.8
+    When I enter
+    """
+    "My favourite hash: #{ {foo: 1, bar: 2}.inspect }"
+    """
+    And I transpile it
+    Then I should get
+    """
+    "My favourite hash: #{ { :foo => 1, :bar => 2 }.inspect }"
+    """
+
+  Scenario: I attempt to interpolate some Rubby in a single-tick string
+    When I enter
+    """
+    'My favourite hash: #{ {foo: 1, bar: 2}.inspect }'
+    """
+    And I transpile it
+    Then I should get
+    """
+    'My favourite hash: #{ {foo: 1, bar: 2}.inspect }'
+    """

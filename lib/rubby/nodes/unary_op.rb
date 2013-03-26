@@ -4,7 +4,11 @@ module Rubby::Nodes
     child :right, Base
 
     def to_ruby(runner)
-      [ "#{operator}#{inline(right,runner)}" ]
+      [ "#{get_operator}#{inline(right,runner)}" ]
+    end
+
+    def get_operator
+      operator == '?' ? 'defined? ' : operator
     end
   end
 end

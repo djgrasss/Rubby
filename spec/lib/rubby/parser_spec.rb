@@ -55,6 +55,8 @@ describe Rubby::Parser do
     describe 'constants' do
       describe('Foo') { it_behaves_like 'node', Rubby::Nodes::Constant, 'Foo' }
       describe('Foo::Bar') { it_behaves_like 'node', Rubby::Nodes::Constant, 'Foo::Bar' }
+      describe('::Foo') { it_behaves_like 'node', Rubby::Nodes::Constant, '::Foo' }
+      describe('::Foo::Bar') { it_behaves_like 'node', Rubby::Nodes::Constant, '::Foo::Bar' }
     end
 
     describe 'Array literals' do

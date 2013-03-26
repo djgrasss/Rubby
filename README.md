@@ -284,23 +284,32 @@ end
 Shorter raise syntax:
 
 ```rubby
-  o_O "WTF!?"
+o_O "WTF!?"
 ```
 
 ```ruby
-  raise "WTF!?"
+raise "WTF!?"
 ```
 
 Explicit return syntax:
 
 ```rubby
-  <- "b00m!"
+<- "b00m!"
 ```
 
 ```ruby
-  return "b00m!"
+return "b00m!"
 ```
 
+#### Shorter `defined?` syntax
+
+```rubby
+?Foo
+```
+
+```ruby
+defined? Foo
+```
 ## Installation
 
 Add this line to your application's Gemfile:

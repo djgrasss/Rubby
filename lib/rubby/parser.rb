@@ -100,6 +100,7 @@ module Rubby
 
     production('constant') do
       clause('constant_list') { |e| Constant.new(e.join('::')) }
+      clause('CONSTINDEXOP constant_list') { |_,e| Constant.new("::#{e.join('::')}") }
     end
 
     production(:integer) do
