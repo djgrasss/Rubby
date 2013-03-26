@@ -57,17 +57,20 @@ Rubby is in it's infancy, pull requests are greatly appreciated.
 
 ### Require
 
-Rubby defines a polyglot hook so that you can require `.rbb` files straight from your Ruby projects.
+Rubby defines a polyglot hook so that you can require `.rbb` files straight
+from your Ruby projects.
 
-### Transpiler
+### rubby
 
-You can transpile Rubby code into Ruby:
+The `rubby` command can be used to transpile a Rubby script into rubby (using
+the `--transpile` or `-t`) arguments, or to simply intepret the file given.
 
-```shell
-$ rubby my_amazing_rubby_script.rbb [optional_ruby_file_name.rb]
-```
+You can also specify a specific version of Ruby to target and Rubby will alter
+the output accordingly where necessary.
 
-### REPL
+You can also use `#!rubby` in your scripts to make them executable.
+
+### irbb
 
 Rubby has a (very basic) REPL:
 

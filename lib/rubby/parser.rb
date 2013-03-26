@@ -168,7 +168,6 @@ module Rubby
     end
 
     production(:hash_normal_identifier) do
-      clause('STRING')           { |e| e }
       clause('CONSTANT')         { |e| e }
       clause('IDENTIFIER')       { |e| e }
       clause('COLON IDENTIFIER') { |_,e| e }
@@ -177,6 +176,7 @@ module Rubby
     production(:hash_numerical_identifier) do
       clause('integer')          { |e| e }
       clause('float')            { |e| e }
+      clause('string')           { |e| e }
     end
 
     production(:hash_identifier_expression) do

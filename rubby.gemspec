@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'polyglot'
   gem.add_dependency 'rubby-rltk', '>= 7.0.2'
+  gem.add_dependency 'trollop', '~> 2.0.0'
 end

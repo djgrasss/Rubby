@@ -18,13 +18,17 @@ module Rubby::Nodes
     private
 
     def hash_for_19(runner)
-      return hash_for_18 unless contents.all? { |e| e.key.is_a? Symbol }
+      return hash_for_18(runner) unless contents.all? { |e| e.key.is_a? Symbol }
       result = []
       result << "{" if needs_delimiting?
+      elements = []
       contents.each do |element|
-        result << element.key.content.value + ":"
-        result << inline(element.value, runner)
+        e = []
+        e << element.key.content.value + ":"
+        e << "#{inline(element.value, runner)}"
+        elements << e.join(' ')
       end
+      result << elements.join(', ')
       result << "}" if needs_delimiting?
       [result.join(" ")]
     end
@@ -32,11 +36,15 @@ module Rubby::Nodes
     def hash_for_18(runner)
       result = []
       result << "{" if needs_delimiting?
+      elements = []
       contents.each do |element|
-        result << inline(element.key, runner)
-        result << '=>'
-        result << inline(element.value, runner)
+        e = []
+        e << inline(element.key, runner)
+        e << '=>'
+        e << "#{inline(element.value, runner)}"
+        elements << e.join(' ')
       end
+      result << elements.join(', ')
       result << "}" if needs_delimiting?
       [result.join(" ")]
     end

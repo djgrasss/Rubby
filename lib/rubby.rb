@@ -19,6 +19,10 @@ module Rubby
     Kernel.eval(transpile(source,'STDIN', version), TOPLEVEL_BINDING)
   end
 
+  def interpret_file(source, version=nil)
+    Kernel.eval(transpile(File.read(source), source, version), TOPLEVEL_BINDING)
+  end
+
   def transpile_file(source, destination=nil, version=nil)
     destination = source.gsub(/\.rbb$/, '.rb') unless destination
     File.open(source, "r") do |src|
