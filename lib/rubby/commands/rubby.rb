@@ -1,4 +1,5 @@
 require 'trollop'
+require 'rubby'
 
 @option_parser = Trollop::Parser.new do
   version "Rubby version #{Rubby::VERSION}"
@@ -14,14 +15,13 @@ EOS
   opt :transpile, "Transpile a Rubby file to Ruby.",           :default => false, :short => 't'
   opt :output,    "Save transpiler output to a specific file", :type => String, :default => nil, :depends => :transpile, :short => 'o'
   opt :help,      "This output",                               :default => false, :short => 'h'
-  opt :target,    "Target Ruby version",                       :type => String, :default => RUBY_VERSION, :short => 'r'
+  opt :target,    "Target Ruby version",                       :type => String, :default => Rubby::TargetVersion.new.to_s, :short => 'r'
 end
 
 def main
   opts = @option_parser.parse
   file = @option_parser.leftovers.first
   usage if opts[:help] || !file
-  require 'rubby'
   if opts[:transpile]
     if opts[:output] == '-'
       puts Rubby.transpile(File.read(file), file, opts[:target])

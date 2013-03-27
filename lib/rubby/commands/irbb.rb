@@ -1,11 +1,27 @@
 require 'rubby'
+require 'trollop'
 require 'readline'
+
+@opts = Trollop.options do
+  version "Rubby version #{Rubby::VERSION}"
+  banner <<-EOS
+Rubby: a little wee Ruby language.
+http://rubby-lang.org/
+
+Usage:
+\tirbb [options]
+
+where [options] are:
+EOS
+  opt :help,   'This output',         :default => false, :short => 'h'
+  opt :target, 'Target Ruby version', :type => String, :default => Rubby::TargetVersion.new.to_s, :short => 'r'
+end
 
 def repl
   loop do
     line = collect_lines
     begin
-      result = Rubby.interpret(line)
+      result = Rubby.interpret(line, @opts[:target])
     rescue SystemExit
       exit
     rescue Exception => e
@@ -34,7 +50,7 @@ def prompt(multiline=false)
   multiline ? '>| ' :  '>> '
 end
 
-puts "Rubby version #{Rubby::VERSION}, starting REPL"
+puts "Rubby version #{Rubby::VERSION}, starting REPL on Ruby #{Rubby::TargetVersion.new}"
 puts "  use '\\' on the end of line for multiline input."
 repl
 
