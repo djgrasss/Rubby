@@ -128,14 +128,12 @@ Feature: I should be able to call methods.
     And I transpile it
     Then I should get 'foo(*bar, *baz)'
 
-    @todo
   Scenario: I call a method with multiple splat arguments in Ruby 1.8
     Given I am targetting Ruby 1.8.7
     When I enter 'foo *bar, *baz'
     And I transpile it
     Then I should get 'foo(*(bar + baz))'
 
-    @todo
   Scenario: I call a method with multiple splat and plain arguments in Ruby 1.8
     Given I am targetting Ruby 1.8.7
     When I enter 'fruits *apples, banana, *pears'
