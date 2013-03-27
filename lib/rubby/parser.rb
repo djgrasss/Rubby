@@ -329,8 +329,10 @@ module Rubby
     end
 
     production(:method_modifier) do
-      clause('UNDERSCORE') { |e| e }
-      clause('AT')         { |e| e }
+      clause('UNDERSCORE')    { |e| e }
+      clause('AT')            { |e| e }
+      clause('UNDERSCORE AT') { |e0,e1| e0+e1 }
+      clause('AT UNDERSCORE') { |e0,e1| e0+e1 }
     end
 
     production(:method_without_contents) do

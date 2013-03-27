@@ -10,11 +10,8 @@ module Rubby::Nodes
 
     def to_ruby(runner)
       result = ''
-      if args.size == 0
-        result << "#{name}"
-      else
-        result <<  "#{name}(#{inline(args,runner,', ')})"
-      end
+      a = inline(args,runner, ', ')
+      result << "#{name}#{open_paren}#{a}#{close_paren}"
       if block
         result << " "
         _block = squash_array(recurse(block,runner))
@@ -23,6 +20,25 @@ module Rubby::Nodes
       else
         [result]
       end
+    end
+
+    private
+    def use_parens?
+      (args.size > 0) || (block && block.should_be_inlined?)
+    end
+
+    def open_paren
+      if use_parens?
+        '('
+      elsif args.size == 0
+        ''
+      else
+        ' '
+      end
+    end
+
+    def close_paren
+      use_parens? ? ')' : ''
     end
   end
 end

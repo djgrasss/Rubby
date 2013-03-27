@@ -62,3 +62,14 @@ Feature: Block definition
     -> { foo }
     """
 
+    @todo
+  Scenario: I define multiple splat arguments to a block on 1.8
+    Given I am targetting Ruby 1.8
+    When I enter '&> (*foo, *bar)'
+    And I transpile it
+    Then I should get
+    """
+    lambda do (*__args__)
+      __i__, __size__ = 0, __args__.size
+      foo, bar = __args__.partition { |a| i += 1; i < __size__ / 2 }
+    """

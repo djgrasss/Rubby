@@ -26,7 +26,6 @@ module Rubby::Nodes
       end
     end
 
-    private
     def is_private?
       modifiers.include? "_"
     end
@@ -35,6 +34,7 @@ module Rubby::Nodes
       modifiers.include? "@"
     end
 
+    private
     def basic_method_name
       name.gsub(/@/,'')
     end

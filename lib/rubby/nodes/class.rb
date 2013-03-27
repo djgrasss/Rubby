@@ -14,6 +14,22 @@ module Rubby::Nodes
 
     private
 
+    def methods
+      contents.select { |c| c.is_a? Method }
+    end
+
+    def private_methods
+      methods.select(&:is_private?)
+    end
+
+    def class_methods
+      methods.select(&:is_class?)
+    end
+
+    def private_class_methods
+      methods.select { |m| m.is_private? && m.is_class? }
+    end
+
     def define_class_with_contents(runner)
       [].tap do |ruby|
         if superclass
