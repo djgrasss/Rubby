@@ -1,4 +1,5 @@
 require 'rubby'
+require 'readline'
 
 def repl
   loop do
@@ -16,8 +17,7 @@ def repl
 end
 
 def collect_lines(multiline=false)
-  print prompt(multiline)
-  line = gets
+  line = Readline.readline(prompt(multiline), true)
   unless line
     puts "Exiting Rubby REPL"
     exit 0
