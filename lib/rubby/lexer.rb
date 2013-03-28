@@ -57,7 +57,7 @@ module Rubby
         keyword.upcase.to_sym
       end
     end
-    rule(/o_O/) { [ :RAISE, 'o_O' ] }
+    rule(/o_O/) { [ :WTF, 'o_O' ] }
 
     rule /[a-z_][a-zA-Z0-9_]*/, :default do |e|
       [ :IDENTIFIER, e ]

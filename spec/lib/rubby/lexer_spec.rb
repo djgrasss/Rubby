@@ -187,7 +187,7 @@ describe Rubby::Lexer do
         describe('-> (') { it_behaves_like 'operator', :PROCWITHARGS, '->' }
         describe('&> (') { it_behaves_like 'operator', :BLOCKWITHARGS, '&>' }
         describe('<-')   { it_behaves_like 'operator', :RETURN, '<-' }
-        describe('o_O')   { it_behaves_like 'operator', :RAISE, 'o_O' }
+        describe('o_O')   { it_behaves_like 'operator', :WTF, 'o_O' }
       end
     end
 

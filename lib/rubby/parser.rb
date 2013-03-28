@@ -249,7 +249,7 @@ module Rubby
 
     production(:call_identifier) do
       clause('method_identifier') { |e| e }
-      clause('RAISE') { |_| 'raise' }
+      clause('WTF') { |_| 'raise' }
     end
 
     production(:call_arguments) do
