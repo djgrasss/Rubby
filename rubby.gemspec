@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  %w[bundler rspec rspec-mocks guard guard-rspec guard-bundler guard-cucumber guard terminal-notifier-guard cucumber rb-fsevent rake].each do |dep|
+  %w[bundler rspec rspec-mocks guard guard-rspec guard-bundler guard-cucumber guard terminal-notifier-guard cucumber rb-fsevent rake coveralls].each do |dep|
     gem.add_development_dependency dep
   end
 

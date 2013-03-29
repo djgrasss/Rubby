@@ -16,6 +16,7 @@ Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 [![Build Status](https://travis-ci.org/jamesotron/Rubby.png?branch=master)](https://travis-ci.org/jamesotron/Rubby)
 [![Dependency Status](https://gemnasium.com/jamesotron/Rubby.png)](https://gemnasium.com/jamesotron/Rubby)
 [![Code Climate](https://codeclimate.com/github/jamesotron/Rubby.png)](https://codeclimate.com/github/jamesotron/Rubby)
+[![Coverage Status](https://coveralls.io/repos/jamesotron/Rubby/badge.png?branch=master)](https://coveralls.io/r/jamesotron/Rubby)
 
 Features required for 1.0 release:
 
