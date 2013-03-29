@@ -4,7 +4,7 @@ require 'readline'
 
 @opts = Trollop.options do
   version "Rubby version #{Rubby::VERSION}"
-  banner <<-EOS
+  banner <<EOS
 Rubby: a little wee Ruby language.
 http://rubby-lang.org/
 

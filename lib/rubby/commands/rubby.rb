@@ -3,7 +3,7 @@ require 'rubby'
 
 @option_parser = Trollop::Parser.new do
   version "Rubby version #{Rubby::VERSION}"
-  banner <<-EOS
+  banner <<EOS
 Rubby: a little wee Ruby language.
 http://rubby-lang.org/
 
