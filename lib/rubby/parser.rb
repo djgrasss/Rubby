@@ -15,7 +15,6 @@ module Rubby
     production(:default) do
       clause('statements') { |e| Root.new(e) }
       clause('statements expression') { |e0,e1| Root.new(e0 + [e1]) }
-      clause('comment')  { |e| Root.new([e]) }
       clause('expression') { |e| Root.new([e]) }
     end
 
@@ -30,7 +29,7 @@ module Rubby
     end
 
     production(:comment) do
-      clause("COMMENT NEWLINE")                  { |e,_| Comment.new(e) }
+      clause("COMMENT")                          { |e| Comment.new(e) }
     end
 
     production(:expression) do
@@ -53,6 +52,7 @@ module Rubby
       clause('expr_group')               { |e| e }
       clause('explicit_return')          { |e| e }
       clause('control_flow')             { |e| e }
+      clause('comment')                  { |e| e }
     end
 
     production(:chainable_expression) do
