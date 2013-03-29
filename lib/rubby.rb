@@ -8,7 +8,10 @@ require 'rubby/target_version'
 require 'rubby/transpiler'
 require 'rubby/rubby_loader'
 
+Dir[File.expand_path('../../lib/rubby/tasks/**/*.rake', __FILE__)].each { |f| load f } if defined? Rake
+
 module Rubby
+
   module_function
 
   def transpile(source,filename='STDIN', version=nil)
