@@ -27,3 +27,8 @@ end
 Then(/^I should get$/) do |what|
   @transpiler_output.chomp.should eq(what)
 end
+
+Then(/^transpilation will raise a ([\w ]+)$/) do |error|
+  exception = Rubby::Exceptions.const_get(error.to_sym)
+  expect { Rubby.transpile(@source, @feature_name, @target_version) }.to raise_error(exception)
+end

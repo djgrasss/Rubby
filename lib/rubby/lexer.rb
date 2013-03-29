@@ -19,6 +19,8 @@ module Rubby
 
     KEYWORDS = %w[ module class if else elsif unless ]
 
+    REJECTED = %w[ do and or not return proc lambda raise ]
+
     class Environment < Environment
       attr_accessor :current_indent_level
 
@@ -58,6 +60,12 @@ module Rubby
       end
     end
     rule(/o_O/) { [ :WTF, 'o_O' ] }
+
+    REJECTED.each do |keyword|
+      rule /#{keyword}/, :default do |e|
+        raise Rubby::Exceptions::SyntaxError, "Invalid keyword #{keyword}."
+      end
+    end
 
     rule /[a-z_][a-zA-Z0-9_]*/, :default do |e|
       [ :IDENTIFIER, e ]
@@ -136,7 +144,7 @@ module Rubby
     end
 
     rule(/=/) { |e| [ :ASSIGNEQ, e ] }
-    %w[ \+= -= \*= /= %= \*\*= ].each do |op|
+    %w[ \+= -= \*= /= %= \*\*= \|\|= ].each do |op|
       rule(%r|#{op}|) { |e| [ :ASSIGNMENTOP, e ] }
     end
 

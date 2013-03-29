@@ -146,7 +146,6 @@ describe Rubby::Lexer do
 
       describe 'bitwise' do
         describe("&") { it_behaves_like 'operator', :AMPER, "&" }
-        describe("!") { it_behaves_like 'operator', :BANG, "!" }
         describe("~") { it_behaves_like 'operator', :TILDE, "~" }
         describe("^") { it_behaves_like 'operator', :HAT, "^" }
         %w[ | << >> ].each do |op|
@@ -155,6 +154,7 @@ describe Rubby::Lexer do
       end
 
       describe 'logical' do
+        describe("!") { it_behaves_like 'operator', :BANG, "!" }
         describe("?") { it_behaves_like 'operator', :QUESTION, "?" }
         %w[ && || ].each do |op|
           describe(op) { it_behaves_like 'operator', :LOGICALOP, op }
@@ -213,6 +213,17 @@ describe Rubby::Lexer do
 
       %w[ class module if else elsif unless ].each do |keyword|
         describe(keyword) { it_behaves_like('keyword', keyword.upcase.to_sym) }
+      end
+    end
+
+    describe 'Rejected keywords' do
+      shared_examples_for 'rejected keyword' do |type|
+        let(:source) { example.example_group.parent_groups[1].description }
+        example { expect { subject }.to raise_error(Rubby::Exceptions::SyntaxError) }
+      end
+
+      %w[ do and or not return proc lambda raise ].each do |keyword|
+        describe(keyword) { it_behaves_like('rejected keyword') }
       end
     end
 
