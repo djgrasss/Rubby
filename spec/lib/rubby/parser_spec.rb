@@ -59,6 +59,11 @@ describe Rubby::Parser do
       describe('::Foo::Bar') { it_behaves_like 'node', Rubby::Nodes::Constant, '::Foo::Bar' }
     end
 
+    describe 'regex literals' do
+      describe('/foo/') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo/i') { it_behaves_like 'node', Rubby::Nodes::Regex }
+    end
+
     describe 'Array literals' do
       describe('[]') { it_behaves_like 'node', Rubby::Nodes::Array }
       describe('[1]') { it_behaves_like 'node', Rubby::Nodes::Array }

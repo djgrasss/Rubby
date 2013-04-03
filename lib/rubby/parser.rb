@@ -52,6 +52,7 @@ module Rubby
       clause('expr_group')               { |e| e }
       clause('explicit_return')          { |e| e }
       clause('control_flow')             { |e| e }
+      clause('regex')                    { |e| e }
       clause('comment')                  { |e| e }
     end
 
@@ -67,6 +68,7 @@ module Rubby
       clause('block')                    { |e| e }
       clause('expr_group')               { |e| e }
       clause('index')                    { |e| e }
+      clause('regex')                    { |e| e }
     end
 
     production(:expr_group) do
@@ -149,6 +151,10 @@ module Rubby
     production(:string) do
       clause('simple_string') { |e| e }
       clause('interpolated_string') { |e| e }
+    end
+
+    production(:regex) do
+      clause('REGEX') { |e| Regex.new(e) }
     end
 
     production(:left_square) do

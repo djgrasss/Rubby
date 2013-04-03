@@ -130,6 +130,10 @@ module Rubby
       [ :STRING, "\"" ]
     end
 
+    rule %r_/(\\/|[^/])*/i?m?x?o?_, :default do |e|
+      [ :REGEX, e ]
+    end
+
     rule(/\*\*/) { [ :EXPO, '**' ] }
     rule(/\+/)   { [ :PLUS, "+" ] }
     rule(/-/)    { [ :MINUS, "-" ] }

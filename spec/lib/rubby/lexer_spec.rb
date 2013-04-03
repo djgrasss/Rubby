@@ -110,6 +110,20 @@ describe Rubby::Lexer do
       end
     end
 
+    describe 'Regular expressions' do
+      shared_examples_for 'regular expression' do
+        let(:source) { example.example_group.parent_groups[1].description }
+        example('length') { expect(subject.length).to eq(2) }
+        example('type') { expect(subject.first.type).to eq(:REGEX) }
+      end
+
+      describe(%q|/foo/|) { it_behaves_like 'regular expression' }
+      describe(%q|/foo/i|) { it_behaves_like 'regular expression' }
+      describe(%q|/foo/m|) { it_behaves_like 'regular expression' }
+      describe(%q|/foo/x|) { it_behaves_like 'regular expression' }
+      describe(%q|/foo/o|) { it_behaves_like 'regular expression' }
+    end
+
     describe 'Operators' do
       shared_examples_for 'operator' do |*args|
         type = args.first
