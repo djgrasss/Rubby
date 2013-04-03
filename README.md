@@ -18,7 +18,11 @@ Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 [![Code Climate](https://codeclimate.com/github/jamesotron/Rubby.png)](https://codeclimate.com/github/jamesotron/Rubby)
 [![Coverage Status](https://coveralls.io/repos/jamesotron/Rubby/badge.png?branch=master)](https://coveralls.io/r/jamesotron/Rubby)
 
-Features required for 1.0 release:
+### How can I help?
+
+There's a whole bunch of Cucumber features tagged with `@todo` - grab one and try and make it pass.
+
+### Features required for 1.0 release:
 
  + Lexer
    - Indent/dedent (✓)
@@ -27,6 +31,8 @@ Features required for 1.0 release:
    - Strings (✓)
    - Symbols (✓)
    - Regular expressions
+     - Basic (✓)
+     - Interpolated
    - Methods (✓)
    - Standard operators (✓)
    - Keywords (✓)
