@@ -110,3 +110,46 @@ Feature: Class definition
 
     end
     """
+
+    @todo
+  Scenario: Private methods are grouped together at the bottom of a class
+    When I enter
+    """
+    class SecretiveClass
+      _foo ->
+      _bar ->
+      _baz ->
+    """
+    And I transpile it
+    Then I should get
+    """
+    class SecretiveClass
+
+      private
+      def _foo; end
+      def _bar; end
+      def _baz; end
+    end
+    """
+
+    @todo
+  Scenario: Multiple private class methods are grouped together inside an eigenclass hack
+    When I enter
+    """
+    class SecretiveClass
+      @_foo ->
+      @_bar ->
+      @_baz ->
+    """
+    And I transpile it
+    Then I should get
+    """
+    class SecretiveClass
+      class << self
+        private
+        def _foo; end
+        def _bar; end
+        def _baz; end
+      end
+    end
+    """
