@@ -466,6 +466,6 @@ module Rubby
       clause('outer_prefix_control_flow inner_control_flow') { |e0,e1| e0.tap { |e| e.next = e1 } }
     end
 
-    finalize :lookahead => false
+    finalize :lookahead => false, :use => File.expand_path('../parser.rltk', __FILE__)
   end
 end
