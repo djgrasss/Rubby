@@ -1,4 +1,4 @@
-Feature: Rescueing exceptions and ensuring execution.
+Feature: Rescuing exceptions and ensuring execution.
 
     @todo
   Scenario: I define a method with a rescue.
