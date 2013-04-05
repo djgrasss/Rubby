@@ -41,6 +41,7 @@ describe Rubby::Parser do
       describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, "'foo'" }
       describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
       describe('"foo #{ bar } baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+      describe('"foo #{1} #{2}baz"') { it_behaves_like 'node', Rubby::Nodes::String }
     end
 
     describe 'Symbol literals' do

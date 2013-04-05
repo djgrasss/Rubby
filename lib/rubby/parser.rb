@@ -146,6 +146,7 @@ module Rubby
 
     production(:interpolated_string) do
       clause('simple_string interpolation simple_string') { |e0,e1,e2| InterpolatedString.new([e0,e1,e2]) }
+      clause('interpolated_string interpolation simple_string') { |e0,e1,e2| e0.contents += [e1,e2]; e0 }
     end
 
     production(:string) do

@@ -45,3 +45,14 @@ Feature: I like strings.
     """
     'My favourite hash: #{ {foo: 1, bar: 2}.inspect }'
     """
+
+  Scenario: I attempt multiple interpolations in the same string
+    When I enter
+    """
+    "Welcome #{whom}, welcome to #{what}."
+    """
+    And I transpile it
+    Then I should get
+    """
+    "Welcome #{whom}, welcome to #{what}."
+    """
