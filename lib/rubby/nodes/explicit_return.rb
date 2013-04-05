@@ -3,7 +3,11 @@ module Rubby::Nodes
     child :content, Base
 
     def to_ruby(runner)
-      [ "return #{inline(content,runner)}" ]
+      if content
+        [ "return #{inline(content,runner)}" ]
+      else
+        [ "return" ]
+      end
     end
   end
 end

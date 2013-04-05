@@ -422,6 +422,7 @@ module Rubby
 
     production(:explicit_return) do
       clause('RETURN WHITE? expression') { |_,_,e| ExplicitReturn.new(e) }
+      clause('RETURN WHITE?') { |_,_| ExplicitReturn.new }
     end
 
     production(:outer_control_flow_word) do
