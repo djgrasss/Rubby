@@ -47,9 +47,14 @@ be considered traps for young players.</p>
 
 <p><a href="https://travis-ci.org/jamesotron/Rubby"><img src="https://travis-ci.org/jamesotron/Rubby.png?branch=master" alt="Build Status"></a>
 <a href="https://gemnasium.com/jamesotron/Rubby"><img src="https://gemnasium.com/jamesotron/Rubby.png" alt="Dependency Status"></a>
-<a href="https://codeclimate.com/github/jamesotron/Rubby"><img src="https://codeclimate.com/github/jamesotron/Rubby.png" alt="Code Climate"></a></p>
+<a href="https://codeclimate.com/github/jamesotron/Rubby"><img src="https://codeclimate.com/github/jamesotron/Rubby.png" alt="Code Climate"></a>
+<a href="https://coveralls.io/r/jamesotron/Rubby"><img src="https://coveralls.io/repos/jamesotron/Rubby/badge.png?branch=master" alt="Coverage Status"></a></p>
 
-<p>Features required for 1.0 release:</p>
+<h3>How can I help?</h3>
+
+<p>There's a whole bunch of Cucumber features tagged with <code>@todo</code> - grab one and try and make it pass.</p>
+
+<h3>Features required for 1.0 release:</h3>
 
 <ul>
 <li>Lexer
@@ -60,7 +65,13 @@ be considered traps for young players.</p>
 <li>Floats (✓)</li>
 <li>Strings (✓)</li>
 <li>Symbols (✓)</li>
-<li>Regular expressions</li>
+<li>Regular expressions
+
+<ul>
+<li>Basic (✓)</li>
+<li>Interpolated</li>
+</ul>
+</li>
 <li>Methods (✓)</li>
 <li>Standard operators (✓)</li>
 <li>Keywords (✓)</li>
@@ -229,7 +240,7 @@ _my_private_method-&gt; (*args)
 <span class="k">end</span>
 
 <span class="kp">private</span>
-<span class="k">def</span> <span class="nf">my_private_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_my_private_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
   <span class="n">args</span>
 <span class="k">end</span>
 
@@ -239,7 +250,7 @@ _my_private_method-&gt; (*args)
 
 <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
   <span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">my_private_class_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="k">def</span> <span class="nf">_my_private_class_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
     <span class="n">args</span>
   <span class="k">end</span>
 <span class="k">end</span>
@@ -313,18 +324,26 @@ class Cat
 
 <p>Shorter raise syntax:</p>
 
-<pre lang="rubby"><code>  o_O "WTF!?"
+<pre lang="rubby"><code>o_O "WTF!?"
 </code></pre>
 
-<div class="highlight"><pre>  <span class="k">raise</span> <span class="s2">"WTF!?"</span>
+<div class="highlight"><pre><span class="k">raise</span> <span class="s2">"WTF!?"</span>
 </pre></div>
 
 <p>Explicit return syntax:</p>
 
-<pre lang="rubby"><code>  &lt;- "b00m!"
+<pre lang="rubby"><code>&lt;- "b00m!"
 </code></pre>
 
-<div class="highlight"><pre>  <span class="k">return</span> <span class="s2">"b00m!"</span>
+<div class="highlight"><pre><span class="k">return</span> <span class="s2">"b00m!"</span>
+</pre></div>
+
+<h4>Shorter <code>defined?</code> syntax</h4>
+
+<pre lang="rubby"><code>?Foo
+</code></pre>
+
+<div class="highlight"><pre><span class="n">defined?</span> <span class="no">Foo</span>
 </pre></div>
 
 <h2>Installation</h2>
