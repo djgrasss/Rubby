@@ -1,7 +1,5 @@
-require 'rltk/ast'
-
 module Rubby::Nodes
-  class Base < RLTK::ASTNode
+  class Base
     def to_ruby(runner)
       if respond_to? :value
         [ value.inspect ]
