@@ -1,0 +1,103 @@
+%% name = Rubby::Parser
+
+%% {
+  def ast
+    @ast || @result
+  end
+}
+
+%% ast-location = Rubby::Nodes
+%% comment  = ast Comment(value)
+%% integer  = ast Integer(value)
+%% float    = ast Float(value)
+%% constant = ast Constant(value)
+%% string   = ast String(value)
+%% call     = ast Call(name, arguments)
+%% array    = ast Array(values)
+%% hash     = ast Hash(values)
+%% hash_element = ast HashElement(key, value)
+%% symbol   = ast Symbol(value)
+
+eof = !.
+space = " " | "\t"
+nl = "\n" | "\r" | "\r\n" | "\n\r"
+
+keywords = "module" | "class" | "if" | "else" | "elsif" | "unless"
+rejected = "do" | "and" | "or" | "not" | "return" | "proc" | "lambda"
+
+# Keywords
+module = "module"
+class  = "class"
+if     = "if"
+else   = "else"
+elsif  = "elsif"
+unless = "unless"
+raise  = "raise" | "o_O"
+rescue = "rescue"
+ensure = "ensure"
+
+# Literals
+identifier = /[a-z_][a-zA-Z0-9_]*/
+
+constant_name     = /([A-Z][a-zA-Z0-9_]+)/
+constant_sep      = "::"
+constant_with_sep = constant_sep constant_name
+constant   = < (constant_name constant_with_sep+) | constant_with_sep+ | constant_name > ~constant(text)
+
+integer_octal   = /(0[1-9][0-9]*)/
+integer_decimal = /([1-9][0-9]*)/
+integer_zero    = "0"
+integer_hex     = /(0x[0-9a-fA-F]+)/
+integer_binary  = /(0b[01]+)/
+integer    = < integer_octal | integer_decimal | integer_hex | integer_binary | integer_zero > ~integer(text)
+float      = < /([0-9]+\.[0-9]+)/ > ~float(text)
+
+# Strings
+single_tick_string = "'" </(\\'|[^'])/*> "'"
+double_tick_string = "\"" </(\\"|[^"])/*> "\""
+string     = < single_tick_string | double_tick_string > ~string(text)
+
+# Array literals
+array_empty     = "[]" ~array([])
+array_non_empty = "[" space? <expression_list:values> space? "]" ~array(values)
+array           = array_non_empty | array_empty
+
+# Hash literals
+hash_sep          = ":" space?
+hash_lhs_symbol   = <identifier:name> ~symbol(name)
+hash_lhs_expr     = expression
+hash_lhs          = hash_lhs_symbol | hash_lhs_expr
+hash_element      = <hash_lhs:key hash_sep expression:value> ~hash_element(key,value)
+hash_element_list = (hash_element (expression_list_sep hash_element)+) | hash_element
+hash_unbraced     = <hash_element_list:values> ~hash(values)
+hash_braced       = "{" space? <hash_element_list:values> space? "}" ~hash(values)
+hash_empty        = "{" space? "}" ~hash([])
+hash              = hash_unbraced | hash_braced | hash_empty
+
+# Symbol literals
+symbol_ident      = <identifier> ~symbol(text)
+symbol_string     = <string:value> ~symbol(value)
+symbol_glyph      = <("+" | "-" | "*" | "/" | "!" | "^" | "&" | "**")> ~symbol(text)
+symbol_var        = <("@@" | "@") identifier> ~symbol(text)
+symbol            = ":" (symbol_ident | symbol_string | symbol_glyph | symbol_var)
+
+literal    = array | identifier | constant | float | integer | string | symbol
+
+# Comments
+comment    = "#" < (!nl .)* > nl ~comment(text)
+
+# Method call_args
+call_args = expression_list
+
+# Method Calls
+call_without_args       = <identifier:name> ( "(" space? ")" )? ~call(name, [])
+call_with_braced_args   = <identifier:name "(" space? call_args:args space? ")"> ~call(text, args)
+call_with_unbraced_args = <identifier:name space? call_args:args space?> ~call(name, args)
+call       = call_with_braced_args | call_with_unbraced_args | call_without_args
+
+expression_list_sep = space? "," space?
+expression_list = (expression (expression_list_sep expression)+) | expression
+expression = hash | call | literal
+statements = statements+
+statement  = expression | comment
+root       = statements | statement

@@ -10,12 +10,8 @@ module Rubby
       self.target = target_version
     end
 
-    def tokens
-      @tokens ||= Rubby::Lexer.lex(source, filename)
-    end
-
     def tree
-      @tree ||= tree_constructor
+      @tree ||= parse_and_modify_source(source)
     end
 
     def process
@@ -32,8 +28,16 @@ module Rubby
 
     private
 
-    def tree_constructor
-      Rubby::Parser.parse(tokens).each do |node|
+    def parse_and_modify_source(source)
+      modify_ast parse_source(source).ast
+    end
+
+    def parse_source(source)
+      Rubby::Parser.new(source).tap { |p| p.parse }
+    end
+
+    def modify_ast(ast)
+      ast.each do |node|
         node.walk(node.children, self)
       end
     end

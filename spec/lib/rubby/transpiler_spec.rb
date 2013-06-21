@@ -7,26 +7,16 @@ describe Rubby::Transpiler do
 
   it { should respond_to(:source) }
   it { should respond_to(:process) }
-  it { should respond_to(:tokens) }
   it { should respond_to(:tree) }
   it { should respond_to(:target=) }
   it { should respond_to(:target) }
   it { should respond_to(:process) }
 
-  describe '#tokens' do
-    subject { runner.tokens }
-    it 'lexes the source' do
-      Rubby::Lexer.should_receive(:lex).with(source, 'STDIN')
-      subject
-    end
-  end
-
   describe '#tree' do
     subject { runner.tree }
-    it 'parses the tokens' do
-      tokens = Rubby::Lexer.lex(source)
-      runner.stub(:tokens => tokens)
-      Rubby::Parser.should_receive(:parse).with(tokens).and_return([])
+
+    it 'parses the source' do
+      runner.should_receive(:parse_and_modify_source).with(source)
       subject
     end
   end
