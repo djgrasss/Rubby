@@ -1056,22 +1056,75 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # hash_lhs_expr = expression
+  # hash_valid_lhs_exprs = (hash_braced | call | regex | array | identifier | constant | float | integer | string | symbol)
+  def _hash_valid_lhs_exprs
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_hash_braced)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_call)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_regex)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_array)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_identifier)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_constant)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_float)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_integer)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_string)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_symbol)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_hash_valid_lhs_exprs unless _tmp
+    return _tmp
+  end
+
+  # hash_lhs_expr = (hash_valid_lhs_exprs | expression_group)
   def _hash_lhs_expr
-    _tmp = apply(:_expression)
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_hash_valid_lhs_exprs)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_expression_group)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
     set_failed_rule :_hash_lhs_expr unless _tmp
     return _tmp
   end
 
-  # hash_lhs = (hash_lhs_symbol | hash_lhs_expr)
+  # hash_lhs = (hash_lhs_expr | hash_lhs_symbol)
   def _hash_lhs
 
     _save = self.pos
     while true # choice
-      _tmp = apply(:_hash_lhs_symbol)
+      _tmp = apply(:_hash_lhs_expr)
       break if _tmp
       self.pos = _save
-      _tmp = apply(:_hash_lhs_expr)
+      _tmp = apply(:_hash_lhs_symbol)
       break if _tmp
       self.pos = _save
       break
@@ -2135,8 +2188,9 @@ class Rubby::Parser < KPeg::CompiledParser
   Rules[:_array] = rule_info("array", "(array_non_empty | array_empty)")
   Rules[:_hash_sep] = rule_info("hash_sep", "\":\" space?")
   Rules[:_hash_lhs_symbol] = rule_info("hash_lhs_symbol", "identifier:name {symbol(name)}")
-  Rules[:_hash_lhs_expr] = rule_info("hash_lhs_expr", "expression")
-  Rules[:_hash_lhs] = rule_info("hash_lhs", "(hash_lhs_symbol | hash_lhs_expr)")
+  Rules[:_hash_valid_lhs_exprs] = rule_info("hash_valid_lhs_exprs", "(hash_braced | call | regex | array | identifier | constant | float | integer | string | symbol)")
+  Rules[:_hash_lhs_expr] = rule_info("hash_lhs_expr", "(hash_valid_lhs_exprs | expression_group)")
+  Rules[:_hash_lhs] = rule_info("hash_lhs", "(hash_lhs_expr | hash_lhs_symbol)")
   Rules[:_hash_element] = rule_info("hash_element", "hash_lhs:key hash_sep expression:value {hash_element(key,value)}")
   Rules[:_hash_element_list] = rule_info("hash_element_list", "(hash_element (expression_list_sep hash_element)+ | hash_element)")
   Rules[:_hash_unbraced] = rule_info("hash_unbraced", "hash_element_list:values {hash(values)}")

@@ -76,6 +76,7 @@ describe Rubby::Parser do
       describe('[1]') { it_behaves_like 'node', Rubby::Nodes::Array }
       describe('[1,2,3]') { it_behaves_like 'node', Rubby::Nodes::Array }
       describe('[ 1, 2, 3 ]') { it_behaves_like 'node', Rubby::Nodes::Array }
+      describe('[(1),2]') { it_behaves_like 'node', Rubby::Nodes::Array }
     end
 
     describe 'Hash literals' do
@@ -85,6 +86,7 @@ describe Rubby::Parser do
       describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('(foo baz): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('(3): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1}') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
@@ -98,6 +100,7 @@ describe Rubby::Parser do
       describe('foo 1') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1,2') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo bar') { it_behaves_like 'node', Rubby::Nodes::Call }
     #   describe('foo *bar') { it_behaves_like 'node', Rubby::Nodes::Call }
     #   describe('foo *bar,*baz') { it_behaves_like 'node', Rubby::Nodes::Call }
     #   describe('foo {bar: 1, baz: 2}') { it_behaves_like 'node', Rubby::Nodes::Call }
