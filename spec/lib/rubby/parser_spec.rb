@@ -36,19 +36,20 @@ describe Rubby::Parser do
     end
 
     describe 'String literals' do
-      # describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String, '"foo"' }
-      describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String, "'foo'" }
-      describe(%q|'foo\' bar'|) { it_behaves_like 'node', Rubby::Nodes::String, %q|'foo\' bar'| }
-      # describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
-      # describe('"foo #{ bar } baz"') { it_behaves_like 'node', Rubby::Nodes::String }
-      # describe('"foo #{1} #{2}baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+      describe('"foo"') { it_behaves_like 'node', Rubby::Nodes::String }
+      describe("'foo'") { it_behaves_like 'node', Rubby::Nodes::String }
+      describe(%q|'foo\' bar'|) { it_behaves_like 'node', Rubby::Nodes::String }
+      describe('"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+      describe('"foo #{ bar } baz"') { it_behaves_like 'node', Rubby::Nodes::String }
+      describe('"foo #{1} #{2}baz"') { it_behaves_like 'node', Rubby::Nodes::String }
     end
 
     describe 'Symbol literals' do
       describe(':foo')   { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      describe(':Foo')   { it_behaves_like 'node', Rubby::Nodes::Symbol }
       describe(":'foo'") { it_behaves_like 'node', Rubby::Nodes::Symbol }
-    #   describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
-    #   describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      describe(':"foo"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
+      describe(':"foo #{1} baz"') { it_behaves_like 'node', Rubby::Nodes::Symbol }
       %w[ + - * / ! ^ & ** _foo @bar @@baz ].each do |sym|
         describe(":#{sym}") { it_behaves_like 'node', Rubby::Nodes::Symbol }
       end
@@ -61,10 +62,14 @@ describe Rubby::Parser do
       describe('::Foo::Bar') { it_behaves_like 'node', Rubby::Nodes::Constant, '::Foo::Bar' }
     end
 
-    # describe 'regex literals' do
-    #   describe('/foo/') { it_behaves_like 'node', Rubby::Nodes::Regex }
-    #   describe('/foo/i') { it_behaves_like 'node', Rubby::Nodes::Regex }
-    # end
+    describe 'regex literals' do
+      describe('/foo/') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo/i') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo/m') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo/x') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo/o') { it_behaves_like 'node', Rubby::Nodes::Regex }
+      describe('/foo#{ 1 } bar/') { it_behaves_like 'node', Rubby::Nodes::Regex }
+    end
 
     describe 'Array literals' do
       describe('[]') { it_behaves_like 'node', Rubby::Nodes::Array }
@@ -75,14 +80,16 @@ describe Rubby::Parser do
 
     describe 'Hash literals' do
       describe('foo: 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
-    #   describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('1: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
-    #   describe('(foo baz): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
-    #   describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('"foo": 1') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('foo: 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('(foo baz): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1}') { it_behaves_like 'node', Rubby::Nodes::Hash }
-    #   describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1, bar: 2}') { it_behaves_like 'node', Rubby::Nodes::Hash }
-    #   describe('{"foo": 1, 2: 3}') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('{"foo": 1, 2: 3}') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{}') { it_behaves_like 'node', Rubby::Nodes::Hash }
     end
 
@@ -168,12 +175,12 @@ describe Rubby::Parser do
     #   describe('@foo->') { it_behaves_like 'node', Rubby::Nodes::Method }
     # end
 
-    # describe 'expressions' do
-    #   describe('(1)')   { it_behaves_like 'node', Rubby::Nodes::Group }
+    describe 'expressions' do
+      describe('(1)')   { it_behaves_like 'node', Rubby::Nodes::ExpressionGroup }
     #   describe('<- 1')  { it_behaves_like 'node', Rubby::Nodes::ExplicitReturn }
     #   describe('<-')    { it_behaves_like 'node', Rubby::Nodes::ExplicitReturn }
     #   describe('o_O "foo"') { it_behaves_like 'node', Rubby::Nodes::Call }
-    # end
+    end
 
     # describe 'unary operations' do
     #   describe('+1')    { it_behaves_like 'node', Rubby::Nodes::UnaryOp }

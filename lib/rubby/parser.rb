@@ -38,6 +38,12 @@ class Rubby::Parser < KPeg::CompiledParser
       end
       attr_reader :value
     end
+    class ExpressionGroup < Node
+      def initialize(expression)
+        @expression = expression
+      end
+      attr_reader :expression
+    end
     class Float < Node
       def initialize(value)
         @value = value
@@ -64,11 +70,37 @@ class Rubby::Parser < KPeg::CompiledParser
       end
       attr_reader :value
     end
-    class String < Node
+    class Interpolation < Node
+      def initialize(expression)
+        @expression = expression
+      end
+      attr_reader :expression
+    end
+    class Regex < Node
+      def initialize(values, mods)
+        @values = values
+        @mods = mods
+      end
+      attr_reader :values
+      attr_reader :mods
+    end
+    class RegexSeq < Node
       def initialize(value)
         @value = value
       end
       attr_reader :value
+    end
+    class SimpleString < Node
+      def initialize(value)
+        @value = value
+      end
+      attr_reader :value
+    end
+    class String < Node
+      def initialize(values)
+        @values = values
+      end
+      attr_reader :values
     end
     class Symbol < Node
       def initialize(value)
@@ -89,6 +121,9 @@ class Rubby::Parser < KPeg::CompiledParser
   def constant(value)
     Rubby::Nodes::Constant.new(value)
   end
+  def expression_group(expression)
+    Rubby::Nodes::ExpressionGroup.new(expression)
+  end
   def float(value)
     Rubby::Nodes::Float.new(value)
   end
@@ -101,8 +136,20 @@ class Rubby::Parser < KPeg::CompiledParser
   def integer(value)
     Rubby::Nodes::Integer.new(value)
   end
-  def string(value)
-    Rubby::Nodes::String.new(value)
+  def interpolation(expression)
+    Rubby::Nodes::Interpolation.new(expression)
+  end
+  def regex(values, mods)
+    Rubby::Nodes::Regex.new(values, mods)
+  end
+  def regex_seq(value)
+    Rubby::Nodes::RegexSeq.new(value)
+  end
+  def simple_string(value)
+    Rubby::Nodes::SimpleString.new(value)
+  end
+  def string(values)
+    Rubby::Nodes::String.new(values)
   end
   def symbol(value)
     Rubby::Nodes::Symbol.new(value)
@@ -520,7 +567,7 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # single_tick_string = "'" < /(\\'|[^'])/* > "'"
+  # single_tick_string = "'" simple_string_seq:value "'" {string([value])}
   def _single_tick_string
 
     _save = self.pos
@@ -530,6 +577,34 @@ class Rubby::Parser < KPeg::CompiledParser
         self.pos = _save
         break
       end
+      _tmp = apply(:_simple_string_seq)
+      value = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = match_string("'")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; string([value]); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_single_tick_string unless _tmp
+    return _tmp
+  end
+
+  # simple_string_seq = < /(\\'|[^'])/* > {simple_string(text)}
+  def _simple_string_seq
+
+    _save = self.pos
+    while true # sequence
       _text_start = self.pos
       while true
         _tmp = scan(/\A(?-mix:(\\'|[^']))/)
@@ -543,18 +618,45 @@ class Rubby::Parser < KPeg::CompiledParser
         self.pos = _save
         break
       end
-      _tmp = match_string("'")
+      @result = begin; simple_string(text); end
+      _tmp = true
       unless _tmp
         self.pos = _save
       end
       break
     end # end sequence
 
-    set_failed_rule :_single_tick_string unless _tmp
+    set_failed_rule :_simple_string_seq unless _tmp
     return _tmp
   end
 
-  # double_tick_string = "\"" < /(\\"|[^"])/* > "\""
+  # string_seq = < /[^\\"]+/ > {simple_string(text)}
+  def _string_seq
+
+    _save = self.pos
+    while true # sequence
+      _text_start = self.pos
+      _tmp = scan(/\A(?-mix:[^\\"]+)/)
+      if _tmp
+        text = get_text(_text_start)
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; simple_string(text); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_string_seq unless _tmp
+    return _tmp
+  end
+
+  # double_tick_string = "\"" (interpolated_expression:s | string_seq:s)*:values "\"" {string(values)}
   def _double_tick_string
 
     _save = self.pos
@@ -564,20 +666,39 @@ class Rubby::Parser < KPeg::CompiledParser
         self.pos = _save
         break
       end
-      _text_start = self.pos
+      _ary = []
       while true
-        _tmp = scan(/\A(?-mix:(\\"|[^"]))/)
+
+        _save2 = self.pos
+        while true # choice
+          _tmp = apply(:_interpolated_expression)
+          s = @result
+          break if _tmp
+          self.pos = _save2
+          _tmp = apply(:_string_seq)
+          s = @result
+          break if _tmp
+          self.pos = _save2
+          break
+        end # end choice
+
+        _ary << @result if _tmp
         break unless _tmp
       end
       _tmp = true
-      if _tmp
-        text = get_text(_text_start)
-      end
+      @result = _ary
+      values = @result
       unless _tmp
         self.pos = _save
         break
       end
       _tmp = match_string("\"")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; string(values); end
+      _tmp = true
       unless _tmp
         self.pos = _save
       end
@@ -588,24 +709,31 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # string = < (single_tick_string | double_tick_string) > {string(text)}
+  # string = (single_tick_string | double_tick_string)
   def _string
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_single_tick_string)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_double_tick_string)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_string unless _tmp
+    return _tmp
+  end
+
+  # regex_seq = < /[^\\\/]+/ > {regex_seq(text)}
+  def _regex_seq
 
     _save = self.pos
     while true # sequence
       _text_start = self.pos
-
-      _save1 = self.pos
-      while true # choice
-        _tmp = apply(:_single_tick_string)
-        break if _tmp
-        self.pos = _save1
-        _tmp = apply(:_double_tick_string)
-        break if _tmp
-        self.pos = _save1
-        break
-      end # end choice
-
+      _tmp = scan(/\A(?-mix:[^\\\/]+)/)
       if _tmp
         text = get_text(_text_start)
       end
@@ -613,7 +741,7 @@ class Rubby::Parser < KPeg::CompiledParser
         self.pos = _save
         break
       end
-      @result = begin; string(text); end
+      @result = begin; regex_seq(text); end
       _tmp = true
       unless _tmp
         self.pos = _save
@@ -621,7 +749,164 @@ class Rubby::Parser < KPeg::CompiledParser
       break
     end # end sequence
 
-    set_failed_rule :_string unless _tmp
+    set_failed_rule :_regex_seq unless _tmp
+    return _tmp
+  end
+
+  # regex_mods = ("i" | "m" | "x" | "o")
+  def _regex_mods
+
+    _save = self.pos
+    while true # choice
+      _tmp = match_string("i")
+      break if _tmp
+      self.pos = _save
+      _tmp = match_string("m")
+      break if _tmp
+      self.pos = _save
+      _tmp = match_string("x")
+      break if _tmp
+      self.pos = _save
+      _tmp = match_string("o")
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_regex_mods unless _tmp
+    return _tmp
+  end
+
+  # regex = "/" (interpolated_expression:s | regex_seq:s)*:values "/" regex_mods*:mods {regex(values,mods)}
+  def _regex
+
+    _save = self.pos
+    while true # sequence
+      _tmp = match_string("/")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _ary = []
+      while true
+
+        _save2 = self.pos
+        while true # choice
+          _tmp = apply(:_interpolated_expression)
+          s = @result
+          break if _tmp
+          self.pos = _save2
+          _tmp = apply(:_regex_seq)
+          s = @result
+          break if _tmp
+          self.pos = _save2
+          break
+        end # end choice
+
+        _ary << @result if _tmp
+        break unless _tmp
+      end
+      _tmp = true
+      @result = _ary
+      values = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = match_string("/")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _ary = []
+      while true
+        _tmp = apply(:_regex_mods)
+        _ary << @result if _tmp
+        break unless _tmp
+      end
+      _tmp = true
+      @result = _ary
+      mods = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; regex(values,mods); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_regex unless _tmp
+    return _tmp
+  end
+
+  # interpolation_begin = "#{"
+  def _interpolation_begin
+    _tmp = match_string("\#{")
+    set_failed_rule :_interpolation_begin unless _tmp
+    return _tmp
+  end
+
+  # interpolation_end = "}"
+  def _interpolation_end
+    _tmp = match_string("}")
+    set_failed_rule :_interpolation_end unless _tmp
+    return _tmp
+  end
+
+  # interpolated_expression = interpolation_begin space? expression:expr space? interpolation_end {interpolation(expr)}
+  def _interpolated_expression
+
+    _save = self.pos
+    while true # sequence
+      _tmp = apply(:_interpolation_begin)
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save1 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save1
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_expression)
+      expr = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save2 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save2
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_interpolation_end)
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; interpolation(expr); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_interpolated_expression unless _tmp
     return _tmp
   end
 
@@ -748,17 +1033,13 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # hash_lhs_symbol = < identifier:name > {symbol(name)}
+  # hash_lhs_symbol = identifier:name {symbol(name)}
   def _hash_lhs_symbol
 
     _save = self.pos
     while true # sequence
-      _text_start = self.pos
       _tmp = apply(:_identifier)
       name = @result
-      if _tmp
-        text = get_text(_text_start)
-      end
       unless _tmp
         self.pos = _save
         break
@@ -800,37 +1081,24 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # hash_element = < hash_lhs:key hash_sep expression:value > {hash_element(key,value)}
+  # hash_element = hash_lhs:key hash_sep expression:value {hash_element(key,value)}
   def _hash_element
 
     _save = self.pos
     while true # sequence
-      _text_start = self.pos
-
-      _save1 = self.pos
-      while true # sequence
-        _tmp = apply(:_hash_lhs)
-        key = @result
-        unless _tmp
-          self.pos = _save1
-          break
-        end
-        _tmp = apply(:_hash_sep)
-        unless _tmp
-          self.pos = _save1
-          break
-        end
-        _tmp = apply(:_expression)
-        value = @result
-        unless _tmp
-          self.pos = _save1
-        end
+      _tmp = apply(:_hash_lhs)
+      key = @result
+      unless _tmp
+        self.pos = _save
         break
-      end # end sequence
-
-      if _tmp
-        text = get_text(_text_start)
       end
+      _tmp = apply(:_hash_sep)
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_expression)
+      value = @result
       unless _tmp
         self.pos = _save
         break
@@ -917,17 +1185,13 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # hash_unbraced = < hash_element_list:values > {hash(values)}
+  # hash_unbraced = hash_element_list:values {hash(values)}
   def _hash_unbraced
 
     _save = self.pos
     while true # sequence
-      _text_start = self.pos
       _tmp = apply(:_hash_element_list)
       values = @result
-      if _tmp
-        text = get_text(_text_start)
-      end
       unless _tmp
         self.pos = _save
         break
@@ -944,7 +1208,7 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # hash_braced = "{" space? < hash_element_list:values > space? "}" {hash(values)}
+  # hash_braced = "{" space? hash_element_list:values space? "}" {hash(values)}
   def _hash_braced
 
     _save = self.pos
@@ -964,12 +1228,8 @@ class Rubby::Parser < KPeg::CompiledParser
         self.pos = _save
         break
       end
-      _text_start = self.pos
       _tmp = apply(:_hash_element_list)
       values = @result
-      if _tmp
-        text = get_text(_text_start)
-      end
       unless _tmp
         self.pos = _save
         break
@@ -1059,13 +1319,20 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # symbol_ident = < identifier > {symbol(text)}
+  # symbol_identifier = /[A-Za-z0-9_]+/
+  def _symbol_identifier
+    _tmp = scan(/\A(?-mix:[A-Za-z0-9_]+)/)
+    set_failed_rule :_symbol_identifier unless _tmp
+    return _tmp
+  end
+
+  # symbol_ident = < symbol_identifier > {symbol(text)}
   def _symbol_ident
 
     _save = self.pos
     while true # sequence
       _text_start = self.pos
-      _tmp = apply(:_identifier)
+      _tmp = apply(:_symbol_identifier)
       if _tmp
         text = get_text(_text_start)
       end
@@ -1085,17 +1352,13 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # symbol_string = < string:value > {symbol(value)}
+  # symbol_string = string:value {symbol(value)}
   def _symbol_string
 
     _save = self.pos
     while true # sequence
-      _text_start = self.pos
       _tmp = apply(:_string)
       value = @result
-      if _tmp
-        text = get_text(_text_start)
-      end
       unless _tmp
         self.pos = _save
         break
@@ -1167,7 +1430,7 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # symbol_var = < ("@@" | "@") identifier > {symbol(text)}
+  # symbol_var = < ("@@" | "@") symbol_identifier > {symbol(text)}
   def _symbol_var
 
     _save = self.pos
@@ -1192,7 +1455,7 @@ class Rubby::Parser < KPeg::CompiledParser
           self.pos = _save1
           break
         end
-        _tmp = apply(:_identifier)
+        _tmp = apply(:_symbol_identifier)
         unless _tmp
           self.pos = _save1
         end
@@ -1253,39 +1516,6 @@ class Rubby::Parser < KPeg::CompiledParser
     end # end sequence
 
     set_failed_rule :_symbol unless _tmp
-    return _tmp
-  end
-
-  # literal = (array | identifier | constant | float | integer | string | symbol)
-  def _literal
-
-    _save = self.pos
-    while true # choice
-      _tmp = apply(:_array)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_identifier)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_constant)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_float)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_integer)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_string)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_symbol)
-      break if _tmp
-      self.pos = _save
-      break
-    end # end choice
-
-    set_failed_rule :_literal unless _tmp
     return _tmp
   end
 
@@ -1675,8 +1905,61 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # expression = (hash | call | literal)
-  def _expression
+  # expression_group = "(" space? expression:expr space? ")" {expression_group(expr)}
+  def _expression_group
+
+    _save = self.pos
+    while true # sequence
+      _tmp = match_string("(")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save1 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save1
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_expression)
+      expr = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save2 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save2
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = match_string(")")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; expression_group(expr); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_expression_group unless _tmp
+    return _tmp
+  end
+
+  # expression_item = (hash | call | regex | array | identifier | constant | float | integer | string | symbol)
+  def _expression_item
 
     _save = self.pos
     while true # choice
@@ -1686,7 +1969,46 @@ class Rubby::Parser < KPeg::CompiledParser
       _tmp = apply(:_call)
       break if _tmp
       self.pos = _save
-      _tmp = apply(:_literal)
+      _tmp = apply(:_regex)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_array)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_identifier)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_constant)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_float)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_integer)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_string)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_symbol)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_expression_item unless _tmp
+    return _tmp
+  end
+
+  # expression = (expression_group | expression_item)
+  def _expression
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_expression_group)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_expression_item)
       break if _tmp
       self.pos = _save
       break
@@ -1696,13 +2018,13 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # statements = statements+
+  # statements = statement+
   def _statements
     _save = self.pos
-    _tmp = apply(:_statements)
+    _tmp = apply(:_statement)
     if _tmp
       while true
-        _tmp = apply(:_statements)
+        _tmp = apply(:_statement)
         break unless _tmp
       end
       _tmp = true
@@ -1713,38 +2035,59 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # statement = (expression | comment)
-  def _statement
+  # statement_end = (nl | eof)
+  def _statement_end
 
     _save = self.pos
     while true # choice
-      _tmp = apply(:_expression)
+      _tmp = apply(:_nl)
       break if _tmp
       self.pos = _save
-      _tmp = apply(:_comment)
+      _tmp = apply(:_eof)
       break if _tmp
       self.pos = _save
       break
     end # end choice
+
+    set_failed_rule :_statement_end unless _tmp
+    return _tmp
+  end
+
+  # statement = (expression | comment) statement_end
+  def _statement
+
+    _save = self.pos
+    while true # sequence
+
+      _save1 = self.pos
+      while true # choice
+        _tmp = apply(:_expression)
+        break if _tmp
+        self.pos = _save1
+        _tmp = apply(:_comment)
+        break if _tmp
+        self.pos = _save1
+        break
+      end # end choice
+
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_statement_end)
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
 
     set_failed_rule :_statement unless _tmp
     return _tmp
   end
 
-  # root = (statements | statement)
+  # root = statements
   def _root
-
-    _save = self.pos
-    while true # choice
-      _tmp = apply(:_statements)
-      break if _tmp
-      self.pos = _save
-      _tmp = apply(:_statement)
-      break if _tmp
-      self.pos = _save
-      break
-    end # end choice
-
+    _tmp = apply(:_statements)
     set_failed_rule :_root unless _tmp
     return _tmp
   end
@@ -1776,28 +2119,36 @@ class Rubby::Parser < KPeg::CompiledParser
   Rules[:_integer_binary] = rule_info("integer_binary", "/(0b[01]+)/")
   Rules[:_integer] = rule_info("integer", "< (integer_octal | integer_decimal | integer_hex | integer_binary | integer_zero) > {integer(text)}")
   Rules[:_float] = rule_info("float", "< /([0-9]+\\.[0-9]+)/ > {float(text)}")
-  Rules[:_single_tick_string] = rule_info("single_tick_string", "\"'\" < /(\\\\'|[^'])/* > \"'\"")
-  Rules[:_double_tick_string] = rule_info("double_tick_string", "\"\\\"\" < /(\\\\\"|[^\"])/* > \"\\\"\"")
-  Rules[:_string] = rule_info("string", "< (single_tick_string | double_tick_string) > {string(text)}")
+  Rules[:_single_tick_string] = rule_info("single_tick_string", "\"'\" simple_string_seq:value \"'\" {string([value])}")
+  Rules[:_simple_string_seq] = rule_info("simple_string_seq", "< /(\\\\'|[^'])/* > {simple_string(text)}")
+  Rules[:_string_seq] = rule_info("string_seq", "< /[^\\\\\"]+/ > {simple_string(text)}")
+  Rules[:_double_tick_string] = rule_info("double_tick_string", "\"\\\"\" (interpolated_expression:s | string_seq:s)*:values \"\\\"\" {string(values)}")
+  Rules[:_string] = rule_info("string", "(single_tick_string | double_tick_string)")
+  Rules[:_regex_seq] = rule_info("regex_seq", "< /[^\\\\\\/]+/ > {regex_seq(text)}")
+  Rules[:_regex_mods] = rule_info("regex_mods", "(\"i\" | \"m\" | \"x\" | \"o\")")
+  Rules[:_regex] = rule_info("regex", "\"/\" (interpolated_expression:s | regex_seq:s)*:values \"/\" regex_mods*:mods {regex(values,mods)}")
+  Rules[:_interpolation_begin] = rule_info("interpolation_begin", "\"\#{\"")
+  Rules[:_interpolation_end] = rule_info("interpolation_end", "\"}\"")
+  Rules[:_interpolated_expression] = rule_info("interpolated_expression", "interpolation_begin space? expression:expr space? interpolation_end {interpolation(expr)}")
   Rules[:_array_empty] = rule_info("array_empty", "\"[]\" {array([])}")
   Rules[:_array_non_empty] = rule_info("array_non_empty", "\"[\" space? < expression_list:values > space? \"]\" {array(values)}")
   Rules[:_array] = rule_info("array", "(array_non_empty | array_empty)")
   Rules[:_hash_sep] = rule_info("hash_sep", "\":\" space?")
-  Rules[:_hash_lhs_symbol] = rule_info("hash_lhs_symbol", "< identifier:name > {symbol(name)}")
+  Rules[:_hash_lhs_symbol] = rule_info("hash_lhs_symbol", "identifier:name {symbol(name)}")
   Rules[:_hash_lhs_expr] = rule_info("hash_lhs_expr", "expression")
   Rules[:_hash_lhs] = rule_info("hash_lhs", "(hash_lhs_symbol | hash_lhs_expr)")
-  Rules[:_hash_element] = rule_info("hash_element", "< hash_lhs:key hash_sep expression:value > {hash_element(key,value)}")
+  Rules[:_hash_element] = rule_info("hash_element", "hash_lhs:key hash_sep expression:value {hash_element(key,value)}")
   Rules[:_hash_element_list] = rule_info("hash_element_list", "(hash_element (expression_list_sep hash_element)+ | hash_element)")
-  Rules[:_hash_unbraced] = rule_info("hash_unbraced", "< hash_element_list:values > {hash(values)}")
-  Rules[:_hash_braced] = rule_info("hash_braced", "\"{\" space? < hash_element_list:values > space? \"}\" {hash(values)}")
+  Rules[:_hash_unbraced] = rule_info("hash_unbraced", "hash_element_list:values {hash(values)}")
+  Rules[:_hash_braced] = rule_info("hash_braced", "\"{\" space? hash_element_list:values space? \"}\" {hash(values)}")
   Rules[:_hash_empty] = rule_info("hash_empty", "\"{\" space? \"}\" {hash([])}")
   Rules[:_hash] = rule_info("hash", "(hash_unbraced | hash_braced | hash_empty)")
-  Rules[:_symbol_ident] = rule_info("symbol_ident", "< identifier > {symbol(text)}")
-  Rules[:_symbol_string] = rule_info("symbol_string", "< string:value > {symbol(value)}")
+  Rules[:_symbol_identifier] = rule_info("symbol_identifier", "/[A-Za-z0-9_]+/")
+  Rules[:_symbol_ident] = rule_info("symbol_ident", "< symbol_identifier > {symbol(text)}")
+  Rules[:_symbol_string] = rule_info("symbol_string", "string:value {symbol(value)}")
   Rules[:_symbol_glyph] = rule_info("symbol_glyph", "< (\"+\" | \"-\" | \"*\" | \"/\" | \"!\" | \"^\" | \"&\" | \"**\") > {symbol(text)}")
-  Rules[:_symbol_var] = rule_info("symbol_var", "< (\"@@\" | \"@\") identifier > {symbol(text)}")
+  Rules[:_symbol_var] = rule_info("symbol_var", "< (\"@@\" | \"@\") symbol_identifier > {symbol(text)}")
   Rules[:_symbol] = rule_info("symbol", "\":\" (symbol_ident | symbol_string | symbol_glyph | symbol_var)")
-  Rules[:_literal] = rule_info("literal", "(array | identifier | constant | float | integer | string | symbol)")
   Rules[:_comment] = rule_info("comment", "\"\#\" < (!nl .)* > nl {comment(text)}")
   Rules[:_call_args] = rule_info("call_args", "expression_list")
   Rules[:_call_without_args] = rule_info("call_without_args", "< identifier:name > (\"(\" space? \")\")? {call(name, [])}")
@@ -1806,9 +2157,12 @@ class Rubby::Parser < KPeg::CompiledParser
   Rules[:_call] = rule_info("call", "(call_with_braced_args | call_with_unbraced_args | call_without_args)")
   Rules[:_expression_list_sep] = rule_info("expression_list_sep", "space? \",\" space?")
   Rules[:_expression_list] = rule_info("expression_list", "(expression (expression_list_sep expression)+ | expression)")
-  Rules[:_expression] = rule_info("expression", "(hash | call | literal)")
-  Rules[:_statements] = rule_info("statements", "statements+")
-  Rules[:_statement] = rule_info("statement", "(expression | comment)")
-  Rules[:_root] = rule_info("root", "(statements | statement)")
+  Rules[:_expression_group] = rule_info("expression_group", "\"(\" space? expression:expr space? \")\" {expression_group(expr)}")
+  Rules[:_expression_item] = rule_info("expression_item", "(hash | call | regex | array | identifier | constant | float | integer | string | symbol)")
+  Rules[:_expression] = rule_info("expression", "(expression_group | expression_item)")
+  Rules[:_statements] = rule_info("statements", "statement+")
+  Rules[:_statement_end] = rule_info("statement_end", "(nl | eof)")
+  Rules[:_statement] = rule_info("statement", "(expression | comment) statement_end")
+  Rules[:_root] = rule_info("root", "statements")
   # :startdoc:
 end
