@@ -88,6 +88,8 @@ describe Rubby::Parser do
       describe('(foo baz): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('(3): 1, bar: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('"foo": 1, 2: 3') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('{{foo: 1}: 2}') { it_behaves_like 'node', Rubby::Nodes::Hash }
+      describe('{foo: 1}: 2') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1}') { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe("{ foo: 1 }") { it_behaves_like 'node', Rubby::Nodes::Hash }
       describe('{foo: 1, bar: 2}') { it_behaves_like 'node', Rubby::Nodes::Hash }
@@ -101,10 +103,10 @@ describe Rubby::Parser do
       describe('foo 1, 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo 1,2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo bar') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo *bar') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo *bar,*baz') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo {bar: 1, baz: 2}') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo bar: 1, baz: 2') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo *bar') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo *bar,*baz') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo {bar: 1, baz: 2}') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo bar: 1, baz: 2') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo()') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo(1)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1 )') { it_behaves_like 'node', Rubby::Nodes::Call }
@@ -112,17 +114,17 @@ describe Rubby::Parser do
       describe('foo(1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1, 2, 3)') { it_behaves_like 'node', Rubby::Nodes::Call }
       describe('foo( 1, 2, 3 )') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(1,2,*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(*foo,*bar)') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(foo: 1, bar: 2)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(1,2,*foo)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(*foo,*bar)') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo(foo: 1, bar: 2)') { it_behaves_like 'node', Rubby::Nodes::Call }
 
-    #   describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo 1 &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo 1,2 &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
-    #   describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::Call }
+      describe('foo &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
+      describe('foo 1 &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
+      describe('foo 1,2 &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
+      describe('foo() &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
+      describe('foo(1) &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
+      describe('foo(1,2,3) &>') { it_behaves_like 'node', Rubby::Nodes::CallWithBlock }
 
     #   describe('foo[1]') { it_behaves_like 'node', Rubby::Nodes::Index }
     #   describe('foo[:foo]') { it_behaves_like 'node', Rubby::Nodes::Index }

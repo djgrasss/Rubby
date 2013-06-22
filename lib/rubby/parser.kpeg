@@ -6,22 +6,25 @@
   end
 }
 
-%% ast-location     = Rubby::Nodes
-%% comment          = ast Comment(value)
-%% integer          = ast Integer(value)
-%% float            = ast Float(value)
-%% constant         = ast Constant(value)
-%% string           = ast String(values)
-%% simple_string    = ast SimpleString(value)
-%% call             = ast Call(name, arguments)
-%% array            = ast Array(values)
-%% hash             = ast Hash(values)
-%% hash_element     = ast HashElement(key, value)
-%% symbol           = ast Symbol(value)
-%% regex            = ast Regex(values,mods)
-%% regex_seq        = ast RegexSeq(value)
-%% interpolation    = ast Interpolation(expression)
-%% expression_group = ast ExpressionGroup(expression)
+%% ast-location        = Rubby::Nodes
+%% comment             = ast Comment(value)
+%% integer             = ast Integer(value)
+%% float               = ast Float(value)
+%% constant            = ast Constant(value)
+%% string              = ast String(values)
+%% simple_string       = ast SimpleString(value)
+%% call                = ast Call(name, arguments)
+%% array               = ast Array(values)
+%% hash                = ast Hash(values)
+%% hash_element        = ast HashElement(key, value)
+%% symbol              = ast Symbol(value)
+%% regex               = ast Regex(values,mods)
+%% regex_seq           = ast RegexSeq(value)
+%% interpolation       = ast Interpolation(expression)
+%% expression_group    = ast ExpressionGroup(expression)
+%% call_argument       = ast CallArgument(expression)
+%% call_argument_splat = ast CallArgumentSplat(expression)
+%% call_with_block     = ast CallWithBlock(call,statements)
 
 eof = !.
 space = " " | "\t"
@@ -40,6 +43,7 @@ unless = "unless"
 raise  = "raise" | "o_O"
 rescue = "rescue"
 ensure = "ensure"
+proc   = "&>"
 
 # Literals
 identifier = /[a-z_][a-zA-Z0-9_]*/
@@ -105,13 +109,19 @@ symbol            = ":" (symbol_ident | symbol_string | symbol_glyph | symbol_va
 comment    = "#" < (!nl .)* > nl ~comment(text)
 
 # Method call_args
-call_args = expression_list
+call_arg_splat = "*" expression:expr ~call_argument_splat(expr)
+call_arg_expr  = expression:expr ~call_argument(expr)
+call_arg       = call_arg_expr | call_arg_splat
+call_arg_sep   = space? "," space?
+call_args      = (call_arg (call_arg_sep call_arg)+)
 
 # Method Calls
 call_without_args       = <identifier:name> ( "(" space? ")" )? ~call(name, [])
 call_with_braced_args   = <identifier:name "(" space? call_args:args space? ")"> ~call(text, args)
 call_with_unbraced_args = <identifier:name space? call_args:args space?> ~call(name, args)
-call       = call_with_braced_args | call_with_unbraced_args | call_without_args
+call_without_block      = call_with_braced_args | call_with_unbraced_args | call_without_args
+call_with_block         = call_without_block:call space? proc ~call_with_block(call,nil)
+call                    = call_with_block | call_without_block
 
 expression_list_sep = space? "," space?
 expression_list     = (expression (expression_list_sep expression)+) | expression

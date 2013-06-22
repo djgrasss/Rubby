@@ -26,6 +26,26 @@ class Rubby::Parser < KPeg::CompiledParser
       attr_reader :name
       attr_reader :arguments
     end
+    class CallArgument < Node
+      def initialize(expression)
+        @expression = expression
+      end
+      attr_reader :expression
+    end
+    class CallArgumentSplat < Node
+      def initialize(expression)
+        @expression = expression
+      end
+      attr_reader :expression
+    end
+    class CallWithBlock < Node
+      def initialize(call, statements)
+        @call = call
+        @statements = statements
+      end
+      attr_reader :call
+      attr_reader :statements
+    end
     class Comment < Node
       def initialize(value)
         @value = value
@@ -114,6 +134,15 @@ class Rubby::Parser < KPeg::CompiledParser
   end
   def call(name, arguments)
     Rubby::Nodes::Call.new(name, arguments)
+  end
+  def call_argument(expression)
+    Rubby::Nodes::CallArgument.new(expression)
+  end
+  def call_argument_splat(expression)
+    Rubby::Nodes::CallArgumentSplat.new(expression)
+  end
+  def call_with_block(call, statements)
+    Rubby::Nodes::CallWithBlock.new(call, statements)
   end
   def comment(value)
     Rubby::Nodes::Comment.new(value)
@@ -341,6 +370,13 @@ class Rubby::Parser < KPeg::CompiledParser
   def _ensure
     _tmp = match_string("ensure")
     set_failed_rule :_ensure unless _tmp
+    return _tmp
+  end
+
+  # proc = "&>"
+  def _proc
+    _tmp = match_string("&>")
+    set_failed_rule :_proc unless _tmp
     return _tmp
   end
 
@@ -1629,9 +1665,166 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # call_args = expression_list
+  # call_arg_splat = "*" expression:expr {call_argument_splat(expr)}
+  def _call_arg_splat
+
+    _save = self.pos
+    while true # sequence
+      _tmp = match_string("*")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_expression)
+      expr = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; call_argument_splat(expr); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_call_arg_splat unless _tmp
+    return _tmp
+  end
+
+  # call_arg_expr = expression:expr {call_argument(expr)}
+  def _call_arg_expr
+
+    _save = self.pos
+    while true # sequence
+      _tmp = apply(:_expression)
+      expr = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; call_argument(expr); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_call_arg_expr unless _tmp
+    return _tmp
+  end
+
+  # call_arg = (call_arg_expr | call_arg_splat)
+  def _call_arg
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_call_arg_expr)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_call_arg_splat)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_call_arg unless _tmp
+    return _tmp
+  end
+
+  # call_arg_sep = space? "," space?
+  def _call_arg_sep
+
+    _save = self.pos
+    while true # sequence
+      _save1 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save1
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = match_string(",")
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save2 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save2
+      end
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_call_arg_sep unless _tmp
+    return _tmp
+  end
+
+  # call_args = call_arg (call_arg_sep call_arg)+
   def _call_args
-    _tmp = apply(:_expression_list)
+
+    _save = self.pos
+    while true # sequence
+      _tmp = apply(:_call_arg)
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save1 = self.pos
+
+      _save2 = self.pos
+      while true # sequence
+        _tmp = apply(:_call_arg_sep)
+        unless _tmp
+          self.pos = _save2
+          break
+        end
+        _tmp = apply(:_call_arg)
+        unless _tmp
+          self.pos = _save2
+        end
+        break
+      end # end sequence
+
+      if _tmp
+        while true
+
+          _save3 = self.pos
+          while true # sequence
+            _tmp = apply(:_call_arg_sep)
+            unless _tmp
+              self.pos = _save3
+              break
+            end
+            _tmp = apply(:_call_arg)
+            unless _tmp
+              self.pos = _save3
+            end
+            break
+          end # end sequence
+
+          break unless _tmp
+        end
+        _tmp = true
+      else
+        self.pos = _save1
+      end
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
     set_failed_rule :_call_args unless _tmp
     return _tmp
   end
@@ -1831,8 +2024,8 @@ class Rubby::Parser < KPeg::CompiledParser
     return _tmp
   end
 
-  # call = (call_with_braced_args | call_with_unbraced_args | call_without_args)
-  def _call
+  # call_without_block = (call_with_braced_args | call_with_unbraced_args | call_without_args)
+  def _call_without_block
 
     _save = self.pos
     while true # choice
@@ -1843,6 +2036,62 @@ class Rubby::Parser < KPeg::CompiledParser
       break if _tmp
       self.pos = _save
       _tmp = apply(:_call_without_args)
+      break if _tmp
+      self.pos = _save
+      break
+    end # end choice
+
+    set_failed_rule :_call_without_block unless _tmp
+    return _tmp
+  end
+
+  # call_with_block = call_without_block:call space? proc {call_with_block(call,nil)}
+  def _call_with_block
+
+    _save = self.pos
+    while true # sequence
+      _tmp = apply(:_call_without_block)
+      call = @result
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _save1 = self.pos
+      _tmp = apply(:_space)
+      unless _tmp
+        _tmp = true
+        self.pos = _save1
+      end
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      _tmp = apply(:_proc)
+      unless _tmp
+        self.pos = _save
+        break
+      end
+      @result = begin; call_with_block(call,nil); end
+      _tmp = true
+      unless _tmp
+        self.pos = _save
+      end
+      break
+    end # end sequence
+
+    set_failed_rule :_call_with_block unless _tmp
+    return _tmp
+  end
+
+  # call = (call_with_block | call_without_block)
+  def _call
+
+    _save = self.pos
+    while true # choice
+      _tmp = apply(:_call_with_block)
+      break if _tmp
+      self.pos = _save
+      _tmp = apply(:_call_without_block)
       break if _tmp
       self.pos = _save
       break
@@ -2160,6 +2409,7 @@ class Rubby::Parser < KPeg::CompiledParser
   Rules[:_raise] = rule_info("raise", "(\"raise\" | \"o_O\")")
   Rules[:_rescue] = rule_info("rescue", "\"rescue\"")
   Rules[:_ensure] = rule_info("ensure", "\"ensure\"")
+  Rules[:_proc] = rule_info("proc", "\"&>\"")
   Rules[:_identifier] = rule_info("identifier", "/[a-z_][a-zA-Z0-9_]*/")
   Rules[:_constant_name] = rule_info("constant_name", "/([A-Z][a-zA-Z0-9_]+)/")
   Rules[:_constant_sep] = rule_info("constant_sep", "\"::\"")
@@ -2204,11 +2454,17 @@ class Rubby::Parser < KPeg::CompiledParser
   Rules[:_symbol_var] = rule_info("symbol_var", "< (\"@@\" | \"@\") symbol_identifier > {symbol(text)}")
   Rules[:_symbol] = rule_info("symbol", "\":\" (symbol_ident | symbol_string | symbol_glyph | symbol_var)")
   Rules[:_comment] = rule_info("comment", "\"\#\" < (!nl .)* > nl {comment(text)}")
-  Rules[:_call_args] = rule_info("call_args", "expression_list")
+  Rules[:_call_arg_splat] = rule_info("call_arg_splat", "\"*\" expression:expr {call_argument_splat(expr)}")
+  Rules[:_call_arg_expr] = rule_info("call_arg_expr", "expression:expr {call_argument(expr)}")
+  Rules[:_call_arg] = rule_info("call_arg", "(call_arg_expr | call_arg_splat)")
+  Rules[:_call_arg_sep] = rule_info("call_arg_sep", "space? \",\" space?")
+  Rules[:_call_args] = rule_info("call_args", "call_arg (call_arg_sep call_arg)+")
   Rules[:_call_without_args] = rule_info("call_without_args", "< identifier:name > (\"(\" space? \")\")? {call(name, [])}")
   Rules[:_call_with_braced_args] = rule_info("call_with_braced_args", "< identifier:name \"(\" space? call_args:args space? \")\" > {call(text, args)}")
   Rules[:_call_with_unbraced_args] = rule_info("call_with_unbraced_args", "< identifier:name space? call_args:args space? > {call(name, args)}")
-  Rules[:_call] = rule_info("call", "(call_with_braced_args | call_with_unbraced_args | call_without_args)")
+  Rules[:_call_without_block] = rule_info("call_without_block", "(call_with_braced_args | call_with_unbraced_args | call_without_args)")
+  Rules[:_call_with_block] = rule_info("call_with_block", "call_without_block:call space? proc {call_with_block(call,nil)}")
+  Rules[:_call] = rule_info("call", "(call_with_block | call_without_block)")
   Rules[:_expression_list_sep] = rule_info("expression_list_sep", "space? \",\" space?")
   Rules[:_expression_list] = rule_info("expression_list", "(expression (expression_list_sep expression)+ | expression)")
   Rules[:_expression_group] = rule_info("expression_group", "\"(\" space? expression:expr space? \")\" {expression_group(expr)}")
