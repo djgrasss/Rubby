@@ -339,7 +339,7 @@ $ gem install rubby
 
 ## Copyright
 
-Copyright (c) 2013 [Sociable Limited](http://sociable.co.nz) and named contributors:
+Copyright (c) 2013 [Resistor Limited](http://resistor.io) and named contributors:
 
 ### Contributors
 

@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.name          = "rubby"
   gem.version       = Rubby::VERSION
   gem.authors       = ["James Harton", "Philip Arndt", "Bardoe", "Brett Wilkins"]
-  gem.email         = ["james@sociable.co.nz"]
+  gem.email         = ["james@resistor.io"]
   gem.description   = %q{Ruby, the good parts}
   gem.summary       = %q{A little Ruby language}
   gem.homepage      = "http://rubby-lang.org/"
