@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -16,21 +15,21 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 class="header">Rubby</h1>
-        <p class="header">Rubby is a little language on top of Ruby.</p>
+        <h1>Rubby</h1>
+        <p>Rubby is a little language on top of Ruby.</p>
+
+        <p class="view"><a href="https://github.com/jamesotron/Rubby">View the Project on GitHub <small>jamesotron/Rubby</small></a></p>
+
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/jamesotron/Rubby/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/jamesotron/Rubby/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/jamesotron/Rubby">View On GitHub</a></li>
+          <li><a href="https://github.com/jamesotron/Rubby/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/jamesotron/Rubby/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/jamesotron/Rubby">View On <strong>GitHub</strong></a></li>
         </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/jamesotron">jamesotron</a></p>
-
-
       </header>
       <section>
-        <h1>Rubby</h1>
+        <h1>
+<a name="rubby" class="anchor" href="#rubby"><span class="octicon octicon-link"></span></a>Rubby</h1>
 
 <p>Rubby is a little language on top of Ruby. Rubby has a simpler,
 more concise syntax than Ruby, but gives you access to most of Ruby's
@@ -43,18 +42,21 @@ be considered traps for young players.</p>
 <p>Rubby consists of a transpiler, which outputs idiomatic Ruby, and an
 "interpreter" which executes Rubby as if it was the corresponding Ruby code.</p>
 
-<h2>Status</h2>
+<h2>
+<a name="status" class="anchor" href="#status"><span class="octicon octicon-link"></span></a>Status</h2>
 
 <p><a href="https://travis-ci.org/jamesotron/Rubby"><img src="https://travis-ci.org/jamesotron/Rubby.png?branch=master" alt="Build Status"></a>
 <a href="https://gemnasium.com/jamesotron/Rubby"><img src="https://gemnasium.com/jamesotron/Rubby.png" alt="Dependency Status"></a>
 <a href="https://codeclimate.com/github/jamesotron/Rubby"><img src="https://codeclimate.com/github/jamesotron/Rubby.png" alt="Code Climate"></a>
 <a href="https://coveralls.io/r/jamesotron/Rubby"><img src="https://coveralls.io/repos/jamesotron/Rubby/badge.png?branch=master" alt="Coverage Status"></a></p>
 
-<h3>How can I help?</h3>
+<h3>
+<a name="how-can-i-help" class="anchor" href="#how-can-i-help"><span class="octicon octicon-link"></span></a>How can I help?</h3>
 
 <p>There's a whole bunch of Cucumber features tagged with <code>@todo</code> - grab one and try and make it pass.</p>
 
-<h3>Features required for 1.0 release:</h3>
+<h3>
+<a name="features-required-for-10-release" class="anchor" href="#features-required-for-10-release"><span class="octicon octicon-link"></span></a>Features required for 1.0 release:</h3>
 
 <ul>
 <li>Lexer
@@ -112,14 +114,17 @@ be considered traps for young players.</p>
 <li>REPL (✓)</li>
 </ul><p>Rubby is in it's infancy, pull requests are greatly appreciated.</p>
 
-<h2>Usage</h2>
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<h3>Require</h3>
+<h3>
+<a name="require" class="anchor" href="#require"><span class="octicon octicon-link"></span></a>Require</h3>
 
 <p>Rubby defines a polyglot hook so that you can require <code>.rbb</code> files straight
 from your Ruby projects.</p>
 
-<h3>rubby</h3>
+<h3>
+<a name="rubby-1" class="anchor" href="#rubby-1"><span class="octicon octicon-link"></span></a>rubby</h3>
 
 <p>The <code>rubby</code> command can be used to transpile a Rubby script into rubby (using
 the <code>--transpile</code> or <code>-t</code>) arguments, or to simply intepret the file given.</p>
@@ -129,7 +134,8 @@ the output accordingly where necessary.</p>
 
 <p>You can also use <code>#!rubby</code> in your scripts to make them executable.</p>
 
-<h3>irbb</h3>
+<h3>
+<a name="irbb" class="anchor" href="#irbb"><span class="octicon octicon-link"></span></a>irbb</h3>
 
 <p>Rubby has a (very basic) REPL:</p>
 
@@ -139,16 +145,20 @@ use '\' on the end of line for multiline input.
 &gt;&gt; 
 </code></pre>
 
-<h2>Syntax examples</h2>
+<h2>
+<a name="syntax-examples" class="anchor" href="#syntax-examples"><span class="octicon octicon-link"></span></a>Syntax examples</h2>
 
-<h3>Primitives:</h3>
+<h3>
+<a name="primitives" class="anchor" href="#primitives"><span class="octicon octicon-link"></span></a>Primitives:</h3>
 
-<h4>Comments:</h4>
+<h4>
+<a name="comments" class="anchor" href="#comments"><span class="octicon octicon-link"></span></a>Comments:</h4>
 
 <pre lang="rubby"><code># I am a comment
 </code></pre>
 
-<h4>Integers</h4>
+<h4>
+<a name="integers" class="anchor" href="#integers"><span class="octicon octicon-link"></span></a>Integers</h4>
 
 <pre lang="rubby"><code>123    # decimal
 0x123  # hexidecimal
@@ -156,37 +166,43 @@ use '\' on the end of line for multiline input.
 0x101  # binary
 </code></pre>
 
-<h4>Floating point</h4>
+<h4>
+<a name="floating-point" class="anchor" href="#floating-point"><span class="octicon octicon-link"></span></a>Floating point</h4>
 
 <pre lang="rubby"><code>1.23
 </code></pre>
 
-<h4>Strings</h4>
+<h4>
+<a name="strings" class="anchor" href="#strings"><span class="octicon octicon-link"></span></a>Strings</h4>
 
 <pre lang="rubby"><code>'foo'            # basic string with no special characters
 "foo\n"          # complex string, which can contain escaped characters
 "foo #{bar} baz" # complex string with interpolation
 </code></pre>
 
-<h4>Symbols</h4>
+<h4>
+<a name="symbols" class="anchor" href="#symbols"><span class="octicon octicon-link"></span></a>Symbols</h4>
 
 <pre lang="rubby"><code>:foo              # simple symbol, which contain upper and lower case letters, numbers and underscores
 :"foo bar"        # complex symbol which can contain any string
 :"foo #{bar} baz" # complex symbol with interpolation
 </code></pre>
 
-<h4>Regular expressions</h4>
+<h4>
+<a name="regular-expressions" class="anchor" href="#regular-expressions"><span class="octicon octicon-link"></span></a>Regular expressions</h4>
 
 <pre lang="rubby"><code>/^foo$/    # basic regular expression
 /^#{bar}$/ # regular expression with interpolation
 </code></pre>
 
-<h4>Arrays</h4>
+<h4>
+<a name="arrays" class="anchor" href="#arrays"><span class="octicon octicon-link"></span></a>Arrays</h4>
 
 <pre lang="rubby"><code>[1,1.2,'foo',"foo",:foo]
 </code></pre>
 
-<h4>Hashes</h4>
+<h4>
+<a name="hashes" class="anchor" href="#hashes"><span class="octicon octicon-link"></span></a>Hashes</h4>
 
 <pre lang="rubby"><code>foo: 1, 'bar': 2, 3: 4
 </code></pre>
@@ -204,7 +220,8 @@ hashes:</p>
 
 <p>This can be overridden by specifying the target version on the transpiler command line.</p>
 
-<h4>Defining methods</h4>
+<h4>
+<a name="defining-methods" class="anchor" href="#defining-methods"><span class="octicon octicon-link"></span></a>Defining methods</h4>
 
 <p>Methods are defined using the following format:</p>
 
@@ -256,7 +273,8 @@ _my_private_method-&gt; (*args)
 <span class="k">end</span>
 </pre></div>
 
-<h4>Blocks</h4>
+<h4>
+<a name="blocks" class="anchor" href="#blocks"><span class="octicon octicon-link"></span></a>Blocks</h4>
 
 <p>Blocks are passed using the special <code>&amp;&gt;</code> operator. Blocks can take arguments
 (specified within braces <code>()</code> after the <code>&amp;&gt;</code>) and either a single expression
@@ -282,7 +300,8 @@ on the same line, or multiple expressions indented below:</p>
 <span class="k">end</span>
 </pre></div>
 
-<h4>Modules</h4>
+<h4>
+<a name="modules" class="anchor" href="#modules"><span class="octicon octicon-link"></span></a>Modules</h4>
 
 <pre lang="rubby"><code>module Foo # simple module with no contents
 
@@ -300,7 +319,8 @@ module Bar
 <span class="k">end</span>
 </pre></div>
 
-<h4>Classes</h4>
+<h4>
+<a name="classes" class="anchor" href="#classes"><span class="octicon octicon-link"></span></a>Classes</h4>
 
 <pre lang="rubby"><code>class Foo             # simple class with no contents
 class Foo &lt; Exception # simple class, which inherits from Exception with no contents
@@ -320,7 +340,8 @@ class Cat
 <span class="k">end</span>
 </pre></div>
 
-<h4>Extras</h4>
+<h4>
+<a name="extras" class="anchor" href="#extras"><span class="octicon octicon-link"></span></a>Extras</h4>
 
 <p>Shorter raise syntax:</p>
 
@@ -338,7 +359,8 @@ class Cat
 <div class="highlight"><pre><span class="k">return</span> <span class="s2">"b00m!"</span>
 </pre></div>
 
-<h4>Shorter <code>defined?</code> syntax</h4>
+<h4>
+<a name="shorter-defined-syntax" class="anchor" href="#shorter-defined-syntax"><span class="octicon octicon-link"></span></a>Shorter <code>defined?</code> syntax</h4>
 
 <pre lang="rubby"><code>?Foo
 </code></pre>
@@ -346,7 +368,8 @@ class Cat
 <div class="highlight"><pre><span class="n">defined?</span> <span class="no">Foo</span>
 </pre></div>
 
-<h2>Installation</h2>
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Add this line to your application's Gemfile:</p>
 
@@ -363,20 +386,24 @@ class Cat
 <pre lang="shell"><code>$ gem install rubby
 </code></pre>
 
-<h2>Copyright</h2>
+<h2>
+<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>Copyright</h2>
 
 <p>Copyright (c) 2013 <a href="http://sociable.co.nz">Sociable Limited</a> and named contributors:</p>
 
-<h3>Contributors</h3>
+<h3>
+<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h3>
 
 <ul>
 <li><a href="https://github.com/jamesotron">James Harton</a></li>
 <li><a href="https://github.com/parndt">Philip Arndt</a></li>
 <li><a href="https://github.com/bardbess">Bardoe</a></li>
 <li><a href="https://github.com/bwilkins">Brett Wilkins</a></li>
-</ul><h2>License</h2>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-<h3>MIT License</h3>
+<h3>
+<a name="mit-license" class="anchor" href="#mit-license"><span class="octicon octicon-link"></span></a>MIT License</h3>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -398,11 +425,12 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
       <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+        <p>This project is maintained by <a href="https://github.com/jamesotron">jamesotron</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		          <script type="text/javascript">
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
